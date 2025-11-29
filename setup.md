@@ -2,53 +2,69 @@
 title: Setup
 ---
 
-FIXME: Setup instructions live in this document. Please specify the tools and
-the data sets the Learner needs to have installed.
+To take this lesson, you will need the following tools installed and configured.
 
-## Data Sets
+## 1. AWS Account
 
-<!--
-FIXME: place any data you want learners to use in `episodes/data` and then use
-       a relative link ( [data zip file](data/lesson-data.zip) ) to provide a
-       link to it, replacing the example.com link.
--->
-Download the [data zip file](https://example.com/FIXME) and unzip it to your Desktop
+You should have an AWS account you can log into.  
+We will use AWS services such as EC2, IAM, and S3 during the lesson.
 
-## Software Setup
+## 2. Install the AWS CLI
 
-::::::::::::::::::::::::::::::::::::::: discussion
+### macOS
 
-### Details
+Install the AWS CLI using Homebrew:
 
-Setup for different systems can be presented in dropdown menus via a `spoiler`
-tag. They will join to this discussion block, so you can give a general overview
-of the software used in this lesson here and fill out the individual operating
-systems (and potentially add more, e.g. online setup) in the solutions blocks.
+``` bash
+brew install awscli
+```
 
-:::::::::::::::::::::::::::::::::::::::::::::::::::
+Verify the installation:
 
-:::::::::::::::: spoiler
+``` bash
+aws --version
 
-### Windows
+```
 
-Use PuTTY
+## 3. Configure AWS Credentials
 
-::::::::::::::::::::::::
+Use AWS IAM Identity Center (formerly AWS SSO):
 
-:::::::::::::::: spoiler
+``` bash
 
-### MacOS
+aws configure sso
+```
 
-Use Terminal.app
+Follow the browser prompt, then confirm your identity:
 
-::::::::::::::::::::::::
+``` bash
+aws sts get-caller-identity
+```
 
+You should see your AWS account ID and ARN.
 
-:::::::::::::::: spoiler
+## 4. Install Terraform
 
-### Linux
+Download Terraform from the official website or install with Homebrew:
 
-Use Terminal
+    brew tap hashicorp/tap
+    brew install hashicorp/tap/terraform
 
-::::::::::::::::::::::::
+Verify the installation:
 
+    terraform version
+
+## 5. Create a Working Directory
+
+Set up a directory for your Terraform files:
+
+    mkdir terraform-dataverse
+    cd terraform-dataverse
+
+## 6. (Optional) Clone the Lesson Repository
+
+If you want the example files used in this lesson:
+
+    git clone https://github.com/jt14den/terraform-aws-infrastructure
+
+You are now ready to begin the lesson.
