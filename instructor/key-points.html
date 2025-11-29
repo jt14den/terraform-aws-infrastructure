@@ -277,6 +277,18 @@
 </div>
 <!--/div.accordion-flush-->
 
+<div class="accordion accordion-flush" id="accordionFlush5">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading5">
+        <a href="security-groups.html">4. Adding Security Groups to Your EC2 Instance</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
                 </div>
               </div>
             </div>
@@ -377,6 +389,15 @@ resources.</li>
 <li>
 <code>terraform destroy</code> safely removes all managed
 resources.</li>
+</ul></section><section id="security-groups"><h2 class="section-heading"><a href="security-groups.html">Adding Security Groups to Your EC2 Instance</a></h2>
+<hr class="half-width">
+<ul>
+<li>Security groups act as AWS firewalls.</li>
+<li>You define inbound and outbound rules in resource blocks.</li>
+<li>EC2 instances attach one or more security groups.</li>
+<li>Terraform updates security group rules without recreating the
+instance.</li>
+<li>Restricting SSH to your IP improves security.</li>
 </ul></section>
 </div>
     </main>

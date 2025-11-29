@@ -64,6 +64,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/reference.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/security-groups.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor-notes.html</loc>
   </url>
   <url>
@@ -77,5 +80,8 @@
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/reference.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/security-groups.html</loc>
   </url>
 </urlset>
