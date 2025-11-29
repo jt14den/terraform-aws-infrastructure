@@ -265,6 +265,18 @@
 </div>
 <!--/div.accordion-flush-->
 
+<div class="accordion accordion-flush" id="accordionFlush4">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading4">
+        <a href="first-ec2-instance.html">3. Creating Your First AWS EC2 Instance</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
                 </div>
               </div>
             </div>
@@ -608,6 +620,210 @@ how Terraform interacts with AWS.<br>
 configuration is empty.<br>
 </li>
 <li>A clean plan confirms your AWS authentication is working.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-first-ec2-instance"><p>Content from <a href="first-ec2-instance.html">Creating Your First AWS EC2 Instance</a></p>
+<hr>
+<p>Last updated on 2025-11-29 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/first-ec2-instance.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 30 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>How do I define a cloud resource in Terraform?</li>
+<li>What is an <code>aws_instance</code> block?</li>
+<li>How does Terraform preview and apply changes?</li>
+<li>How can I safely destroy cloud resources?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Add an EC2 instance resource to <code>main.tf</code>.</li>
+<li>Understand key arguments of the <code>aws_instance</code>
+block.</li>
+<li>Use <code>terraform plan</code> to preview changes.</li>
+<li>Use <code>terraform apply</code> to create infrastructure.</li>
+<li>Destroy resources safely with <code>terraform destroy</code>.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="adding-an-ec2-instance-to-main-tf">Adding an EC2 Instance to <code>main.tf</code>
+<a class="anchor" aria-label="anchor" href="#adding-an-ec2-instance-to-main-tf"></a>
+</h2>
+<hr class="half-width">
+<p>We extend our configuration from Episode 2 by adding the
+<code>aws_instance</code> resource.</p>
+<p>Add this block to your <code>main.tf</code>:</p>
+<pre class="hcl"><code>resource "aws_instance" "example" {
+  ami           = "ami-0adebe3adcec1fa34"   # Rocky Linux 9 AMI
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "terraform-example"
+  }
+}</code></pre>
+</section><section><h2 class="section-heading" id="understanding-the-key-arguments">Understanding the Key Arguments<a class="anchor" aria-label="anchor" href="#understanding-the-key-arguments"></a>
+</h2>
+<hr class="half-width">
+<ul>
+<li><p><code>resource "aws_instance" "example"</code><br>
+Creates an EC2 instance and names it <code>example</code> in the
+Terraform state.</p></li>
+<li><p><code>ami</code><br>
+Identifies the Amazon Machine Image. Different AMIs represent different
+OSes.</p></li>
+<li><p><code>instance_type</code><br>
+Sets CPU &amp; memory size.</p></li>
+<li><p><code>tags</code><br>
+Adds human-readable metadata in AWS.</p></li>
+</ul></section><section><h2 class="section-heading" id="previewing-the-change">Previewing the Change<a class="anchor" aria-label="anchor" href="#previewing-the-change"></a>
+</h2>
+<hr class="half-width">
+<p>Run:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">terraform</span> plan</span></code></pre>
+</div>
+<p>Terraform will show:</p>
+<ul>
+<li>one resource to add<br>
+</li>
+<li>full details of what will be created<br>
+</li>
+<li>no changes to existing resources</li>
+</ul>
+<p>This preview step is important—nothing changes until we apply.</p>
+</section><section><h2 class="section-heading" id="creating-the-ec2-instance">Creating the EC2 Instance<a class="anchor" aria-label="anchor" href="#creating-the-ec2-instance"></a>
+</h2>
+<hr class="half-width">
+<p>Apply the plan:</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">terraform</span> apply</span></code></pre>
+</div>
+<p>You will be prompted:</p>
+<p>Do you want to perform these actions? Only ‘yes’ will be
+accepted.</p>
+<p>Type:</p>
+<p>yes</p>
+<p>Within about 20–60 seconds the EC2 instance will launch.</p>
+<p>Terraform will output:</p>
+<ul>
+<li>the instance ID<br>
+</li>
+<li>the public DNS<br>
+</li>
+<li>the public IP</li>
+</ul>
+<p>These values are now part of Terraform’s <strong>state</strong>, so
+it knows the instance exists.</p>
+</section><section><h2 class="section-heading" id="verifying-the-instance-in-aws">Verifying the Instance in AWS<a class="anchor" aria-label="anchor" href="#verifying-the-instance-in-aws"></a>
+</h2>
+<hr class="half-width">
+<p>Visit your AWS Console:</p>
+<ul>
+<li>EC2 → Instances<br>
+</li>
+<li>Confirm the instance named <code>terraform-example</code> is
+<strong>running</strong>
+</li>
+</ul></section><section><h2 class="section-heading" id="destroying-the-instance-optional">Destroying the Instance (Optional)<a class="anchor" aria-label="anchor" href="#destroying-the-instance-optional"></a>
+</h2>
+<hr class="half-width">
+<p>Terraform can remove everything it created:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">terraform</span> destroy</span></code></pre>
+</div>
+<p>This is useful while practicing to avoid unnecessary AWS charges.</p>
+<div id="practice-change-the-instance-type" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="practice-change-the-instance-type" class="callout-inner">
+<h3 class="callout-title">Practice: Change the Instance Type</h3>
+<div class="callout-content">
+<p>Modify this line:</p>
+<pre class="hcl"><code><span><span class="va">instance_type</span> <span class="op">=</span> <span class="st">"t3.micro"</span></span></code></pre>
+<p>Change it to:</p>
+<pre class="hcl"><code><span><span class="va">instance_type</span> <span class="op">=</span> <span class="st">"t3.small"</span></span></code></pre>
+<p>Run:</p>
+<div class="codewrapper sourceCode" id="cb7">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">terraform</span> plan</span></code></pre>
+</div>
+<p>What does Terraform tell you it will do?</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div class="accordion-body">
+<dl>
+<dt>Terraform should report an <strong>in-place update</strong>,
+changing only the instance type:</dt>
+<dd>
+<p>instance_type: “t3.micro” -&gt; “t3.small”</p>
+</dd>
+</dl>
+<p>No resources are destroyed unless the change requires
+replacement.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>Terraform uses resource blocks to define cloud infrastructure.</li>
+<li>The AWS provider includes many resource types; EC2 is one of
+them.</li>
+<li>
+<code>terraform plan</code> previews changes before they occur.</li>
+<li>
+<code>terraform apply</code> creates or updates cloud
+resources.</li>
+<li>Terraform maintains state so it always knows what exists.</li>
+<li>
+<code>terraform destroy</code> safely removes all managed
+resources.</li>
 </ul>
 </div>
 </div>
