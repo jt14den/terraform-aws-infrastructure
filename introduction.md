@@ -1,114 +1,76 @@
 ---
-title: "Using Markdown"
-teaching: 10 # teaching time in minutes
-exercises: 2 # exercise time in minutes
+title: "Introduction to Terraform for AWS"
+teaching: 10
+exercises: 5
 ---
 
-:::::::::::::::::::::::::::::::::::::: questions 
+:::::::::::::::::::::::::::::::::::::: questions
 
-- How do you write a lesson using Markdown and `{sandpaper}`?
+- What problem does Terraform solve?
+- How does Terraform create and update cloud resources?
+- Why is infrastructure as code useful for reproducibility?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: objectives
 
-- Explain how to use markdown with The Carpentries Workbench
-- Demonstrate how to include pieces of code, figures, and nested challenge blocks
+- Describe the purpose of Terraform.
+- Explain the core workflow (`init`, `plan`, `apply`).
+- Identify the AWS resources managed in this lesson.
+- Recognize how infrastructure as code improves reliability.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Introduction
 
-This is a lesson created via The Carpentries Workbench. It is written in
-[Pandoc-flavored Markdown](https://pandoc.org/MANUAL.html) for static files and
-[R Markdown][r-markdown] for dynamic files that can render code into output. 
-Please refer to the [Introduction to The Carpentries 
-Workbench](https://carpentries.github.io/sandpaper-docs/) for full documentation.
+This lesson introduces Terraform through a practical, minimal example:
+launching and managing an EC2 instance on AWS.
 
-What you need to know is that there are three sections required for a valid
-Carpentries lesson:
+Terraform is a tool that lets you define cloud resources in configuration files.
+Instead of clicking through the AWS console, you describe resources such as:
 
- 1. `questions` are displayed at the beginning of the episode to prime the
-    learner for the content.
- 2. `objectives` are the learning objectives for an episode displayed with
-    the questions.
- 3. `keypoints` are displayed at the end of the episode to reinforce the
-    objectives.
+- EC2 instances  
+- security groups  
+- key pairs  
+- storage volumes  
+
+Terraform then compares your configuration to what exists in AWS and makes the
+changes needed to match the desired state.
+
+By working this way, your infrastructure becomes:
+
+- repeatable  
+- easier to review  
+- easier to share  
+- easier to rebuild when something breaks  
+
+This lesson is written in Pandoc-flavoured Markdown and built with The Carpentries Workbench.
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
-Inline instructor notes can help inform instructors of timing challenges
-associated with the lessons. They appear in the "Instructor View"
+Encourage learners to say out loud (or write down) what they currently do to
+create infrastructure (for example, “I click around in the AWS console”).
+Use their answers to motivate why infrastructure as code is valuable.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-::::::::::::::::::::::::::::::::::::: challenge 
-
-## Challenge 1: Can you do it?
-
-What is the output of this command?
-
-```r
-paste("This", "new", "lesson", "looks", "good")
-```
-
-:::::::::::::::::::::::: solution 
-
-## Output
- 
-```output
-[1] "This new lesson looks good"
-```
-
-:::::::::::::::::::::::::::::::::
-
-
-## Challenge 2: how do you nest solutions within challenge blocks?
-
-:::::::::::::::::::::::: solution 
-
-You can add a line with at least three colons and a `solution` tag.
-
-:::::::::::::::::::::::::::::::::
-::::::::::::::::::::::::::::::::::::::::::::::::
-
-## Figures
-
-You can use standard markdown for static figures with the following syntax:
-
-`![optional caption that appears below the figure](figure url){alt='alt text for
-accessibility purposes'}`
-
-![You belong in The Carpentries!](https://raw.githubusercontent.com/carpentries/logo/master/Badge_Carpentries.svg){alt='Blue Carpentries hex person logo with no text.'}
-
 ::::::::::::::::::::::::::::::::::::: callout
 
-Callout sections can highlight information.
+### The Terraform Workflow
 
-They are sometimes used to emphasise particularly important points
-but are also used in some lessons to present "asides": 
-content that is not central to the narrative of the lesson,
-e.g. by providing the answer to a commonly-asked question.
+We will use three core commands throughout the lesson:
 
-::::::::::::::::::::::::::::::::::::::::::::::::
-
-
-## Math
-
-One of our episodes contains $\LaTeX$ equations when describing how to create
-dynamic reports with {knitr}, so we now use mathjax to describe this:
-
-`$\alpha = \dfrac{1}{(1 - \beta)^2}$` becomes: $\alpha = \dfrac{1}{(1 - \beta)^2}$
-
-Cool, right?
-
-::::::::::::::::::::::::::::::::::::: keypoints 
-
-- Use `.md` files for episodes when you want static content
-- Use `.Rmd` files for episodes when you need to generate output
-- Run `sandpaper::check_lesson()` to identify any issues with your lesson
-- Run `sandpaper::build_lesson()` to preview your lesson locally
+- `terraform init` — prepare the working directory and download providers  
+- `terraform plan` — show what Terraform will change  
+- `terraform apply` — apply the changes to real infrastructure  
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-[r-markdown]: https://rmarkdown.rstudio.com/
+::::::::::::::::::::::::::::::::::::: keypoints
+
+- Terraform lets you describe infrastructure in code instead of clicking in a UI.  
+- The main workflow is `init`, `plan`, and `apply`.  
+- Infrastructure as code is more reproducible, reviewable, and maintainable.  
+- This lesson will build up a small AWS environment step by step.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
