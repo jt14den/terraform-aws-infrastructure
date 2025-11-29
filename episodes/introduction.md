@@ -98,3 +98,5 @@ Terraform can produce architecture diagrams, but in this lesson we use simple co
 - `init`, `plan`, and `apply` form the core workflow.  
 - Code-based infrastructure is reproducible and easy to update.  
 - This lesson will build a small AWS environment step by
+
+::::::::::::::::::::::::::::::::::::::::
