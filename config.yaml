@@ -39,6 +39,7 @@ contact: 'tdennis@library.ucla.edu'
 # Order of episodes in your lesson
 episodes: 
   - introduction.md
+  - first-terraform-config.md
 
 # Information for Learners
 learners: 
