@@ -300,12 +300,106 @@
 
         
 <section><h2 class="section-heading" id="glossary">Glossary<a class="anchor" aria-label="anchor" href="#glossary"></a></h2>
-<hr class="half-width"><p>This is a placeholder file. Please add content here.</p>
-<!--
+<hr class="half-width"><dl><dt>AMI (Amazon Machine Image)</dt>
+<dd>
+A template describing the OS and software configuration for launching an
+EC2 instance.
+</dd>
+<dt>Apply (Terraform)</dt>
+<dd>
+Terraform command that creates or updates cloud resources to match your
+configuration.
+</dd>
+<dt>AWS Region</dt>
+<dd>
+A geographic area where AWS operates data centers (e.g.,
+<code>us-west-2</code>).<br>
+Terraform resources must all specify a region.
+</dd>
+<dt>Backend (Terraform)</dt>
+<dd>
+Where Terraform stores its state file (local file, S3, etc.).<br>
+Remote backends enable collaboration and reduce risk.
+</dd>
+<dt>CIDR Block</dt>
+<dd>
+A notation defining IP ranges, such as
+<code>203.0.113.24/32</code>.<br>
+Used for networking and security groups.
+</dd>
+<dt>Configuration File (<code>*.tf</code>)</dt>
+<dd>
+A Terraform file written in HCL that describes desired infrastructure.
+</dd>
+<dt>Destroy (Terraform)</dt>
+<dd>
+Command that removes all Terraform-managed resources.<br>
+Usage: <code>terraform destroy</code>.
+</dd>
+<dt>EC2 Instance</dt>
+<dd>
+A virtual server hosted in AWS.
+</dd>
+<dt>HCL (HashiCorp Configuration Language)</dt>
+<dd>
+The language used by Terraform for configuration.
+</dd>
+<dt>Ingress Rule (Security Group)</dt>
+<dd>
+A firewall rule allowing incoming traffic to an EC2 instance.
+</dd>
+<dt>Instance Type</dt>
+<dd>
+A hardware profile specifying CPU, memory, and network performance
+(e.g., <code>t3.micro</code>, <code>t3.large</code>).
+</dd>
+<dt>Key Pair (AWS)</dt>
+<dd>
+Public/private SSH key used to authenticate when logging into EC2
+instances.
+</dd>
+<dt>Module (Terraform)</dt>
+<dd>
+A folder containing Terraform code that groups logical resources for
+reuse.
+</dd>
+<dt>Output (Terraform)</dt>
+<dd>
+A value returned by Terraform after an apply, such as an instance IP or
+DNS name.
+</dd>
+<dt>Plan (Terraform)</dt>
+<dd>
+Command that previews changes before Terraform applies them.<br>
+Usage: <code>terraform plan</code>.
+</dd>
+<dt>Provider (Terraform)</dt>
+<dd>
+A plugin that allows Terraform to interact with a platform such as AWS,
+Azure, GitHub, or Kubernetes.
+</dd>
+<dt>Resource (Terraform)</dt>
+<dd>
+A specific piece of infrastructure described in Terraform (EC2 instance,
+S3 bucket, etc.).
+</dd>
+<dt>Security Group</dt>
+<dd>
+An AWS virtual firewall controlling inbound and outbound traffic.
+</dd>
+<dt>SSH</dt>
+<dd>
+Secure Shell, a network protocol used to log into remote machines.
+</dd>
+<dt>State File (<code>terraform.tfstate</code>)</dt>
+<dd>
+The file Terraform uses to track all managed resources.<br>
+Can be stored locally or in a remote backend.
+</dd>
+</dl><!--
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
- -->
-</section></div> <!-- / div.lesson-content -->
+ --></section></div> <!-- / div.lesson-content -->
     </main><!-- / main#main-content.main-content --><nav class="bottom-pagination mx-md-4" aria-label="Previous and Next Chapter"><div class="d-block d-sm-block d-md-none">
         <a class="chapter-link" href="index.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
         <a class="chapter-link float-end" href="index.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
