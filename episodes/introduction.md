@@ -17,7 +17,7 @@ exercises: 5
 - Describe the purpose of Terraform.
 - Explain the core workflow (`init`, `plan`, `apply`).
 - Identify the AWS resources managed in this lesson.
-- Recognize why infrastructure as code improves reliability.
+- Recognize how infrastructure as code improves reliability.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -26,77 +26,51 @@ exercises: 5
 This lesson introduces Terraform through a practical, minimal example:
 launching and managing an EC2 instance on AWS.
 
-Terraform is a tool that lets you define cloud resources in code.  
-Instead of clicking through the AWS console, you write configuration files that describe resources such as:
+Terraform is a tool that lets you define cloud resources in configuration files.
+Instead of clicking through the AWS console, you describe resources such as:
 
 - EC2 instances  
 - security groups  
 - key pairs  
 - storage volumes  
 
-This approach makes your infrastructure repeatable, testable, and version-controlled.
+Terraform then compares your configuration to what exists in AWS and makes the
+changes needed to match the desired state.
 
-We use Pandoc-flavored Markdown for lesson content. Code in this lesson is shown using Workbench-compatible formatting.
+By working this way, your infrastructure becomes:
 
-Three sections appear in every Carpentries episode:
+- repeatable  
+- easier to review  
+- easier to share  
+- easier to rebuild when something breaks  
 
-1. **questions** — displayed at the top to focus the learner  
-2. **objectives** — skills the learner should gain  
-3. **keypoints** — quick reinforcement at the end  
+This lesson is written in Pandoc-flavoured Markdown and built with The Carpentries Workbench.
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: instructor
 
-This introduction works best when learners already have AWS CLI authentication set up.  
-If not, suggest they review the Setup page before proceeding.
+Encourage learners to say out loud (or write down) what they currently do to
+create infrastructure (for example, “I click around in the AWS console”).
+Use their answers to motivate why infrastructure as code is valuable.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-::::::::::::::::::::::::::::::::::::: challenge
-
-## Challenge 1: Why Use Terraform?
-
-List one advantage of defining infrastructure in code instead of using the AWS console.
-
-:::::::::::::::::::::::: solution
-
-Versioning and reproducibility — code lets you recreate the same infrastructure any time.
-
-::::::::::::::::::::::::::::::::::::::::::::::::
-
-## Challenge 2: Thinking About the Workflow
-
-Terraform uses a three-step workflow.  
-What does `terraform plan` do?
-
-:::::::::::::::::::::::: solution
-
-It shows what Terraform *would* change, without applying the changes.
-
-::::::::::::::::::::::::::::::::::::::::::::::::
-
-## Callout: The Terraform Workflow
-
 ::::::::::::::::::::::::::::::::::::: callout
 
-The three most important commands in Terraform are:
+### The Terraform Workflow
 
-- `terraform init` — prepare the working directory  
-- `terraform plan` — preview changes  
-- `terraform apply` — create or update resources  
+We will use three core commands throughout the lesson:
+
+- `terraform init` — prepare the working directory and download providers  
+- `terraform plan` — show what Terraform will change  
+- `terraform apply` — apply the changes to real infrastructure  
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
-
-## Figures
-
-Terraform can produce architecture diagrams, but in this lesson we use simple conceptual images.
-
-![High-level AWS Infrastructure](https://raw.githubusercontent.com/carpentries/logo/master/Badge_Carpentries.svg){alt='Placeholder diagram showing infrastructure as code.'}
 
 ::::::::::::::::::::::::::::::::::::: keypoints
 
-- Terraform describes infrastructure in code.  
-- `init`, `plan`, and `apply` form the core workflow.  
-- Code-based infrastructure is reproducible and easy to update.  
-- This lesson will build a small AWS environment step by
+- Terraform lets you describe infrastructure in code instead of clicking in a UI.  
+- The main workflow is `init`, `plan`, and `apply`.  
+- Infrastructure as code is more reproducible, reviewable, and maintainable.  
+- This lesson will build up a small AWS environment step by step.
 
-::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::
