@@ -1,45 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/404.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/404.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/CODE_OF_CONDUCT.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/CODE_OF_CONDUCT.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/LICENSE.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/index.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/aio.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/instructor/404.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/images.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/instructor/CODE_OF_CONDUCT.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/index.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/instructor/LICENSE.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/404.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/instructor/index.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/CODE_OF_CONDUCT.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/instructor/introduction.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/instructor/profiles.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/aio.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/instructor/reference.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/images.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/introduction.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/index.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/profiles.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/instructor-notes.html</loc>
   </url>
   <url>
-    <loc>https://carpentries.github.io/workbench-template-md/reference.html</loc>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/introduction.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/key-points.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/profiles.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/reference.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor-notes.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/introduction.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/key-points.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/profiles.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/reference.html</loc>
   </url>
 </urlset>
