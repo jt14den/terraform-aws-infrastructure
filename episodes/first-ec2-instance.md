@@ -149,6 +149,8 @@ No resources are destroyed unless the change requires replacement.
 
 :::::::::::::::::::::::::::::::::::::::::::::::
 
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 ::::::::::::::::::::::::::::::::::::: keypoints
 
 - Terraform uses resource blocks to define cloud infrastructure.
