@@ -468,7 +468,7 @@ The Carpentries Workbench.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
 <div class="accordion-body">
 <p>Encourage learners to say out loud (or write down) what they
 currently do to create infrastructure (for example, “I click around in
@@ -530,7 +530,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-first-terraform-config"><p>Content from <a href="first-terraform-config.html">Your First Terraform Configuration</a></p>
 <hr>
-<p>Last updated on 2025-11-29 |
+<p>Last updated on 2025-11-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/first-terraform-config.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 25 minutes</p>
@@ -612,6 +612,39 @@ plugin to use.</li>
 <li>Terraform does <em>not</em> create any infrastructure yet. It only
 knows how to talk to AWS.</li>
 </ul>
+<div id="terraform-supports-many-providers" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="terraform-supports-many-providers" class="callout-inner">
+<h3 class="callout-title">Terraform Supports Many Providers</h3>
+<div class="callout-content">
+<p>Although this lesson focuses on AWS, Terraform can manage
+infrastructure across hundreds of platforms.<br>
+A <em>provider</em> is a plugin that enables Terraform to create,
+update, and destroy resources within an ecosystem.</p>
+<p>Common categories of Terraform providers include:</p>
+<ul>
+<li><p><strong>Cloud platforms</strong><br>
+AWS, Azure, Google Cloud, Oracle Cloud, DigitalOcean, Linode</p></li>
+<li><p><strong>Version control and CI/CD</strong><br>
+GitHub, GitLab, Bitbucket, CircleCI</p></li>
+<li><p><strong>Containers &amp; orchestration</strong><br>
+Kubernetes, Helm, Docker</p></li>
+<li><p><strong>Networking &amp; security</strong><br>
+Cloudflare, Palo Alto Networks, Okta, Auth0</p></li>
+<li><p><strong>Databases &amp; analytics</strong><br>
+PostgreSQL, MySQL, Snowflake, Databricks</p></li>
+<li><p><strong>SaaS &amp; productivity tools</strong><br>
+PagerDuty, Datadog, New Relic, Fastly</p></li>
+</ul>
+<p>Terraform’s strength is that it provides a <strong>single
+workflow</strong> for all these platforms, even though they typically
+use very different APIs.</p>
+</div>
+</div>
+</div>
 </div>
 </section><section><h2 class="section-heading" id="initialize-terraform">Initialize Terraform<a class="anchor" aria-label="anchor" href="#initialize-terraform"></a>
 </h2>
@@ -643,7 +676,7 @@ installed.</p>
 <li>Terraform sees no resources yet (because we haven’t defined
 any)</li>
 </ul>
-<div id="callout1" class="callout">
+<div id="callout2" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
@@ -1083,7 +1116,7 @@ You don’t need explicit outbound rules to return data.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <dl>
 <dt>Terraform should detect and apply an <strong>in-place
@@ -1261,7 +1294,7 @@ which IP is allowed to SSH into the instance.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>Add to variables.tf:</p>
 <div class="codewrapper sourceCode" id="cb5">
@@ -1375,7 +1408,7 @@ concurrent writes</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
 <div class="accordion-body">
 <p>If learners have not used S3 or DynamoDB before, provide a quick
 overview of these AWS services, emphasizing that only minimal
@@ -1456,7 +1489,7 @@ S3.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>Terraform prompts:</p>
 <p><code>Do you want to copy existing state to the new backend? (yes/no)</code></p>
@@ -1747,7 +1780,7 @@ more.</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
 <div class="accordion-body">
 <p>Have learners SSH manually into the instance before running
 Ansible.</p>
@@ -1825,7 +1858,7 @@ Ansible.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <pre class="text"><code>dataverse | SUCCESS =&gt; {
   "changed": false,
