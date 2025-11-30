@@ -41,6 +41,7 @@ touch variables.tf
 
 Add the following:
 
+```hcl
 variable "aws_region" {
   description = "AWS region for all resources"
   type        = string
@@ -59,6 +60,8 @@ variable "instance_name" {
   default     = "terraform-demo"
 }
 
+```
+
 ::::::::::::::::::::::::::::::::::::: callout
 
 By convention, variables are collected in their own file. Terraform loads all .tf files automatically, so file names don’t affect execution order.
@@ -69,7 +72,7 @@ Using Variables in main.tf
 
 Update your EC2 resource to reference variables:
 
-```bash
+```hcl
 provider "aws" {
   region = var.aws_region
 }
