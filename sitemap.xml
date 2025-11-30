@@ -13,6 +13,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/aio.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/ansible-integration.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/first-ec2-instance.html</loc>
   </url>
   <url>
@@ -35,6 +38,9 @@
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/aio.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/ansible-integration.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/first-ec2-instance.html</loc>
