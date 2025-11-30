@@ -61,6 +61,39 @@ provider "aws" {
 - The `provider "aws"` block sets your AWS region.
 - Terraform does *not* create any infrastructure yet. It only knows how to talk to AWS.
 
+::::::::::::::::::::::::::::::::::::: callout
+
+## Terraform Supports Many Providers
+
+Although this lesson focuses on AWS, Terraform can manage infrastructure across hundreds of platforms.  
+A *provider* is a plugin that enables Terraform to create, update, and destroy resources within an ecosystem.
+
+Common categories of Terraform providers include:
+
+- **Cloud platforms**  
+  AWS, Azure, Google Cloud, Oracle Cloud, DigitalOcean, Linode
+
+- **Version control and CI/CD**  
+  GitHub, GitLab, Bitbucket, CircleCI
+
+- **Containers & orchestration**  
+  Kubernetes, Helm, Docker
+
+- **Networking & security**  
+  Cloudflare, Palo Alto Networks, Okta, Auth0
+
+- **Databases & analytics**  
+  PostgreSQL, MySQL, Snowflake, Databricks
+
+- **SaaS & productivity tools**  
+  PagerDuty, Datadog, New Relic, Fastly
+
+Terraform’s strength is that it provides a **single workflow** for all these platforms, even though they typically use very different APIs.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
 ## Initialize Terraform
 
 Before Terraform can do anything, it needs to download provider plugins:
