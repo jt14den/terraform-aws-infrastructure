@@ -112,6 +112,7 @@ Terraform should show an in-place update if the instance type supports resizing.
 If not, Terraform will propose a destroy-and-recreate operation.
 
 :::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: keypoints
 
