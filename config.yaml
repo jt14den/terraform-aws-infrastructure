@@ -42,6 +42,7 @@ episodes:
   - first-terraform-config.md
   - first-ec2-instance.md
   - security-groups.md
+  - variables.md
 
 # Information for Learners
 learners: 
