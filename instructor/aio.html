@@ -289,6 +289,18 @@
 </div>
 <!--/div.accordion-flush-->
 
+<div class="accordion accordion-flush" id="accordionFlush6">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading6">
+        <a href="variables.html">5. Using Variables in Terraform</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
                 </div>
               </div>
             </div>
@@ -801,7 +813,7 @@ it knows the instance exists.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <dl>
 <dt>Terraform should report an <strong>in-place update</strong>,
@@ -1035,7 +1047,7 @@ You don’t need explicit outbound rules to return data.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <dl>
 <dt>Terraform should detect and apply an <strong>in-place
@@ -1064,6 +1076,195 @@ to be recreated.</p>
 <li>Terraform updates security group rules without recreating the
 instance.</li>
 <li>Restricting SSH to your IP improves security.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-variables"><p>Content from <a href="variables.html">Using Variables in Terraform</a></p>
+<hr>
+<p>Last updated on 2025-11-30 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/variables.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 20 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>How can we make Terraform configurations flexible instead of
+hard-coded?</li>
+<li>How do we define and use variables in Terraform?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Define input variables in a <code>variables.tf</code> file.</li>
+<li>Use variables inside Terraform resources.</li>
+<li>Override variables from the command line or with
+<code>terraform.tfvars</code>.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="why-variables-matter">Why Variables Matter<a class="anchor" aria-label="anchor" href="#why-variables-matter"></a>
+</h2>
+<hr class="half-width">
+<p>In the previous episodes, we hard-coded details like the AMI ID,
+instance type, and allowed SSH CIDR. This is fine for experimentation,
+but not practical when:</p>
+<ul>
+<li>You deploy to different environments.</li>
+<li>You need to give learners flexibility.</li>
+<li>You plan to reuse your Terraform modules.</li>
+</ul>
+<p>Terraform variables make your configuration more reusable and easier
+to maintain.</p>
+<hr></section><section><h2 class="section-heading" id="creating-a-variables-tf-file">Creating a <code>variables.tf</code> File<a class="anchor" aria-label="anchor" href="#creating-a-variables-tf-file"></a>
+</h2>
+<hr class="half-width">
+<p>Create a new file:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">touch</span> variables.tf</span></code></pre>
+</div>
+<p>Add the following:</p>
+<p>variable “aws_region” { description = “AWS region for all resources”
+type = string default = “us-west-2” }</p>
+<p>variable “instance_type” { description = “EC2 instance type” type =
+string default = “t3.micro” }</p>
+<p>variable “instance_name” { description = “Name tag for the EC2
+instance” type = string default = “terraform-demo” }</p>
+<div id="callout1" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div class="callout-inner">
+<div class="callout-content">
+<p>By convention, variables are collected in their own file. Terraform
+loads all .tf files automatically, so file names don’t affect execution
+order.</p>
+</div>
+</div>
+</div>
+<p>Using Variables in main.tf</p>
+<p>Update your EC2 resource to reference variables:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">provider</span> <span class="st">"aws"</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="ex">region</span> = var.aws_region</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="ex">resource</span> <span class="st">"aws_instance"</span> <span class="st">"demo"</span> {</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="ex">ami</span>           = <span class="st">"ami-0adebe3adcec1fa34"</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="ex">instance_type</span> = var.instance_type</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="ex">tags</span> = {</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    <span class="ex">Name</span> = var.instance_name</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="er">}</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+</div>
+</section><section><h2 class="section-heading" id="overriding-variables">Overriding Variables<a class="anchor" aria-label="anchor" href="#overriding-variables"></a>
+</h2>
+<hr class="half-width">
+<ol style="list-style-type: decimal">
+<li>Override at apply time terraform apply
+-var=“instance_type=t3.small”</li>
+<li>Use a .tfvars file</li>
+</ol>
+<p>Create a <code>terraform.tfvars</code> file:</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">instance_type</span> = <span class="st">"t3.large"</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">instance_name</span> = <span class="st">"demo-from-tfvars"</span></span></code></pre>
+</div>
+<p>Now apply normally:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">terraform</span> apply</span></code></pre>
+</div>
+<p>Terraform automatically loads terraform.tfvars.</p>
+<div id="challenge1" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div class="callout-inner">
+<h3 class="callout-title">Challenge</h3>
+<div class="callout-content">
+<p>Challenge: Create Your Own Variable</p>
+<p>Add a new variable called ssh_cidr that lets the learner specify
+which IP is allowed to SSH into the instance.</p>
+<p>Then update your Security Group to use it.</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div class="accordion-body">
+<p>Add to variables.tf:</p>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">variable</span> <span class="st">"ssh_cidr"</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">"CIDR allowed for SSH"</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="bu">type</span>        = string</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="ex">default</span>     = <span class="st">"0.0.0.0/0"</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+</div>
+<p>Update the security group:</p>
+<div class="codewrapper sourceCode" id="cb6">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">ingress</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">"SSH"</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="ex">from_port</span>   = 22</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="ex">to_port</span>     = 22</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="ex">protocol</span>    = <span class="st">"tcp"</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="ex">cidr_blocks</span> = <span class="pp">[</span><span class="ss">var.ssh_cidr</span><span class="pp">]</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>Variables make Terraform code reusable and easier to maintain.</li>
+<li>Variables are defined once and used many times across
+configurations.</li>
+<li>You can override variables with -var or terraform.tfvars.</li>
 </ul>
 </div>
 </div>
