@@ -301,6 +301,18 @@
 </div>
 <!--/div.accordion-flush-->
 
+<div class="accordion accordion-flush" id="accordionFlush7">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading7">
+        <a href="remote-state.html">6. Remote State with S3 and DynamoDB</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
                 </div>
               </div>
             </div>
@@ -432,7 +444,7 @@ The Carpentries Workbench.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
 <div class="accordion-body">
 <p>Encourage learners to say out loud (or write down) what they
 currently do to create infrastructure (for example, “I click around in
@@ -813,7 +825,7 @@ it knows the instance exists.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <dl>
 <dt>Terraform should report an <strong>in-place update</strong>,
@@ -1225,7 +1237,7 @@ which IP is allowed to SSH into the instance.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>Add to variables.tf:</p>
 <div class="codewrapper sourceCode" id="cb5">
@@ -1265,6 +1277,183 @@ which IP is allowed to SSH into the instance.</p>
 <li>Variables are defined once and used many times across
 configurations.</li>
 <li>You can override variables with -var or terraform.tfvars.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-remote-state"><p>Content from <a href="remote-state.html">Remote State with S3 and DynamoDB</a></p>
+<hr>
+<p>Last updated on 2025-11-30 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/remote-state.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 20 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>Why store Terraform state remotely instead of locally?</li>
+<li>How do I configure an S3 bucket and DynamoDB table for remote
+state?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Explain the purpose and benefits of remote state.</li>
+<li>Configure an S3 backend for state storage.</li>
+<li>Add a DynamoDB table to enable state locking.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="why-use-remote-state">Why Use Remote State?<a class="anchor" aria-label="anchor" href="#why-use-remote-state"></a>
+</h2>
+<hr class="half-width">
+<p>By default, Terraform keeps its state in a local file named
+<code>terraform.tfstate</code>.<br>
+This works for testing or single-user setups, but it breaks down
+when:</p>
+<ul>
+<li>multiple people are working on the same infrastructure</li>
+<li>you want versioned backups of your state</li>
+<li>your laptop is not a safe place for critical infrastructure
+metadata</li>
+</ul>
+<p>A <strong>remote backend</strong> solves these problems by putting
+your state in AWS.</p>
+<p>We use:</p>
+<ul>
+<li>
+<strong>Amazon S3</strong> — stores the state file</li>
+<li>
+<strong>DynamoDB</strong> — provides a locking mechanism to prevent
+concurrent writes</li>
+</ul>
+<div id="accordionInstructor1" class="accordion instructor-note accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
+  <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
+</button>
+<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div class="accordion-body">
+<p>If learners have not used S3 or DynamoDB before, provide a quick
+overview of these AWS services, emphasizing that only minimal
+configuration is needed for Terraform.</p>
+</div>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="s3-bucket-configuration">S3 Bucket Configuration<a class="anchor" aria-label="anchor" href="#s3-bucket-configuration"></a>
+</h2>
+<hr class="half-width">
+<p>Earlier, we created a bucket manually:</p>
+<p><code>ucla-tim-terraform-state</code></p>
+<p>You can also declare the bucket in Terraform (optional for this
+lesson):</p>
+<pre class="hcl"><code>resource "aws_s3_bucket" "tf_state" {
+  bucket = "ucla-tim-terraform-state"
+}
+
+## DynamoDB Table Configuration
+
+Terraform locking requires a simple table with a primary key named LockID.
+
+Example:
+
+```bash
+resource "aws_dynamodb_table" "tf_lock" {
+  name         = "terraform-lock"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}</code></pre>
+</section><section><h2 class="section-heading" id="backend-configuration">Backend Configuration<a class="anchor" aria-label="anchor" href="#backend-configuration"></a>
+</h2>
+<hr class="half-width">
+<p>Add a <code>backend</code> block to your main Terraform
+configuration.</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">terraform</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="ex">backend</span> <span class="st">"s3"</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="ex">bucket</span>         = <span class="st">"ucla-tim-terraform-state"</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="ex">key</span>            = <span class="st">"terraform.tfstate"</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="ex">region</span>         = <span class="st">"us-west-2"</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="ex">dynamodb_table</span> = <span class="st">"terraform-lock"</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="ex">encrypt</span>        = true</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="er">}</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+</div>
+<p>After adding the backend, reinitialize Terraform:</p>
+<p><code>terraform init</code></p>
+<p>Terraform will detect the backend and move your local state into
+S3.</p>
+<div id="challenge1" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div class="callout-inner">
+<h3 class="callout-title">Challenge</h3>
+<div class="callout-content">
+<p>Convert Your Project to Remote State</p>
+<p>Using the bucket and DynamoDB table created above:</p>
+<p>Add a backend block to your main terraform configuration.</p>
+<p>Run terraform init.</p>
+<p>Confirm that Terraform offers to migrate your state.</p>
+<p>Verify that your S3 bucket now includes a .tfstate file.</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div class="accordion-body">
+<p>Terraform prompts:</p>
+<p><code>Do you want to copy existing state to the new backend? (yes/no)</code></p>
+<p>Answer yes.</p>
+<p>You can view the resulting file in the AWS S3 console.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>Remote state centralizes infrastructure metadata in AWS.</li>
+<li>S3 stores the state, DynamoDB handles locking.</li>
+<li>terraform init migrates local state to the remote backend.</li>
+<li>Remote backends enable safe collaboration.</li>
 </ul>
 </div>
 </div>

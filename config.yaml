@@ -43,6 +43,7 @@ episodes:
   - first-ec2-instance.md
   - security-groups.md
   - variables.md
+  - remote-state.md
 
 # Information for Learners
 learners: 

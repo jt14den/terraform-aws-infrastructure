@@ -301,6 +301,18 @@
 </div>
 <!--/div.accordion-flush-->
 
+<div class="accordion accordion-flush" id="accordionFlush7">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading7">
+        <a href="remote-state.html">6. Remote State with S3 and DynamoDB</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
                 </div>
               </div>
             </div>
@@ -417,6 +429,13 @@ instance.</li>
 <li>Variables are defined once and used many times across
 configurations.</li>
 <li>You can override variables with -var or terraform.tfvars.</li>
+</ul></section><section id="remote-state"><h2 class="section-heading"><a href="remote-state.html">Remote State with S3 and DynamoDB</a></h2>
+<hr class="half-width">
+<ul>
+<li>Remote state centralizes infrastructure metadata in AWS.</li>
+<li>S3 stores the state, DynamoDB handles locking.</li>
+<li>terraform init migrates local state to the remote backend.</li>
+<li>Remote backends enable safe collaboration.</li>
 </ul></section>
 </div>
     </main>
