@@ -39,7 +39,7 @@ During the lesson you will use:
 
 We use the AWS CLI throughout the lesson to authenticate and confirm credentials.
 
-:::::::::::::::::::::::::::::::::::::: tab
+:::::::::::::::::::::::::::::::::::::: group-tab
 
 ### macOS
 
@@ -119,7 +119,7 @@ You should see:
 
 ## 4. Install Terraform
 
-:::::::::::::::::::::::::::::::::::::: tab
+:::::::::::::::::::::::::::::::::::::: group-tab
 
 ### macOS
 
