@@ -882,7 +882,7 @@ it knows the instance exists.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <dl>
 <dt>Terraform should report an <strong>in-place update</strong>,
@@ -1116,7 +1116,7 @@ You don’t need explicit outbound rules to return data.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <dl>
 <dt>Terraform should detect and apply an <strong>in-place
@@ -1215,12 +1215,24 @@ to maintain.</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">touch</span> variables.tf</span></code></pre>
 </div>
 <p>Add the following:</p>
-<p>variable “aws_region” { description = “AWS region for all resources”
-type = string default = “us-west-2” }</p>
-<p>variable “instance_type” { description = “EC2 instance type” type =
-string default = “t3.micro” }</p>
-<p>variable “instance_name” { description = “Name tag for the EC2
-instance” type = string default = “terraform-demo” }</p>
+<pre class="hcl"><code>variable "aws_region" {
+  description = "AWS region for all resources"
+  type        = string
+  default     = "us-west-2"
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "instance_name" {
+  description = "Name tag for the EC2 instance"
+  type        = string
+  default     = "terraform-demo"
+}
+</code></pre>
 <div id="callout1" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -1236,22 +1248,18 @@ order.</p>
 </div>
 <p>Using Variables in main.tf</p>
 <p>Update your EC2 resource to reference variables:</p>
-<div class="codewrapper sourceCode" id="cb2">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">provider</span> <span class="st">"aws"</span> {</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="ex">region</span> = var.aws_region</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="er">}</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="ex">resource</span> <span class="st">"aws_instance"</span> <span class="st">"demo"</span> {</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="ex">ami</span>           = <span class="st">"ami-0adebe3adcec1fa34"</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="ex">instance_type</span> = var.instance_type</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="ex">tags</span> = {</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    <span class="ex">Name</span> = var.instance_name</span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="er">}</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="er">}</span></span></code></pre>
-</div>
+<pre class="hcl"><code>provider "aws" {
+  region = var.aws_region
+}
+
+resource "aws_instance" "demo" {
+  ami           = "ami-0adebe3adcec1fa34"
+  instance_type = var.instance_type
+
+  tags = {
+    Name = var.instance_name
+  }
+}</code></pre>
 </section><section><h2 class="section-heading" id="overriding-variables">Overriding Variables<a class="anchor" aria-label="anchor" href="#overriding-variables"></a>
 </h2>
 <hr class="half-width">
@@ -1261,17 +1269,17 @@ order.</p>
 <li>Use a .tfvars file</li>
 </ol>
 <p>Create a <code>terraform.tfvars</code> file:</p>
-<div class="codewrapper sourceCode" id="cb3">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">instance_type</span> = <span class="st">"t3.large"</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">instance_name</span> = <span class="st">"demo-from-tfvars"</span></span></code></pre>
-</div>
-<p>Now apply normally:</p>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">terraform</span> apply</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">instance_type</span> = <span class="st">"t3.large"</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">instance_name</span> = <span class="st">"demo-from-tfvars"</span></span></code></pre>
+</div>
+<p>Now apply normally:</p>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">terraform</span> apply</span></code></pre>
 </div>
 <p>Terraform automatically loads terraform.tfvars.</p>
 <div id="challenge1" class="callout challenge">
@@ -1297,26 +1305,26 @@ which IP is allowed to SSH into the instance.</p>
 <div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>Add to variables.tf:</p>
-<div class="codewrapper sourceCode" id="cb5">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">variable</span> <span class="st">"ssh_cidr"</span> {</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">"CIDR allowed for SSH"</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="bu">type</span>        = string</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="ex">default</span>     = <span class="st">"0.0.0.0/0"</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="er">}</span></span></code></pre>
-</div>
-<p>Update the security group:</p>
 <div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">ingress</span> {</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">"SSH"</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="ex">from_port</span>   = 22</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="ex">to_port</span>     = 22</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="ex">protocol</span>    = <span class="st">"tcp"</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="ex">cidr_blocks</span> = <span class="pp">[</span><span class="ss">var.ssh_cidr</span><span class="pp">]</span></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">variable</span> <span class="st">"ssh_cidr"</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">"CIDR allowed for SSH"</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="bu">type</span>        = string</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="ex">default</span>     = <span class="st">"0.0.0.0/0"</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="er">}</span></span></code></pre>
+</div>
+<p>Update the security group:</p>
+<div class="codewrapper sourceCode" id="cb7">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">ingress</span> {</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="ex">description</span> = <span class="st">"SSH"</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="ex">from_port</span>   = 22</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="ex">to_port</span>     = 22</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="ex">protocol</span>    = <span class="st">"tcp"</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="ex">cidr_blocks</span> = <span class="pp">[</span><span class="ss">var.ssh_cidr</span><span class="pp">]</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="er">}</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -1408,7 +1416,7 @@ concurrent writes</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
 <div class="accordion-body">
 <p>If learners have not used S3 or DynamoDB before, provide a quick
 overview of these AWS services, emphasizing that only minimal
@@ -1489,7 +1497,7 @@ S3.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>Terraform prompts:</p>
 <p><code>Do you want to copy existing state to the new backend? (yes/no)</code></p>
@@ -1780,7 +1788,7 @@ more.</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
 <div class="accordion-body">
 <p>Have learners SSH manually into the instance before running
 Ansible.</p>
@@ -1858,7 +1866,7 @@ Ansible.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <pre class="text"><code>dataverse | SUCCESS =&gt; {
   "changed": false,
