@@ -76,6 +76,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/security-groups.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/variables-and-modules.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/variables.html</loc>
   </url>
   <url>
@@ -98,6 +101,9 @@
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/security-groups.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/variables-and-modules.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/variables.html</loc>

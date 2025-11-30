@@ -207,9 +207,10 @@
 
     <div id="flush-collapsecurrent" class="accordion-collapse collapse show" aria-labelledby="flush-headingcurrent" data-bs-parent="#accordionFlushcurrent">
       <div class="accordion-body">
-        <ul><li><a href="#aws-account">1. AWS Account</a></li>
+        <ul><li><a href="#introduction">Introduction</a></li>
+<li><a href="#aws-account">1. AWS Account</a></li>
 <li><a href="#install-the-aws-cli">2. Install the AWS CLI</a></li>
-<li><a href="#configure-aws-credentials">3. Configure AWS Credentials</a></li>
+<li><a href="#configure-aws-credentials-iam-identity-center-sso">3. Configure AWS Credentials (IAM Identity Center / SSO)</a></li>
 <li><a href="#install-terraform">4. Install Terraform</a></li>
 <li><a href="#create-a-working-directory">5. Create a Working Directory</a></li>
 <li><a href="#optional-clone-the-lesson-repository">6. (Optional) Clone the Lesson Repository</a></li>
@@ -276,7 +277,16 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="ansible-integration.html">7. Integrating Terraform with Ansible</a>
+        <a href="variables-and-modules.html">7. Variables, tfvars, and Modular Patterns</a>
+    </div><!--/div.accordion-header-->
+
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush9">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading9">
+        <a href="ansible-integration.html">8. Integrating Terraform with Ansible</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -360,73 +370,238 @@ write Terraform configurations from scratch.</p>
 </ul><!--
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
- --></section><section id="setup"><p>To take this lesson, you will need the following tools installed and
-configured.</p>
-<section><h2 class="section-heading" id="aws-account">1. AWS Account<a class="anchor" aria-label="anchor" href="#aws-account"></a></h2>
-<hr class="half-width"><p>You should have an AWS account you can log into.<br>
-We will use AWS services such as EC2, IAM, and S3 during the lesson.</p>
-</section><section><h2 class="section-heading" id="install-the-aws-cli">2. Install the AWS CLI<a class="anchor" aria-label="anchor" href="#install-the-aws-cli"></a></h2>
-<hr class="half-width"><div class="section level3">
-<h3 id="macos">macOS<a class="anchor" aria-label="anchor" href="#macos"></a></h3>
-<p>Install the AWS CLI using Homebrew:</p>
+ --></section><section id="setup"><div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul><li>What tools do I need installed before starting this lesson?</li>
+<li>How do I configure AWS, Terraform, and my local environment?</li>
+</ul></div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul><li>Install AWS CLI on macOS, Windows, and Linux</li>
+<li>Configure AWS credentials using AWS IAM Identity Center (SSO)</li>
+<li>Install Terraform</li>
+<li>Verify all tools are ready for the lesson</li>
+</ul></div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a></h2>
+<hr class="half-width"><p>This page walks you through installing and configuring everything
+required to follow the lesson.<br>
+By the end of this setup, you will be able to authenticate to AWS, run
+Terraform, and prepare a working directory.</p>
+</section><section><h2 class="section-heading" id="aws-account">1. AWS Account<a class="anchor" aria-label="anchor" href="#aws-account"></a></h2>
+<hr class="half-width"><p>You will need an AWS account you can log into.<br>
+During the lesson you will use:</p>
+<ul><li>EC2 (virtual machines)<br></li>
+<li>IAM (identity and access)<br></li>
+<li>S3 (storage)</li>
+</ul></section><section><h2 class="section-heading" id="install-the-aws-cli">2. Install the AWS CLI<a class="anchor" aria-label="anchor" href="#install-the-aws-cli"></a></h2>
+<hr class="half-width"><p>We use the AWS CLI throughout the lesson to authenticate and confirm
+credentials.</p>
+<div class="tabs">
+<nav><div id="nav-tab-1" class="nav nav-tabs" role="tablist">
+<button class="nav-link active" id="nav-tab-1-macOS" name="macOS" data-bs-toggle="tab" data-bs-target="#nav-tabpanel-1-macOS" type="button" role="tab" aria-controls="nav-tabpanel-1-macOS" aria-selected="true">
+  <h3 class="tab-header" id="nav-tab-heading-1-macOS">
+  macOS
+  </h3>
+</button>
+<button class="nav-link" id="nav-tab-1-Windows" name="Windows" data-bs-toggle="tab" data-bs-target="#nav-tabpanel-1-Windows" type="button" role="tab" aria-controls="nav-tabpanel-1-Windows" aria-selected="false">
+  <h3 class="tab-header" id="nav-tab-heading-1-Windows">
+  Windows
+  </h3>
+</button>
+<button class="nav-link" id="nav-tab-1-Linux" name="Linux" data-bs-toggle="tab" data-bs-target="#nav-tabpanel-1-Linux" type="button" role="tab" aria-controls="nav-tabpanel-1-Linux" aria-selected="false">
+  <h3 class="tab-header" id="nav-tab-heading-1-Linux">
+  Linux
+  </h3>
+</button>
+</div>
+</nav><div id="nav-tabContent-1" class="tab-content">
+<div id="nav-tabpanel-1-macOS" class="tab-pane show active" aria-labelledby="nav-tab-1-macOS" role="tabpanel">
+<p>Install using Homebrew:</p>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">brew</span> install awscli</span></code></pre>
 </div>
-<p>Verify the installation:</p>
+<p>Verify:</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">aws</span> <span class="at">--version</span></span></code></pre>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="configure-aws-credentials">3. Configure AWS Credentials<a class="anchor" aria-label="anchor" href="#configure-aws-credentials"></a></h2>
-<hr class="half-width"><p>Use AWS IAM Identity Center (formerly AWS SSO):</p>
-<div class="codewrapper sourceCode" id="cb3">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+<div id="nav-tabpanel-1-Windows" class="tab-pane" aria-labelledby="nav-tab-1-Windows" role="tabpanel">
+<p>Use the official MSI installer:</p>
+<ol style="list-style-type: decimal"><li>Download: <a href="https://awscli.amazonaws.com/AWSCLIV2.msi" class="external-link">https://awscli.amazonaws.com/AWSCLIV2.msi</a>
+</li>
+<li>Run installer</li>
+<li>Verify:</li>
+</ol><div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">POWERSHELL<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">aws</span> configure sso</span></code></pre>
+<pre class="sourceCode powershell" tabindex="0"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>aws <span class="op">--</span>version</span></code></pre>
 </div>
-<p>Follow the browser prompt, then confirm your identity:</p>
+</div>
+<div id="nav-tabpanel-1-Linux" class="tab-pane" aria-labelledby="nav-tab-1-Linux" role="tabpanel">
+<p>On Ubuntu/Debian:</p>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">aws</span> sts get-caller-identity</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">sudo</span> apt-get install <span class="at">-y</span> awscli</span></code></pre>
 </div>
-<p>You should see your AWS account ID and ARN.</p>
-</section><section><h2 class="section-heading" id="install-terraform">4. Install Terraform<a class="anchor" aria-label="anchor" href="#install-terraform"></a></h2>
-<hr class="half-width"><p>Download Terraform from the official website or install with
-Homebrew:</p>
+<p>On Fedora/RHEL/Amazon Linux:</p>
 <div class="codewrapper sourceCode" id="cb5">
-<h3 class="code-label">SH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode sh" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">brew</span> tap hashicorp/tap</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">brew</span> install hashicorp/tap/terraform</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">sudo</span> dnf install <span class="at">-y</span> awscli</span></code></pre>
 </div>
-<p>Verify the installation:</p>
+<p>Verify:</p>
 <div class="codewrapper sourceCode" id="cb6">
-<h3 class="code-label">SH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode sh" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">terraform</span> version</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">aws</span> <span class="at">--version</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="configure-aws-credentials-iam-identity-center-sso">3. Configure AWS Credentials (IAM Identity Center / SSO)<a class="anchor" aria-label="anchor" href="#configure-aws-credentials-iam-identity-center-sso"></a></h2>
+<hr class="half-width"><p>This lesson uses <strong>IAM Identity Center</strong>, the modern AWS
+authentication system.</p>
+<p>Run:</p>
+<div class="codewrapper sourceCode" id="cb7">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">aws</span> configure sso</span></code></pre>
+</div>
+<p>Follow the browser prompts to authenticate.</p>
+<p>Then confirm your identity:</p>
+<div class="codewrapper sourceCode" id="cb8">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="ex">aws</span> sts get-caller-identity</span></code></pre>
+</div>
+<p>You should see:</p>
+<ul><li>Your AWS account ID</li>
+<li>Your IAM role ARN</li>
+<li>Your user ID</li>
+</ul></section><section><h2 class="section-heading" id="install-terraform">4. Install Terraform<a class="anchor" aria-label="anchor" href="#install-terraform"></a></h2>
+<hr class="half-width"><div class="tabs">
+<nav><div id="nav-tab-2" class="nav nav-tabs" role="tablist">
+<button class="nav-link active" id="nav-tab-2-macOS" name="macOS" data-bs-toggle="tab" data-bs-target="#nav-tabpanel-2-macOS" type="button" role="tab" aria-controls="nav-tabpanel-2-macOS" aria-selected="true">
+  <h3 class="tab-header" id="nav-tab-heading-2-macOS">
+  macOS
+  </h3>
+</button>
+<button class="nav-link" id="nav-tab-2-Windows" name="Windows" data-bs-toggle="tab" data-bs-target="#nav-tabpanel-2-Windows" type="button" role="tab" aria-controls="nav-tabpanel-2-Windows" aria-selected="false">
+  <h3 class="tab-header" id="nav-tab-heading-2-Windows">
+  Windows
+  </h3>
+</button>
+<button class="nav-link" id="nav-tab-2-Linux" name="Linux" data-bs-toggle="tab" data-bs-target="#nav-tabpanel-2-Linux" type="button" role="tab" aria-controls="nav-tabpanel-2-Linux" aria-selected="false">
+  <h3 class="tab-header" id="nav-tab-heading-2-Linux">
+  Linux
+  </h3>
+</button>
+</div>
+</nav><div id="nav-tabContent-2" class="tab-content">
+<div id="nav-tabpanel-2-macOS" class="tab-pane show active" aria-labelledby="nav-tab-2-macOS" role="tabpanel">
+<div class="codewrapper sourceCode" id="cb9">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="ex">brew</span> tap hashicorp/tap</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="ex">brew</span> install hashicorp/tap/terraform</span></code></pre>
+</div>
+</div>
+<div id="nav-tabpanel-2-Windows" class="tab-pane" aria-labelledby="nav-tab-2-Windows" role="tabpanel">
+<p>Using Chocolatey:</p>
+<div class="codewrapper sourceCode" id="cb10">
+<h3 class="code-label">POWERSHELL<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode powershell" tabindex="0"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>choco install terraform</span></code></pre>
+</div>
+<p>Using Scoop:</p>
+<div class="codewrapper sourceCode" id="cb11">
+<h3 class="code-label">POWERSHELL<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode powershell" tabindex="0"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>scoop install terraform</span></code></pre>
+</div>
+</div>
+<div id="nav-tabpanel-2-Linux" class="tab-pane" aria-labelledby="nav-tab-2-Linux" role="tabpanel">
+<p>On Ubuntu/Debian:</p>
+<div class="codewrapper sourceCode" id="cb12">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">sudo</span> apt-get install <span class="at">-y</span> gnupg software-properties-common</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-O-</span> https://apt.releases.hashicorp.com/gpg <span class="kw">|</span> <span class="fu">sudo</span> gpg <span class="at">--dearmor</span> <span class="at">-o</span> /usr/share/keyrings/hashicorp.gpg</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"deb [signed-by=/usr/share/keyrings/hashicorp.gpg] </span><span class="dt">\</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="st">https://apt.releases.hashicorp.com </span><span class="va">$(</span><span class="ex">lsb_release</span> <span class="at">-cs</span><span class="va">)</span><span class="st"> main"</span> <span class="dt">\</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="kw">|</span> <span class="fu">sudo</span> tee /etc/apt/sources.list.d/hashicorp.list</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="fu">sudo</span> apt-get install terraform</span></code></pre>
+</div>
+<p>On Fedora/RHEL:</p>
+<div class="codewrapper sourceCode" id="cb13">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">sudo</span> dnf install <span class="at">-y</span> dnf-plugins-core</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">sudo</span> dnf config-manager <span class="at">--add-repo</span> https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="fu">sudo</span> dnf install terraform</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>Verify installation:</p>
+<div class="codewrapper sourceCode" id="cb14">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="ex">terraform</span> version</span></code></pre>
 </div>
 </section><section><h2 class="section-heading" id="create-a-working-directory">5. Create a Working Directory<a class="anchor" aria-label="anchor" href="#create-a-working-directory"></a></h2>
-<hr class="half-width"><p>Set up a directory for your Terraform files:</p>
-<div class="codewrapper sourceCode" id="cb7">
-<h3 class="code-label">SH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+<hr class="half-width"><p>Create a folder where your Terraform configuration files will
+live:</p>
+<div class="codewrapper sourceCode" id="cb15">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode sh" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">mkdir</span> terraform-dataverse</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="bu">cd</span> terraform-dataverse</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">mkdir</span> terraform-dataverse</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="bu">cd</span> terraform-dataverse</span></code></pre>
 </div>
 </section><section><h2 class="section-heading" id="optional-clone-the-lesson-repository">6. (Optional) Clone the Lesson Repository<a class="anchor" aria-label="anchor" href="#optional-clone-the-lesson-repository"></a></h2>
-<hr class="half-width"><p>If you want the example files used in this lesson:</p>
-<div class="codewrapper sourceCode" id="cb8">
-<h3 class="code-label">SH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+<hr class="half-width"><p>If you want the example files from this lesson:</p>
+<div class="codewrapper sourceCode" id="cb16">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode sh" tabindex="0"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/jt14den/terraform-aws-infrastructure</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/jt14den/terraform-aws-infrastructure</span></code></pre>
 </div>
-<p>You are now ready to begin the lesson.</p>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul><li>Install AWS CLI, Terraform, and Git before beginning the lesson</li>
+<li>Use <code>aws configure sso</code> to authenticate with AWS Identity
+Center</li>
+<li>Use <code>terraform version</code> and <code>aws --version</code> to
+verify installation</li>
+<li>Create a dedicated working directory for Terraform files</li>
+</ul></div>
+</div>
+</div>
 <!--
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.

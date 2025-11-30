@@ -316,7 +316,19 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="ansible-integration.html">7. Integrating Terraform with Ansible</a>
+        <a href="variables-and-modules.html">7. Variables, tfvars, and Modular Patterns</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush9">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading9">
+        <a href="ansible-integration.html">8. Integrating Terraform with Ansible</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -1071,7 +1083,7 @@ You don’t need explicit outbound rules to return data.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <dl>
 <dt>Terraform should detect and apply an <strong>in-place
@@ -1363,7 +1375,7 @@ concurrent writes</li>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
 <div class="accordion-body">
 <p>If learners have not used S3 or DynamoDB before, provide a quick
 overview of these AWS services, emphasizing that only minimal
@@ -1444,7 +1456,7 @@ S3.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>Terraform prompts:</p>
 <p><code>Do you want to copy existing state to the new backend? (yes/no)</code></p>
@@ -1466,6 +1478,165 @@ S3.</p>
 <li>S3 stores the state, DynamoDB handles locking.</li>
 <li>terraform init migrates local state to the remote backend.</li>
 <li>Remote backends enable safe collaboration.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-variables-and-modules"><p>Content from <a href="variables-and-modules.html">Variables, tfvars, and Modular Patterns</a></p>
+<hr>
+<p>Last updated on 2025-11-30 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/variables-and-modules.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 17 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>How do variables improve Terraform configuration?</li>
+<li>What is the role of terraform.tfvars?</li>
+<li>Why do modules make infrastructure clearer and easier to
+manage?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Define Terraform variables and describe their purpose.</li>
+<li>Use terraform.tfvars to store environment-specific values.</li>
+<li>Understand how modules group related infrastructure.</li>
+<li>Interpret a Terraform plan that references module outputs.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="why-variables-matter">Why Variables Matter<a class="anchor" aria-label="anchor" href="#why-variables-matter"></a>
+</h2>
+<hr class="half-width">
+<p>Terraform variables help you avoid hard-coding values.<br>
+Instead of embedding values directly in a resource, you define them once
+in a separate file and reference them everywhere.</p>
+<p>Example variable definition (do NOT include backticks when pasting
+into Workbench):</p>
+<p>variable “instance_type” { description = “EC2 instance size” type =
+string default = “t3.large” }</p>
+<p>Referenced in a resource:</p>
+<p>instance_type = var.instance_type</p>
+<p>This keeps your configuration clean, reusable, and portable.</p>
+</section><section><h2 class="section-heading" id="using-terraform-tfvars">Using terraform.tfvars<a class="anchor" aria-label="anchor" href="#using-terraform-tfvars"></a>
+</h2>
+<hr class="half-width">
+<p>terraform.tfvars lets you override defaults without editing your
+Terraform source files.</p>
+<p>Example contents:</p>
+<p>instance_type = “t3.xlarge” ssh_cidr = “91.196.220.29/32”</p>
+<p>Terraform automatically loads these values when you run:</p>
+<p>terraform plan</p>
+<div id="accordionInstructor1" class="accordion instructor-note accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
+  <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
+</button>
+<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div class="accordion-body">
+<p>Invite learners to experiment by changing values in terraform.tfvars
+and re-running the plan to see the effect.</p>
+</div>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="why-use-modules">Why Use Modules?<a class="anchor" aria-label="anchor" href="#why-use-modules"></a>
+</h2>
+<hr class="half-width">
+<p>As your infrastructure grows, a single main.tf becomes
+cluttered.<br>
+Modules organize related resources into reusable folders.</p>
+<p>Example structure:</p>
+<p>modules/ dataverse_ec2/ main.tf variables.tf</p>
+<p>Your root configuration stays clean:</p>
+<p>module “dataverse_ec2” { source = “./modules/dataverse_ec2”
+instance_ami = var.instance_ami instance_type = var.instance_type
+key_pair_name = var.key_pair_name ssh_cidr = var.ssh_cidr instance_name
+= var.instance_name root_volume_size = var.root_volume_size }</p>
+<p>Terraform passes all variables into the module at plan time.</p>
+</section><section><h2 class="section-heading" id="putting-it-all-together">Putting It All Together<a class="anchor" aria-label="anchor" href="#putting-it-all-together"></a>
+</h2>
+<hr class="half-width">
+<p>When terraform plan runs, Terraform:</p>
+<ol style="list-style-type: decimal">
+<li>Loads variables from variables.tf<br>
+</li>
+<li>Loads overrides from terraform.tfvars<br>
+</li>
+<li>Injects them into the module<br>
+</li>
+<li>Builds a dependency graph<br>
+</li>
+<li>Produces a plan showing expected changes</li>
+</ol>
+<p>This is the core of reproducible infrastructure.</p>
+<div id="try-it" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="try-it" class="callout-inner">
+<h3 class="callout-title">Try It</h3>
+<div class="callout-content">
+<ol style="list-style-type: decimal">
+<li>Change your EC2 instance type in terraform.tfvars<br>
+</li>
+<li>Run terraform plan<br>
+</li>
+<li>Observe what Terraform proposes<br>
+</li>
+<li>Revert your change when done</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div class="accordion-body">
+<p>Terraform should show an in-place update if the instance type
+supports resizing.<br>
+If not, Terraform will propose a destroy-and-recreate operation.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>Variables avoid hard-coded values and keep Terraform flexible.</li>
+<li>terraform.tfvars stores environment-specific settings.</li>
+<li>Modules organize infrastructure into logical components.</li>
+<li>Terraform wires everything together at plan time.</li>
 </ul>
 </div>
 </div>
