@@ -92,7 +92,54 @@ aws --version
 :::::::::::::::::::::::::::::::::::::::::::::::
 
 
+::::::::::::::::::::::::::::::::::::: checklist
+
+Before running `aws configure sso`, confirm the following:
+
+- IAM Identity Center is **enabled** in your AWS account
+- You have been given:
+  - an **SSO start URL** (looks like `https://your-org.awsapps.com/start`)
+  - the **AWS region** for Identity Center (commonly `us-west-2` or `us-east-1`)
+  - permission to assume at least one AWS account role
+
+If you do not have this information, contact your AWS administrator.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
 ## 3. Configure AWS Credentials (IAM Identity Center / SSO)
+
+::::::::::::::::::::::::::::::::::::: callout
+
+### AWS authentication is changing (and that’s normal)
+
+AWS has significantly changed how users authenticate over the last few years.
+
+Older tutorials often reference:
+- long-lived access keys (`AWS_ACCESS_KEY_ID`)
+- `aws configure` with static credentials
+- manually managing credentials files
+
+This lesson uses **AWS IAM Identity Center (SSO)**, which is now the recommended
+approach for most organizations.
+
+As a result:
+- some older guides will not match what you see here
+- prompts in the AWS CLI may look unfamiliar
+- defaults (like SSO registration scopes) are usually correct
+
+If something feels different from past AWS experience, that’s expected.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: instructor
+
+Learners with prior AWS experience may expect access keys instead of SSO.
+Reassure them that Identity Center is now standard in many organizations and
+that accepting defaults is usually correct.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
 This lesson uses **IAM Identity Center**, the modern AWS authentication system.
 
@@ -115,6 +162,23 @@ You should see:
 * Your AWS account ID
 * Your IAM role ARN
 * Your user ID
+
+::::::::::::::::::::::::::::::::::::: callout
+
+### About the “SSO registration scopes” prompt
+
+During `aws configure sso`, you may see:
+
+``` bash
+SSO registration scopes [sso:account:access]:
+
+```
+
+For this lesson, **press Enter to accept the default**.
+
+You only need a different value if your organization has explicitly instructed you to use custom scopes.
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
 ## 4. Install Terraform
