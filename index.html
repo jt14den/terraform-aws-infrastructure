@@ -397,17 +397,15 @@ any links that you are not going to use.
 </div>
 </div>
 <section><h2 class="section-heading" id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a></h2>
-<hr class="half-width"><p>This page walks you through installing and configuring everything
-required to follow the lesson.<br>
-By the end of this setup, you will be able to authenticate to AWS, run
-Terraform, and prepare a working directory.</p>
+<hr class="half-width"><p>You do not need to understand everything on this page at this time.
+The goal is only to get the tools working. By the end of this setup, you
+will be able to authenticate to AWS, run Terraform, and prepare a
+working directory.</p>
 </section><section><h2 class="section-heading" id="aws-account">1. AWS Account<a class="anchor" aria-label="anchor" href="#aws-account"></a></h2>
 <hr class="half-width"><p>You will need an AWS account you can log into.<br>
-During the lesson you will use:</p>
-<ul><li>EC2 (virtual machines)<br></li>
-<li>IAM (identity and access)<br></li>
-<li>S3 (storage)</li>
-</ul></section><section><h2 class="section-heading" id="install-the-aws-cli">2. Install the AWS CLI<a class="anchor" aria-label="anchor" href="#install-the-aws-cli"></a></h2>
+During the lesson, AWS will be used to create a virtual machine and
+store a small amount of configuration data.</p>
+</section><section><h2 class="section-heading" id="install-the-aws-cli">2. Install the AWS CLI<a class="anchor" aria-label="anchor" href="#install-the-aws-cli"></a></h2>
 <hr class="half-width"><p>We use the AWS CLI throughout the lesson to authenticate and confirm
 credentials.</p>
 <div class="tabs">
@@ -429,7 +427,7 @@ credentials.</p>
 </button>
 </div>
 </nav><div id="nav-tabContent-1" class="tab-content">
-<div id="nav-tabpanel-1-macOS" class="tab-pane show active" aria-labelledby="nav-tab-1-macOS" role="tabpanel">
+<div id="nav-tabpanel-1-macOS" class="tab-pane show active" role="tabpanel" aria-labelledby="nav-tab-1-macOS">
 <p>Install using Homebrew:</p>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -443,7 +441,7 @@ credentials.</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">aws</span> <span class="at">--version</span></span></code></pre>
 </div>
 </div>
-<div id="nav-tabpanel-1-Windows" class="tab-pane" aria-labelledby="nav-tab-1-Windows" role="tabpanel">
+<div id="nav-tabpanel-1-Windows" class="tab-pane" role="tabpanel" aria-labelledby="nav-tab-1-Windows">
 <p>Use the official MSI installer:</p>
 <ol style="list-style-type: decimal"><li>Download: <a href="https://awscli.amazonaws.com/AWSCLIV2.msi" class="external-link">https://awscli.amazonaws.com/AWSCLIV2.msi</a>
 </li>
@@ -455,7 +453,7 @@ credentials.</p>
 <pre class="sourceCode powershell" tabindex="0"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>aws <span class="op">--</span>version</span></code></pre>
 </div>
 </div>
-<div id="nav-tabpanel-1-Linux" class="tab-pane" aria-labelledby="nav-tab-1-Linux" role="tabpanel">
+<div id="nav-tabpanel-1-Linux" class="tab-pane" role="tabpanel" aria-labelledby="nav-tab-1-Linux">
 <p>On Ubuntu/Debian:</p>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -485,6 +483,8 @@ credentials.</p>
 <span class="callout-header">Checklist</span>
 <div class="callout-inner">
 <div class="callout-content">
+<p>If you are using a personal AWS account without Identity Center, ask
+the instructor for an alternative setup.</p>
 <p>Before running <code>aws configure sso</code>, confirm the
 following:</p>
 <ul><li>IAM Identity Center is <strong>enabled</strong> in your AWS
@@ -536,7 +536,8 @@ authentication system.</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">aws</span> configure sso</span></code></pre>
 </div>
 <p>Follow the browser prompts to authenticate.</p>
-<p>Then confirm your identity:</p>
+<p>Then confirm your identity. This command doesn’t change anything. It
+only confirms that authentication worked.</p>
 <div class="codewrapper sourceCode" id="cb8">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -588,7 +589,7 @@ instructed you to use custom scopes.</p>
 </button>
 </div>
 </nav><div id="nav-tabContent-2" class="tab-content">
-<div id="nav-tabpanel-2-macOS" class="tab-pane show active" aria-labelledby="nav-tab-2-macOS" role="tabpanel">
+<div id="nav-tabpanel-2-macOS" class="tab-pane show active" role="tabpanel" aria-labelledby="nav-tab-2-macOS">
 <div class="codewrapper sourceCode" id="cb10">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -596,7 +597,7 @@ instructed you to use custom scopes.</p>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="ex">brew</span> install hashicorp/tap/terraform</span></code></pre>
 </div>
 </div>
-<div id="nav-tabpanel-2-Windows" class="tab-pane" aria-labelledby="nav-tab-2-Windows" role="tabpanel">
+<div id="nav-tabpanel-2-Windows" class="tab-pane" role="tabpanel" aria-labelledby="nav-tab-2-Windows">
 <p>Using Chocolatey:</p>
 <div class="codewrapper sourceCode" id="cb11">
 <h3 class="code-label">POWERSHELL<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -610,7 +611,7 @@ instructed you to use custom scopes.</p>
 <pre class="sourceCode powershell" tabindex="0"><code class="sourceCode powershell"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>scoop install terraform</span></code></pre>
 </div>
 </div>
-<div id="nav-tabpanel-2-Linux" class="tab-pane" aria-labelledby="nav-tab-2-Linux" role="tabpanel">
+<div id="nav-tabpanel-2-Linux" class="tab-pane" role="tabpanel" aria-labelledby="nav-tab-2-Linux">
 <p>On Ubuntu/Debian:</p>
 <div class="codewrapper sourceCode" id="cb13">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
