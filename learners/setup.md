@@ -21,18 +21,13 @@ title: "Setup"
 
 ## Introduction
 
-This page walks you through installing and configuring everything required to follow the lesson.  
+You do not need to understand everything on this page at this time. The goal is only to get the tools working.
 By the end of this setup, you will be able to authenticate to AWS, run Terraform, and prepare a working directory.
-
 
 ## 1. AWS Account
 
 You will need an AWS account you can log into.  
-During the lesson you will use:
-
-- EC2 (virtual machines)  
-- IAM (identity and access)  
-- S3 (storage)  
+During the lesson, AWS will be used to create a virtual machine and store a small amount of configuration data.
 
 
 ## 2. Install the AWS CLI
@@ -94,6 +89,8 @@ aws --version
 
 ::::::::::::::::::::::::::::::::::::: checklist
 
+If you are using a personal AWS account without Identity Center, ask the instructor for an alternative setup.
+
 Before running `aws configure sso`, confirm the following:
 
 - IAM Identity Center is **enabled** in your AWS account
@@ -148,10 +145,9 @@ Run:
 ```bash
 aws configure sso
 ```
-
 Follow the browser prompts to authenticate.
 
-Then confirm your identity:
+Then confirm your identity. This command doesn’t change anything. It only confirms that authentication worked.
 
 ```bash
 aws sts get-caller-identity
