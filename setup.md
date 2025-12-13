@@ -3,22 +3,6 @@
 title: "Setup"
 ---
 
-:::::::::::::::::::::::::::::::::::::: questions
-
-- What tools do I need installed before starting this lesson?
-- How do I configure AWS, Terraform, and my local environment?
-
-::::::::::::::::::::::::::::::::::::::::::::::::
-
-::::::::::::::::::::::::::::::::::::: objectives
-
-- Install AWS CLI on macOS, Windows, and Linux
-- Configure AWS credentials using AWS IAM Identity Center (SSO)
-- Install Terraform
-- Verify all tools are ready for the lesson
-
-::::::::::::::::::::::::::::::::::::::::::::::::
-
 ## Introduction
 
 You do not need to understand everything on this page at this time. The goal is only to get the tools working.
