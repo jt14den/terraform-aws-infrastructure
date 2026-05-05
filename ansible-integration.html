@@ -440,22 +440,22 @@ more.</li>
 <li>Deploy Dataverse</li>
 </ol><p>Terraform is not needed again unless infrastructure changes.</p>
 </section><section><h2 class="section-heading" id="when-to-use-terraform-vs-ansible">When to Use Terraform vs Ansible<a class="anchor" aria-label="anchor" href="#when-to-use-terraform-vs-ansible"></a></h2>
-<hr class="half-width"><table class="table"><thead><tr class="header"><th>Task</th>
+<hr class="half-width"><table class="table"><thead><tr><th>Task</th>
 <th>Terraform</th>
 <th>Ansible</th>
-</tr></thead><tbody><tr class="odd"><td>Create or destroy EC2 instances</td>
+</tr></thead><tbody><tr><td>Create or destroy EC2 instances</td>
 <td>✅</td>
 <td>❌</td>
-</tr><tr class="even"><td>Install Dataverse</td>
+</tr><tr><td>Install Dataverse</td>
 <td>❌</td>
 <td>✅</td>
-</tr><tr class="odd"><td>Configure Payara</td>
+</tr><tr><td>Configure Payara</td>
 <td>❌</td>
 <td>✅</td>
-</tr><tr class="even"><td>Change instance type or disk size</td>
+</tr><tr><td>Change instance type or disk size</td>
 <td>✅</td>
 <td>❌</td>
-</tr><tr class="odd"><td>Restart services / roll out config</td>
+</tr><tr><td>Restart services / roll out config</td>
 <td>❌</td>
 <td>✅</td>
 </tr></tbody></table><div id="exercise-test-connectivity" class="callout challenge">
@@ -479,7 +479,7 @@ more.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <pre class="text"><code>dataverse | SUCCESS =&gt; {
   "changed": false,
@@ -569,7 +569,7 @@ any links that you are not going to use.
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/ansible-integration.html",
   "dateCreated": "2025-11-28",
   "dateModified": "2025-11-30",
-  "datePublished": "2026-04-28"
+  "datePublished": "2026-05-05"
 }
 
   </script><script>

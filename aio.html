@@ -1090,7 +1090,7 @@ You don’t need explicit outbound rules to return data.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <dl>
 <dt>Terraform should detect and apply an <strong>in-place
@@ -1275,7 +1275,7 @@ which IP is allowed to SSH into the instance.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>Add to variables.tf:</p>
 <div class="codewrapper sourceCode" id="cb6">
@@ -1454,7 +1454,7 @@ S3.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>Terraform prompts:</p>
 <p><code>Do you want to copy existing state to the new backend? (yes/no)</code></p>
@@ -1601,7 +1601,7 @@ key_pair_name = var.key_pair_name ssh_cidr = var.ssh_cidr instance_name
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>Terraform should show an in-place update if the instance type
 supports resizing.<br>
@@ -1743,33 +1743,33 @@ more.</li>
 </h2>
 <hr class="half-width">
 <table class="table">
-<thead><tr class="header">
+<thead><tr>
 <th>Task</th>
 <th>Terraform</th>
 <th>Ansible</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Create or destroy EC2 instances</td>
 <td>✅</td>
 <td>❌</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Install Dataverse</td>
 <td>❌</td>
 <td>✅</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Configure Payara</td>
 <td>❌</td>
 <td>✅</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Change instance type or disk size</td>
 <td>✅</td>
 <td>❌</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Restart services / roll out config</td>
 <td>❌</td>
 <td>✅</td>
@@ -1797,7 +1797,7 @@ more.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <pre class="text"><code>dataverse | SUCCESS =&gt; {
   "changed": false,
@@ -1878,8 +1878,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/aio.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/aio.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-04-28",
-  "datePublished": "2026-04-28"
+  "dateModified": "2026-05-05",
+  "datePublished": "2026-05-05"
 }
 
   </script><script>
