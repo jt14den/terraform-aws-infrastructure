@@ -118,7 +118,7 @@
     <a id="search-button" class="btn btn-primary" href="aio.html" role="button" aria-label="Search the All In One page">Search the All In One page</a>
   </div><!--/div.container-fluid -->
 </nav><aside class="col-md-12 lesson-progress"><div class="progress incubator">
-    <div class="progress-bar incubator" role="progressbar" style="width: 83%" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson Progress">83%</div>
+    <div class="progress-bar incubator" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson Progress">82%</div>
   </div>
 </aside><div class="container">
       <div class="row">
@@ -286,7 +286,8 @@
 <li><a href="#what-not-to-share">What not to share</a></li>
 <li><a href="#where-ai-helps">Where AI helps</a></li>
 <li><a href="#where-ai-misleads">Where AI misleads</a></li>
-<li><a href="#a-structured-approach">A structured approach</a></li>
+<li><a href="#the-deeper-risk-losing-contact">The deeper risk: losing contact</a></li>
+<li><a href="#strategies-for-staying-grounded">Strategies for staying grounded</a></li>
         </ul></div><!--/div.accordion-body-->
     </div><!--/div.accordion-collapse-->
 
@@ -382,7 +383,8 @@
 <ul><li>Where does AI actually help with infrastructure work, and where does
 it mislead?</li>
 <li>What should I never share with an AI tool?</li>
-<li>How do I use AI productively without skipping validation?</li>
+<li>How do I stay technically grounded when AI is doing a lot of the
+work?</li>
 </ul></div>
 </div>
 </div>
@@ -394,9 +396,10 @@ it mislead?</li>
 context.</li>
 <li>Identify tasks where AI output requires careful verification or
 should not be trusted.</li>
-<li>Apply a consistent habit of sanitizing inputs before pasting
-anything into an AI tool.</li>
-<li>Know which AI tools your institution has licensed for work use.</li>
+<li>Apply a consistent habit of sanitizing inputs before sharing
+anything with an AI tool.</li>
+<li>Name at least two strategies for staying grounded when AI
+accelerates your output.</li>
 </ul></div>
 </div>
 </div>
@@ -407,9 +410,11 @@ anything into an AI tool.</li>
 misuse – not through dramatic failures, but through subtle ones:
 plausible-looking config that is slightly wrong, outdated API syntax, or
 confident answers to questions the tool cannot actually know.</p>
-<p>This episode is about developing a clear-eyed working relationship
-with these tools: knowing what to ask, what to verify, and what to keep
-out of the conversation entirely.</p>
+<p>This episode covers two things. First, the practical mechanics: what
+to ask, what to verify, and what to keep out of the conversation
+entirely. Second, something less often discussed: what happens to your
+own understanding when AI does a lot of the heavy lifting, and what you
+can do about it.</p>
 </section><section><h2 class="section-heading" id="what-your-institution-has-licensed">What your institution has licensed<a class="anchor" aria-label="anchor" href="#what-your-institution-has-licensed"></a></h2>
 <hr class="half-width"><p>Before using any AI tool for work, check what your institution has
 approved. Institutional licenses typically include data handling
@@ -418,31 +423,26 @@ for work-related content – especially anything involving infrastructure,
 access credentials, or user data – may violate your institution’s
 acceptable use policy.</p>
 <p>At UCLA, the institution licenses <strong>Gemini</strong> for work
-use (via Google Workspace). This is the appropriate tool for UCLA
-Library staff working on infrastructure tasks. When in doubt, check with
-your IT or information security team about what is approved.</p>
+use via Google Workspace. This is the appropriate tool for UCLA Library
+staff working on infrastructure tasks. When in doubt, check with your IT
+or information security team about what is approved.</p>
 <p>Using a licensed tool does not mean anything goes – it means the data
-handling terms are known and accepted. You still need to follow the
-practices in this episode.</p>
+handling terms are known and accepted. The practices in this episode
+still apply.</p>
 </section><section><h2 class="section-heading" id="what-not-to-share">What not to share<a class="anchor" aria-label="anchor" href="#what-not-to-share"></a></h2>
 <hr class="half-width"><p>Some content should never be pasted into an AI tool, regardless of
-which tool or what it is licensed for:</p>
-<ul><li>
-<strong>Secrets and credentials</strong>: passwords, API tokens,
-Ansible Vault contents, AWS access keys</li>
-<li>
-<strong>Private hostnames and IPs</strong>: internal RDS endpoints,
-EC2 instance addresses, VPN addresses</li>
-<li>
-<strong>Database connection strings</strong>: these combine a
-hostname, port, database name, username, and password</li>
-<li>
-<strong>SSH private keys</strong>: never, ever</li>
-<li>
-<strong>Personally identifiable information</strong>: user account
-data from the database, emails, names</li>
-</ul><p>For infrastructure work specifically, this means you should sanitize
-before sharing. Replace real values with placeholders:</p>
+which tool or what license covers it:</p>
+<ul><li>Secrets and credentials: passwords, API tokens, Ansible Vault
+contents, AWS access keys</li>
+<li>Private hostnames and IPs: internal RDS endpoints, EC2 instance
+addresses, VPN addresses</li>
+<li>Database connection strings: these combine a hostname, port,
+database name, username, and password</li>
+<li>SSH private keys</li>
+<li>Personally identifiable information: user account data, emails,
+names from the database</li>
+</ul><p>For infrastructure work, this means sanitizing before sharing.
+Replace real values with placeholders:</p>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -458,35 +458,40 @@ before sharing. Replace real values with placeholders:</p>
 passwords do not change what an Ansible task should look like or why a
 Terraform plan is failing.</p>
 </section><section><h2 class="section-heading" id="where-ai-helps">Where AI helps<a class="anchor" aria-label="anchor" href="#where-ai-helps"></a></h2>
-<hr class="half-width"><p><strong>Understanding unfamiliar tools and concepts</strong></p>
-<p>When you encounter a tool, service, or concept you have not worked
-with before, AI can give you a faster orientation than documentation
-alone. Asking “what is Payara and how does it relate to GlassFish?” or
-“explain what Ansible handlers do and when they run” gets you a usable
-explanation quickly.</p>
-<p>This is one of the highest-value uses. The tool is good at
-synthesizing documentation into plain explanations tailored to your
-context.</p>
+<hr class="half-width"><p><strong>Config systems and infrastructure-as-code</strong></p>
+<p>This is where AI tools are genuinely strong, and it is directly
+relevant to this lesson. Terraform and Ansible are pattern-heavy,
+well-documented, and structurally consistent. AI tools have seen
+enormous amounts of both. They are good at:</p>
+<ul><li>Generating correct HCL resource blocks from a description</li>
+<li>Explaining what an Ansible module does and what its options
+mean</li>
+<li>Debugging Terraform plan output or Ansible task failures</li>
+<li>Translating “here is what I want to happen” into the right module or
+resource type</li>
+</ul><p>This is not a coincidence. Config systems are exactly the kind of
+domain where AI excels: large training corpus, consistent syntax,
+well-defined semantics, errors with recognizable patterns.</p>
+<p><strong>Understanding unfamiliar tools and concepts</strong></p>
+<p>When you encounter something new, AI gives you a faster orientation
+than documentation alone. “What is Payara and how does it relate to
+GlassFish?” or “explain what Ansible handlers do and when they run”
+produces a usable explanation quickly, tailored to your context.</p>
 <p><strong>Explaining error messages</strong></p>
-<p>Paste an error message (sanitized) and ask what it means. For common
+<p>Paste a sanitized error message and ask what it means. For common
 errors from Terraform, Ansible, Payara, or AWS, AI tools often recognize
-the error pattern and can explain the root cause and likely fixes faster
-than searching.</p>
-<p><strong>Generating boilerplate</strong></p>
-<p>Writing a new Ansible task, a Terraform resource block, or a Makefile
-target follows patterns. AI is good at generating correct structure for
-common cases. Use it to get a starting point, then read and adjust
-rather than writing from scratch.</p>
+the pattern and explain the root cause and likely fixes faster than
+searching.</p>
 <p><strong>Drafting documentation and runbooks</strong></p>
 <p>AI is useful for turning rough notes into structured documentation –
-filling in a runbook outline, writing a glossary entry, or turning a
-list of steps into a coherent procedure. This lesson was partly
-developed this way.</p>
+filling in a runbook outline, writing a glossary entry, turning a list
+of steps into a coherent procedure. This lesson was partly developed
+that way.</p>
 <p><strong>Talking through a problem</strong></p>
-<p>Describing a problem to an AI tool, even before asking a specific
-question, often helps clarify your own thinking. “I ran make rebuild and
-Payara is up but Dataverse search returns no results – what are the
-possible causes?” returns a structured list you can work through.</p>
+<p>Describing a problem before asking a specific question often helps
+clarify your own thinking. “I ran make rebuild and Payara is up but
+Dataverse search returns no results – what are the possible causes?”
+returns a structured list you can work through.</p>
 </section><section><h2 class="section-heading" id="where-ai-misleads">Where AI misleads<a class="anchor" aria-label="anchor" href="#where-ai-misleads"></a></h2>
 <hr class="half-width"><p><strong>Version-specific configuration</strong></p>
 <p>AI training data has a cutoff. Dataverse, Payara, Terraform provider
@@ -498,49 +503,118 @@ configuration-related. Do not assume AI-generated config is correct for
 the version you are running.</p>
 <p><strong>Your specific environment</strong></p>
 <p>The AI does not know your S3 bucket names, your RDS endpoint, your
-Terraform state, or what is currently deployed. It cannot tell you “why
-is my EC2 instance not coming up” based on your environment – it can
-only suggest things to check.</p>
-<p>When you need environment-specific answers, the tools are: AWS
-console, Terraform state, Ansible <code>--check</code> mode, and the
-Payara log. AI is a supplement to these, not a replacement.</p>
+Terraform state, or what is currently deployed. When you need
+environment-specific answers, the tools are: AWS console, Terraform
+state, Ansible <code>--check</code> mode, and the Payara log. AI is a
+supplement to these, not a replacement.</p>
 <p><strong>Plausible but wrong</strong></p>
 <p>AI tools produce fluent, confident output even when they are wrong. A
 hallucinated Terraform resource argument or a non-existent Ansible
-module option will look exactly like a correct one. The text is
-convincing; the output may not work.</p>
+module option looks exactly like a correct one. The text is convincing;
+the output may not work.</p>
 <p>This is the central risk. Never copy AI-generated configuration into
 a production context without running it through the validation steps:
 <code>terraform plan</code>, <code>--check</code> mode, the test
 suite.</p>
 <p><strong>Security decisions</strong></p>
 <p>Do not outsource security decisions to an AI tool. Questions like “is
-this IAM policy safe?” or “does this security group expose anything it
-shouldn’t?” benefit from AI explanation, but the final judgment belongs
-to a person who understands the actual threat model and has access to
-the full context.</p>
-</section><section><h2 class="section-heading" id="a-structured-approach">A structured approach<a class="anchor" aria-label="anchor" href="#a-structured-approach"></a></h2>
-<hr class="half-width"><p>These habits reduce the risk of AI misleading you without giving up
-the benefit:</p>
-<p><strong>Sanitize before sharing.</strong> Replace real hostnames,
-passwords, and identifiers with placeholders before pasting anything
-into an AI tool. Make this automatic.</p>
-<p><strong>State your versions.</strong> When asking about
-configuration, include the versions you are running: “Terraform 1.7, AWS
-provider 5.x, Ansible 2.16, Dataverse 6.3.” This narrows the search
-space and reduces the chance of getting outdated syntax.</p>
-<p><strong>Ask for explanation, not just output.</strong> Instead of
-“write me an Ansible task to configure Payara JVM options,” try “explain
-how Ansible configures Payara JVM options, then show me an example
-task.” The explanation helps you verify the output.</p>
-<p><strong>Verify before applying.</strong> Every piece of AI-generated
-configuration should go through the same validation path as anything
-else: <code>terraform plan</code>, <code>--check</code> mode, test
-suite. AI output is a draft, not a finished product.</p>
-<p><strong>Use it to understand, not to skip understanding.</strong> The
-goal of this lesson is to build a real mental model of the
-infrastructure. Using AI to generate config you do not understand
-defeats that goal. Use it to accelerate learning, not to bypass it.</p>
+this IAM policy safe?” benefit from AI explanation, but the final
+judgment belongs to a person who understands the actual threat model and
+has access to the full context.</p>
+<hr></section><section><h2 class="section-heading" id="the-deeper-risk-losing-contact">The deeper risk: losing contact<a class="anchor" aria-label="anchor" href="#the-deeper-risk-losing-contact"></a></h2>
+<hr class="half-width"><p>Because AI is particularly good at config systems – Terraform,
+Ansible, CI pipelines – it is possible to move very fast without fully
+understanding what was built. The acceleration is real. So is the
+risk.</p>
+<p>This is not unique to AI. It is a well-studied pattern in automation
+research. When a system handles the hard parts reliably, people stop
+building the mental model that lets them catch when it is wrong. In
+aviation and medicine, this is called <strong>automation bias</strong>:
+over-trusting automated output because it is usually right, even when
+evidence of an error is present. The cognitive load of staying engaged
+is high, and the tool usually gets it right – until it doesn’t.</p>
+<p>For infrastructure work, the specific version looks like this:</p>
+<ul><li>AI writes your Ansible task. It works. You move on.</li>
+<li>Six months later, the task behaves unexpectedly in a new
+context.</li>
+<li>You do not have the mental model to know why, because you never
+built it.</li>
+</ul><p>The output was correct. The understanding was not transferred.</p>
+<p>A useful framing here comes from chess: after computers became
+stronger than humans, the best human-computer teams were not
+grandmasters who let the engine decide everything, but players who kept
+their own judgment engaged and used the engine to check it. The
+technical term in HCI research is <strong>cognitive offloading</strong>
+– and the question is not whether to do it, but which parts you can
+safely offload and which you must own.</p>
+<p>For this work, the parts you need to own:</p>
+<ul><li>Why idempotency matters and how to verify it</li>
+<li>What each layer (Terraform, Ansible, Dataverse) is responsible
+for</li>
+<li>What the test suite is actually asserting</li>
+<li>What the migration phases gate and why they are sequenced the way
+they are</li>
+</ul><p>These are not things AI can hold for you. If you cannot explain them
+without opening a chat window, you do not have them yet.</p>
+</section><section><h2 class="section-heading" id="strategies-for-staying-grounded">Strategies for staying grounded<a class="anchor" aria-label="anchor" href="#strategies-for-staying-grounded"></a></h2>
+<hr class="half-width"><p><strong>Write it down in your own words (this lesson)</strong></p>
+<p>Writing this lesson is itself a strategy. Turning what was built into
+structured explanation – not AI-generated, but your own reconstruction –
+forces contact with the material. If you cannot explain the Solr reindex
+requirement in a callout block, you do not understand it yet.</p>
+<p>This is the oldest study technique there is, and it works: retrieval
+practice, or the “protege effect.” Teaching something consolidates the
+understanding in a way that reading or watching does not.</p>
+<p><strong>Ask for explanation, not just output</strong></p>
+<p>Instead of “write me an Ansible task to configure Payara JVM
+options,” try: “explain how Ansible configures Payara JVM options, then
+show me an example task.” The explanation gives you something to
+evaluate the output against.</p>
+<p>If the explanation does not make sense, do not use the output.</p>
+<p><strong>State your versions and read the diff</strong></p>
+<p>When asking for configuration, include the versions you are running:
+“Terraform 1.7, AWS provider 5.x, Ansible 2.16, Dataverse 6.3.” This
+reduces outdated syntax.</p>
+<p>Then read the generated output line by line, the same way you would
+read a code review. If you cannot explain what a line does, look it up
+before using it.</p>
+<p><strong>Validate before applying – always</strong></p>
+<p>Every piece of AI-generated configuration should go through the same
+path as everything else: <code>terraform plan</code>,
+<code>--check</code> mode, the test suite.</p>
+<p>Make this non-negotiable. AI output is a draft, not a finished
+product.</p>
+<p><strong>Practice without the tool periodically</strong></p>
+<p>Work through a piece of configuration or a debugging problem without
+AI assistance, even if it takes longer. This is not about refusing help
+– it is about checking that the skill is still there when you need it.
+Pilots practice manual landings even though automation is usually
+better. The same logic applies.</p>
+<p><strong>Pair with another person</strong></p>
+<p>When another person is present – Jamie, a student, a colleague –
+explain what you are doing and why. This is not about the other person
+checking your work; it is about the act of explaining. If you cannot
+explain it, you do not understand it. Onboarding Leigh or a new
+DataSquad student is actually useful for this: teaching someone who does
+not have the context forces you to articulate things you have
+internalized.</p>
+<div id="a-question-worth-asking-periodically" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="a-question-worth-asking-periodically" class="callout-inner">
+<h3 class="callout-title">A question worth asking periodically</h3>
+<div class="callout-content">
+<p>Could you rebuild this environment – Terraform, Ansible, Dataverse
+configuration – from scratch without AI assistance if you had to?</p>
+<p>Not immediately, and not perfectly. But could you trace the steps,
+know what to look for, and understand why each piece is there?</p>
+<p>If the answer is uncertain, that is a signal. Not to stop using AI,
+but to spend some time with the material on your own terms.</p>
+</div>
+</div>
+</div>
 <div id="sanitize-a-config-snippet" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -549,7 +623,7 @@ defeats that goal. Use it to accelerate learning, not to bypass it.</p>
 <div id="sanitize-a-config-snippet" class="callout-inner">
 <h3 class="callout-title">Sanitize a config snippet</h3>
 <div class="callout-content">
-<p>Take the following snippet from a real group_vars file:</p>
+<p>Take the following snippet from a group_vars file:</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -579,11 +653,11 @@ replaced?</p>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">dataverse_s3_bucket</span><span class="kw">:</span><span class="at"> &lt;s3-bucket-name&gt;</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1" aria-label="code-block-3-4"></a><span class="fu">dataverse_doi_authority</span><span class="kw">:</span><span class="at"> </span><span class="st">"10.25346"</span></span></code></pre>
 </div>
-<p>The DOI authority (<code>10.25346</code>) is a public value and safe
-to share. The RDS endpoint, password, and bucket name should be
-replaced. The bucket name is not a credential, but it identifies your
-institution’s storage – use a placeholder when context does not require
-the real name.</p>
+<p>The DOI authority (<code>10.25346</code>) is a public value – safe to
+share. The RDS endpoint, password, and bucket name should be replaced.
+The bucket name is not a credential, but it identifies your
+institution’s storage; use a placeholder when the real name is not
+needed to answer the question.</p>
 </div>
 </div>
 </div>
@@ -599,15 +673,15 @@ the real name.</p>
 Gemini via Google Workspace.</li>
 <li>Never share credentials, private hostnames, database connection
 strings, or SSH keys with any AI tool.</li>
-<li>Sanitize config snippets by replacing real values with placeholders
-before sharing.</li>
-<li>AI is strong at explanation, error interpretation, boilerplate
-generation, and documentation drafting.</li>
-<li>AI is weak on version-specific config, your specific environment,
-and security decisions.</li>
-<li>Every piece of AI-generated configuration needs the same validation
-as anything else: <code>terraform plan</code>, <code>--check</code>,
-test suite.</li>
+<li>AI is particularly strong with config systems like Terraform and
+Ansible – and that is exactly where the risk of losing contact is
+highest.</li>
+<li>Automation bias is real: over-trusting AI output because it is
+usually right, until it isn’t.</li>
+<li>Strategies for staying grounded: write it down in your own words,
+ask for explanation before output, validate everything, practice without
+the tool periodically, teach it to someone else.</li>
+<li>Writing this lesson is itself one of those strategies.</li>
 </ul></div>
 </div>
 </div>

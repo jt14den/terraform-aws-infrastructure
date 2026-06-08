@@ -529,15 +529,15 @@ final Phase 7 comparison.</li>
 Gemini via Google Workspace.</li>
 <li>Never share credentials, private hostnames, database connection
 strings, or SSH keys with any AI tool.</li>
-<li>Sanitize config snippets by replacing real values with placeholders
-before sharing.</li>
-<li>AI is strong at explanation, error interpretation, boilerplate
-generation, and documentation drafting.</li>
-<li>AI is weak on version-specific config, your specific environment,
-and security decisions.</li>
-<li>Every piece of AI-generated configuration needs the same validation
-as anything else: <code>terraform plan</code>, <code>--check</code>,
-test suite.</li>
+<li>AI is particularly strong with config systems like Terraform and
+Ansible – and that is exactly where the risk of losing contact is
+highest.</li>
+<li>Automation bias is real: over-trusting AI output because it is
+usually right, until it isn’t.</li>
+<li>Strategies for staying grounded: write it down in your own words,
+ask for explanation before output, validate everything, practice without
+the tool periodically, teach it to someone else.</li>
+<li>Writing this lesson is itself one of those strategies.</li>
 </ul></section><section id="migration-arc"><h2 class="section-heading"><a href="migration-arc.html">The Migration Arc: 5.14 to 6.8</a></h2>
 <hr class="half-width">
 <ul>
