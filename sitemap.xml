@@ -106,6 +106,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/tooling-setup.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/using-ai.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/variables-and-modules.html</loc>
   </url>
   <url>
@@ -149,6 +152,9 @@
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/tooling-setup.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/using-ai.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/variables-and-modules.html</loc>

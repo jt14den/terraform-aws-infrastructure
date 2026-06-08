@@ -333,7 +333,19 @@
 <div class="accordion accordion-flush" id="accordionFlush10">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading10">
-        <a href="migration-arc.html">9. The Migration Arc: 5.14 to 6.8</a>
+        <a href="using-ai.html">9. Using AI Tools in Infrastructure Work</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush11">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading11">
+        <a href="migration-arc.html">10. The Migration Arc: 5.14 to 6.8</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -1294,7 +1306,7 @@ Tim’s environment.)</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p><code>ok</code> means the system already matches the desired state –
 no change needed. <code>changed</code> means Ansible would modify
@@ -2327,7 +2339,7 @@ PASSED tests/test_solr.py::test_solr_index_not_empty</code></pre>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>The API and Solr are working, so Payara is up and Solr is indexed. S3
 connectivity is the problem – Dataverse cannot reach S3.</p>
@@ -2371,6 +2383,278 @@ Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
  -->
 </div>
+</section></section><section id="aio-using-ai"><p>Content from <a href="using-ai.html">Using AI Tools in Infrastructure Work</a></p>
+<hr>
+<p>Last updated on 2026-06-08 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/using-ai.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 20 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>Where does AI actually help with infrastructure work, and where does
+it mislead?</li>
+<li>What should I never share with an AI tool?</li>
+<li>How do I use AI productively without skipping validation?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Identify tasks where AI assistance is genuinely useful in this
+context.</li>
+<li>Identify tasks where AI output requires careful verification or
+should not be trusted.</li>
+<li>Apply a consistent habit of sanitizing inputs before pasting
+anything into an AI tool.</li>
+<li>Know which AI tools your institution has licensed for work use.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="what-this-episode-is-about">What this episode is about<a class="anchor" aria-label="anchor" href="#what-this-episode-is-about"></a>
+</h2>
+<hr class="half-width">
+<p>AI tools are useful in infrastructure work. They are also easy to
+misuse – not through dramatic failures, but through subtle ones:
+plausible-looking config that is slightly wrong, outdated API syntax, or
+confident answers to questions the tool cannot actually know.</p>
+<p>This episode is about developing a clear-eyed working relationship
+with these tools: knowing what to ask, what to verify, and what to keep
+out of the conversation entirely.</p>
+</section><section><h2 class="section-heading" id="what-your-institution-has-licensed">What your institution has licensed<a class="anchor" aria-label="anchor" href="#what-your-institution-has-licensed"></a>
+</h2>
+<hr class="half-width">
+<p>Before using any AI tool for work, check what your institution has
+approved. Institutional licenses typically include data handling
+agreements that consumer-grade tools do not. Using an unlicensed tool
+for work-related content – especially anything involving infrastructure,
+access credentials, or user data – may violate your institution’s
+acceptable use policy.</p>
+<p>At UCLA, the institution licenses <strong>Gemini</strong> for work
+use (via Google Workspace). This is the appropriate tool for UCLA
+Library staff working on infrastructure tasks. When in doubt, check with
+your IT or information security team about what is approved.</p>
+<p>Using a licensed tool does not mean anything goes – it means the data
+handling terms are known and accepted. You still need to follow the
+practices in this episode.</p>
+</section><section><h2 class="section-heading" id="what-not-to-share">What not to share<a class="anchor" aria-label="anchor" href="#what-not-to-share"></a>
+</h2>
+<hr class="half-width">
+<p>Some content should never be pasted into an AI tool, regardless of
+which tool or what it is licensed for:</p>
+<ul>
+<li>
+<strong>Secrets and credentials</strong>: passwords, API tokens,
+Ansible Vault contents, AWS access keys</li>
+<li>
+<strong>Private hostnames and IPs</strong>: internal RDS endpoints,
+EC2 instance addresses, VPN addresses</li>
+<li>
+<strong>Database connection strings</strong>: these combine a
+hostname, port, database name, username, and password</li>
+<li>
+<strong>SSH private keys</strong>: never, ever</li>
+<li>
+<strong>Personally identifiable information</strong>: user account
+data from the database, emails, names</li>
+</ul>
+<p>For infrastructure work specifically, this means you should sanitize
+before sharing. Replace real values with placeholders:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="co"># what you have</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1" aria-label="code-block-1-2"></a><span class="fu">db_host</span><span class="kw">:</span><span class="at"> dev-dataverse-db.cb4k4a6gqn27.us-west-2.rds.amazonaws.com</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1" aria-label="code-block-1-3"></a><span class="fu">db_password</span><span class="kw">:</span><span class="at"> </span><span class="st">"actual-password-here"</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1" aria-label="code-block-1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1" aria-label="code-block-1-5"></a><span class="co"># what you share with AI</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1" aria-label="code-block-1-6"></a><span class="fu">db_host</span><span class="kw">:</span><span class="at"> &lt;rds-endpoint&gt;</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1" aria-label="code-block-1-7"></a><span class="fu">db_password</span><span class="kw">:</span><span class="at"> </span><span class="st">"&lt;redacted&gt;"</span></span></code></pre>
+</div>
+<p>The AI does not need the real values to help you. Hostnames and
+passwords do not change what an Ansible task should look like or why a
+Terraform plan is failing.</p>
+</section><section><h2 class="section-heading" id="where-ai-helps">Where AI helps<a class="anchor" aria-label="anchor" href="#where-ai-helps"></a>
+</h2>
+<hr class="half-width">
+<p><strong>Understanding unfamiliar tools and concepts</strong></p>
+<p>When you encounter a tool, service, or concept you have not worked
+with before, AI can give you a faster orientation than documentation
+alone. Asking “what is Payara and how does it relate to GlassFish?” or
+“explain what Ansible handlers do and when they run” gets you a usable
+explanation quickly.</p>
+<p>This is one of the highest-value uses. The tool is good at
+synthesizing documentation into plain explanations tailored to your
+context.</p>
+<p><strong>Explaining error messages</strong></p>
+<p>Paste an error message (sanitized) and ask what it means. For common
+errors from Terraform, Ansible, Payara, or AWS, AI tools often recognize
+the error pattern and can explain the root cause and likely fixes faster
+than searching.</p>
+<p><strong>Generating boilerplate</strong></p>
+<p>Writing a new Ansible task, a Terraform resource block, or a Makefile
+target follows patterns. AI is good at generating correct structure for
+common cases. Use it to get a starting point, then read and adjust
+rather than writing from scratch.</p>
+<p><strong>Drafting documentation and runbooks</strong></p>
+<p>AI is useful for turning rough notes into structured documentation –
+filling in a runbook outline, writing a glossary entry, or turning a
+list of steps into a coherent procedure. This lesson was partly
+developed this way.</p>
+<p><strong>Talking through a problem</strong></p>
+<p>Describing a problem to an AI tool, even before asking a specific
+question, often helps clarify your own thinking. “I ran make rebuild and
+Payara is up but Dataverse search returns no results – what are the
+possible causes?” returns a structured list you can work through.</p>
+</section><section><h2 class="section-heading" id="where-ai-misleads">Where AI misleads<a class="anchor" aria-label="anchor" href="#where-ai-misleads"></a>
+</h2>
+<hr class="half-width">
+<p><strong>Version-specific configuration</strong></p>
+<p>AI training data has a cutoff. Dataverse, Payara, Terraform provider
+syntax, and Ansible module arguments all change between versions. The AI
+may confidently give you configuration syntax that was correct in an
+older version and is now wrong or deprecated.</p>
+<p>Always check the version-specific documentation for anything
+configuration-related. Do not assume AI-generated config is correct for
+the version you are running.</p>
+<p><strong>Your specific environment</strong></p>
+<p>The AI does not know your S3 bucket names, your RDS endpoint, your
+Terraform state, or what is currently deployed. It cannot tell you “why
+is my EC2 instance not coming up” based on your environment – it can
+only suggest things to check.</p>
+<p>When you need environment-specific answers, the tools are: AWS
+console, Terraform state, Ansible <code>--check</code> mode, and the
+Payara log. AI is a supplement to these, not a replacement.</p>
+<p><strong>Plausible but wrong</strong></p>
+<p>AI tools produce fluent, confident output even when they are wrong. A
+hallucinated Terraform resource argument or a non-existent Ansible
+module option will look exactly like a correct one. The text is
+convincing; the output may not work.</p>
+<p>This is the central risk. Never copy AI-generated configuration into
+a production context without running it through the validation steps:
+<code>terraform plan</code>, <code>--check</code> mode, the test
+suite.</p>
+<p><strong>Security decisions</strong></p>
+<p>Do not outsource security decisions to an AI tool. Questions like “is
+this IAM policy safe?” or “does this security group expose anything it
+shouldn’t?” benefit from AI explanation, but the final judgment belongs
+to a person who understands the actual threat model and has access to
+the full context.</p>
+</section><section><h2 class="section-heading" id="a-structured-approach">A structured approach<a class="anchor" aria-label="anchor" href="#a-structured-approach"></a>
+</h2>
+<hr class="half-width">
+<p>These habits reduce the risk of AI misleading you without giving up
+the benefit:</p>
+<p><strong>Sanitize before sharing.</strong> Replace real hostnames,
+passwords, and identifiers with placeholders before pasting anything
+into an AI tool. Make this automatic.</p>
+<p><strong>State your versions.</strong> When asking about
+configuration, include the versions you are running: “Terraform 1.7, AWS
+provider 5.x, Ansible 2.16, Dataverse 6.3.” This narrows the search
+space and reduces the chance of getting outdated syntax.</p>
+<p><strong>Ask for explanation, not just output.</strong> Instead of
+“write me an Ansible task to configure Payara JVM options,” try “explain
+how Ansible configures Payara JVM options, then show me an example
+task.” The explanation helps you verify the output.</p>
+<p><strong>Verify before applying.</strong> Every piece of AI-generated
+configuration should go through the same validation path as anything
+else: <code>terraform plan</code>, <code>--check</code> mode, test
+suite. AI output is a draft, not a finished product.</p>
+<p><strong>Use it to understand, not to skip understanding.</strong> The
+goal of this lesson is to build a real mental model of the
+infrastructure. Using AI to generate config you do not understand
+defeats that goal. Use it to accelerate learning, not to bypass it.</p>
+<div id="sanitize-a-config-snippet" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="sanitize-a-config-snippet" class="callout-inner">
+<h3 class="callout-title">Sanitize a config snippet</h3>
+<div class="callout-content">
+<p>Take the following snippet from a real group_vars file:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="fu">dataverse_db_host</span><span class="kw">:</span><span class="at"> prod-dataverse-db.abc123xyz.us-west-2.rds.amazonaws.com</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="fu">dataverse_db_password</span><span class="kw">:</span><span class="at"> </span><span class="st">"s3cur3P@ssw0rd!"</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1" aria-label="code-block-2-3"></a><span class="fu">dataverse_s3_bucket</span><span class="kw">:</span><span class="at"> ucla-dataverse-production</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1" aria-label="code-block-2-4"></a><span class="fu">dataverse_doi_authority</span><span class="kw">:</span><span class="at"> </span><span class="st">"10.25346"</span></span></code></pre>
+</div>
+<p>Rewrite it as you would share it with an AI tool when asking for help
+with a configuration problem. What is safe to share? What should be
+replaced?</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div class="accordion-body">
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">dataverse_db_host</span><span class="kw">:</span><span class="at"> &lt;rds-endpoint&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="fu">dataverse_db_password</span><span class="kw">:</span><span class="at"> </span><span class="st">"&lt;redacted&gt;"</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">dataverse_s3_bucket</span><span class="kw">:</span><span class="at"> &lt;s3-bucket-name&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1" aria-label="code-block-3-4"></a><span class="fu">dataverse_doi_authority</span><span class="kw">:</span><span class="at"> </span><span class="st">"10.25346"</span></span></code></pre>
+</div>
+<p>The DOI authority (<code>10.25346</code>) is a public value and safe
+to share. The RDS endpoint, password, and bucket name should be
+replaced. The bucket name is not a credential, but it identifies your
+institution’s storage – use a placeholder when context does not require
+the real name.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>Use your institution’s licensed AI tools for work; at UCLA, that is
+Gemini via Google Workspace.</li>
+<li>Never share credentials, private hostnames, database connection
+strings, or SSH keys with any AI tool.</li>
+<li>Sanitize config snippets by replacing real values with placeholders
+before sharing.</li>
+<li>AI is strong at explanation, error interpretation, boilerplate
+generation, and documentation drafting.</li>
+<li>AI is weak on version-specific config, your specific environment,
+and security decisions.</li>
+<li>Every piece of AI-generated configuration needs the same validation
+as anything else: <code>terraform plan</code>, <code>--check</code>,
+test suite.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
 </section></section><section id="aio-migration-arc"><p>Content from <a href="migration-arc.html">The Migration Arc: 5.14 to 6.8</a></p>
 <hr>
 <p>Last updated on 2026-06-08 |
@@ -2607,7 +2891,7 @@ can start:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>Phase 3 requires Phase 2 complete: Tim’s env must rebuild cleanly

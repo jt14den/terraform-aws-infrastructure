@@ -332,7 +332,19 @@
 <div class="accordion accordion-flush" id="accordionFlush10">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading10">
-        <a href="migration-arc.html">9. The Migration Arc: 5.14 to 6.8</a>
+        <a href="using-ai.html">9. Using AI Tools in Infrastructure Work</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush11">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading11">
+        <a href="migration-arc.html">10. The Migration Arc: 5.14 to 6.8</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -508,6 +520,22 @@ before and after migration.</li>
 proceeding to the next phase.</li>
 <li>Jamie’s pre-migration production baseline is the anchor for the
 final Phase 7 comparison.</li>
+</ul></section><section id="using-ai"><h2 class="section-heading"><a href="using-ai.html">Using AI Tools in Infrastructure Work</a></h2>
+<hr class="half-width">
+<ul>
+<li>Use your institution’s licensed AI tools for work; at UCLA, that is
+Gemini via Google Workspace.</li>
+<li>Never share credentials, private hostnames, database connection
+strings, or SSH keys with any AI tool.</li>
+<li>Sanitize config snippets by replacing real values with placeholders
+before sharing.</li>
+<li>AI is strong at explanation, error interpretation, boilerplate
+generation, and documentation drafting.</li>
+<li>AI is weak on version-specific config, your specific environment,
+and security decisions.</li>
+<li>Every piece of AI-generated configuration needs the same validation
+as anything else: <code>terraform plan</code>, <code>--check</code>,
+test suite.</li>
 </ul></section><section id="migration-arc"><h2 class="section-heading"><a href="migration-arc.html">The Migration Arc: 5.14 to 6.8</a></h2>
 <hr class="half-width">
 <ul>
