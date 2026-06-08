@@ -2,30 +2,30 @@
 site: sandpaper::sandpaper_site
 ---
 
-This lesson introduces Terraform as a tool for creating and managing AWS infrastructure.  
-Learners start with simple EC2 deployments and build toward modular, repeatable patterns that support real services such as Dataverse.
+This lesson traces the infrastructure that runs the UCLA Library Dataverse instance. It covers the AWS resources that provide compute, storage, and networking; the Ansible configuration that installs Dataverse and its dependencies; and the tooling that makes rebuilding and migrating the system repeatable.
 
-The lesson uses a step-by-step, hands-on approach. Each task builds on the previous one, keeping cognitive load low and giving time to practice core ideas. Learners work directly in their AWS accounts and write Terraform configurations from scratch.
+It is written for people working in or being onboarded to UCLA Library data services: DSC staff, DataSquad students, and anyone who will be operating or handing off this infrastructure. The assumption is comfort with the command line and some exposure to cloud services or configuration management, but not infrastructure expertise.
 
-:::::::::::::::: prerequisites
+By the end of this lesson you will be able to:
 
-Learners should:
+- Describe the components that make up a running Dataverse instance and what each does
+- Navigate the three repositories that manage the UCLA Dataverse infrastructure
+- Explain the division of responsibility between Terraform (infrastructure) and Ansible (configuration)
+- Run the key Makefile targets for daily operations: `rebuild`, `baseline`, `reindex`
+- Read test output and baseline comparisons to verify the system is in a known-good state
+- Understand the 7-phase migration plan and what each phase accomplishes
 
-- know basic command-line navigation  
-- have an AWS account they can use for testing  
-- be comfortable editing text files  
-- have no prior Terraform experience
+## Who this is for
 
-:::::::::::::::::::::::
+- **Data Science Center staff** coming up to speed on what the infrastructure team built and why
+- **DataSquad students** supporting data services and infrastructure work
+- **Incoming operators** taking over responsibility for the Dataverse instance
+- **Tim and Jamie** using this as a structured way to document decisions made during the 5.14 to 6.8 migration
 
-## Learning Objectives
+## Prerequisites
 
-By the end of this lesson, learners will be able to:
+- Comfortable with the command line (navigating directories, running commands)
+- Basic familiarity with Git (clone, commit, push)
+- An AWS account with credentials for the `ucla-library-dsc` profile, or access to the team's shared environment
 
-- describe what Infrastructure-as-Code means  
-- use Terraform to create, update, and destroy AWS resources  
-- configure providers, variables, and outputs  
-- launch an EC2 instance with a security group and key pair  
-- understand how Terraform state works  
-- refactor a flat configuration into modules  
-- prepare an AWS environment for Ansible-based deployments  
+See the [Setup](learners/setup.md) page for installation instructions.
