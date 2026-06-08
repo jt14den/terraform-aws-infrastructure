@@ -2,61 +2,44 @@
 # Values for this lesson.
 #------------------------------------------------------------
 
-# Which carpentry is this (swc, dc, lc, or cp)?
-# Using 'incubator' because this is an in-development lesson.
 carpentry: 'incubator'
 
-# Alt-text description of the lesson.
-carpentry_description: 'A Carpentries Incubator lesson on using Terraform to manage AWS infrastructure.'
+carpentry_description: 'A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible.'
 
-# Overall title for pages.
-title: 'Terraform for AWS Infrastructure'
+title: 'Dataverse Infrastructure: Terraform, Ansible, and the Migration Path'
 
-# Date the lesson was created (YYYY-MM-DD)
 created: 2025-11-28
 
-# Comma-separated list of keywords for the lesson
-keywords: 'terraform, aws, infrastructure as code, cloud, ec2'
+keywords: 'dataverse, terraform, ansible, aws, infrastructure as code, migration, payara, solr, research data'
 
-# Life cycle stage of the lesson
-# possible values: pre-alpha, alpha, beta, stable
 life_cycle: 'pre-alpha'
 
-# License of the lesson
 license: 'CC-BY 4.0'
 
-# Link to the source repository for this lesson
 source: 'https://github.com/jt14den/terraform-aws-infrastructure'
 
-# Default branch of your lesson
 branch: 'main'
 
-# Who to contact if there are any issues
 contact: 'tdennis@library.ucla.edu'
 
 # Navigation ------------------------------------------------
 
-# Order of episodes in your lesson
-episodes: 
+episodes:
   - introduction.md
-  - first-terraform-config.md
-  - first-ec2-instance.md
-  - security-groups.md
-  - variables.md
-  - remote-state.md
-  - variables-and-modules.md
-  - ansible-integration.md
+  - tooling-setup.md
+  - terraform-infrastructure.md
+  - ansible-idempotency.md
+  - dataverse-stack.md
+  - secrets-config.md
+  - makefile-operations.md
+  - testing-validation.md
+  - migration-arc.md
 
-# Information for Learners
-learners: 
+learners:
+  - reference.md
+  - setup.md
 
-# Information for Instructors
-instructors: 
+instructors:
+  - instructor-notes.md
 
-# Learner Profiles
-profiles: 
-
-# Customisation ---------------------------------------------
-#
-# This space below is where custom yaml items (e.g. pinning
-# sandpaper and varnish versions) should live
+profiles:
