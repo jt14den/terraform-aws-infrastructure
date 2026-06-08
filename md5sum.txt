@@ -14,6 +14,6 @@
 "episodes/testing-validation.md" "93bdda7a61b6580aca4e50c132ab51a6" "site/built/testing-validation.md" "2026-06-08"
 "episodes/migration-arc.md" "7157dd29bfcea91973668947ac50b245" "site/built/migration-arc.md" "2026-06-08"
 "instructors/instructor-notes.md" "cae72b6712578d74a49fea7513099f8c" "site/built/instructor-notes.md" "2025-11-29"
-"learners/reference.md" "869226157aebd6dcebf1f156d6ac92ff" "site/built/reference.md" "2025-11-29"
+"learners/reference.md" "32f8b1dc3ebde73e2d888be8cc0d3016" "site/built/reference.md" "2026-06-08"
 "learners/setup.md" "4429d8aeea03ce4e5f118ee78eb6c12f" "site/built/setup.md" "2025-12-13"
 "profiles/learner-profiles.md" "60b93493cf1da06dfd63255d73854461" "site/built/learner-profiles.md" "2025-11-29"
