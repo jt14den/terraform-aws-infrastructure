@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<title>Terraform for AWS Infrastructure: All in One View</title>
+<title>Dataverse Infrastructure: Terraform, Ansible, and the Migration Path: All in One View</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="assets/themetoggle.js"></script><link rel="stylesheet" type="text/css" href="assets/styles.css">
 <script src="assets/scripts.js" type="text/javascript"></script><!-- mathjax --><!-- NOTE: https://docs.mathjax.org/en/latest/output/mathml.html#mathml-support --><!-- Changes from V2 to V4: https://mathjax.github.io/MathJax-demos-web/convert-configuration/convert-configuration.html
@@ -40,7 +40,7 @@
   <div class="container-fluid top-nav-container">
     <div class="col-md-8">
       <div class="large-logo">
-        <img id="incubator-logo" alt="A Carpentries Incubator lesson on using Terraform to manage AWS infrastructure." src="assets/images/incubator-logo.svg"><span class="badge text-bg-danger">
+        <img id="incubator-logo" alt="A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible." src="assets/images/incubator-logo.svg"><span class="badge text-bg-danger">
           <abbr title="This lesson is in the pre-alpha phase, which means that it is in early development, but has not yet been taught.">
             <a href="https://docs.carpentries.org/resources/curriculum/lesson-life-cycle.html" class="external-link alert-link">
               <i aria-hidden="true" class="icon" data-feather="alert-octagon" style="border-radius: 5px"></i>
@@ -96,10 +96,10 @@
       <span class="menu-title">Menu</span>
     </button>
     <div class="nav-logo">
-      <img class="small-logo" alt="A Carpentries Incubator lesson on using Terraform to manage AWS infrastructure." src="assets/images/incubator-logo-sm.svg">
+      <img class="small-logo" alt="A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible." src="assets/images/incubator-logo-sm.svg">
 </div>
     <div class="lesson-title-md">
-      Terraform for AWS Infrastructure
+      Dataverse Infrastructure: Terraform, Ansible, and the Migration Path
     </div>
     <div class="search-icon-sm">
       <!-- TODO: do not show until we have search
@@ -110,7 +110,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 <li class="nav-item">
           <span class="lesson-title">
-            Terraform for AWS Infrastructure
+            Dataverse Infrastructure: Terraform, Ansible, and the Migration Path
           </span>
         </li>
         <li class="nav-item">
@@ -236,7 +236,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="introduction.html">1. Introduction to Terraform for AWS</a>
+        <a href="introduction.html">1. Introduction: Why We Built This Way</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -248,7 +248,7 @@
 <div class="accordion accordion-flush" id="accordionFlush3">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading3">
-        <a href="first-terraform-config.html">2. Your First Terraform Configuration</a>
+        <a href="tooling-setup.html">2. Tooling Setup</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -260,7 +260,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="first-ec2-instance.html">3. Creating Your First AWS EC2 Instance</a>
+        <a href="terraform-infrastructure.html">3. Terraform: The Infrastructure Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -272,7 +272,7 @@
 <div class="accordion accordion-flush" id="accordionFlush5">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading5">
-        <a href="security-groups.html">4. Adding Security Groups to Your EC2 Instance</a>
+        <a href="ansible-idempotency.html">4. Ansible: Configuration and Idempotency</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -284,7 +284,7 @@
 <div class="accordion accordion-flush" id="accordionFlush6">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading6">
-        <a href="variables.html">5. Using Variables in Terraform</a>
+        <a href="dataverse-stack.html">5. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -296,7 +296,7 @@
 <div class="accordion accordion-flush" id="accordionFlush7">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading7">
-        <a href="remote-state.html">6. Remote State with S3 and DynamoDB</a>
+        <a href="secrets-config.html">6. Secrets and Environment Configuration</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -308,7 +308,7 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="variables-and-modules.html">7. Variables, tfvars, and Modular Patterns</a>
+        <a href="makefile-operations.html">7. The Makefile: Daily Operations</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -320,7 +320,19 @@
 <div class="accordion accordion-flush" id="accordionFlush9">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading9">
-        <a href="ansible-integration.html">8. Integrating Terraform with Ansible</a>
+        <a href="testing-validation.html">8. Testing and Validation</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush10">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading10">
+        <a href="migration-arc.html">9. The Migration Arc: 5.14 to 6.8</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -383,9 +395,9 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>All in One View</h1>
         
-<section id="aio-introduction"><p>Content from <a href="introduction.html">Introduction to Terraform for AWS</a></p>
+<section id="aio-introduction"><p>Content from <a href="introduction.html">Introduction: Why We Built This Way</a></p>
 <hr>
-<p>Last updated on 2025-11-29 |
+<p>Last updated on 2026-06-08 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/introduction.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -399,9 +411,10 @@
 <div class="inner">
 <h3 class="card-title">Questions</h3>
 <ul>
-<li>What problem does Terraform solve?</li>
-<li>How does Terraform create and update cloud resources?</li>
-<li>Why is infrastructure as code useful for reproducibility?</li>
+<li>What is this lesson and who is it for?</li>
+<li>What infrastructure does Dataverse need to run?</li>
+<li>How are Terraform, Ansible, and the Dataverse application
+connected?</li>
 </ul>
 </div>
 </div>
@@ -411,443 +424,174 @@
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <ul>
-<li>Describe the purpose of Terraform.</li>
-<li>Explain the core workflow (<code>init</code>, <code>plan</code>,
-<code>apply</code>).</li>
-<li>Identify the AWS resources managed in this lesson.</li>
-<li>Recognize how infrastructure as code improves reliability.</li>
+<li>Describe the UCLA Dataverse infrastructure stack and what each
+component does.</li>
+<li>Explain the division of responsibility between Terraform and
+Ansible.</li>
+<li>Navigate the three repositories that make up this
+infrastructure.</li>
+<li>Understand what the 5.14 to 6.8 migration involves and why it shaped
+these decisions.</li>
 </ul>
 </div>
 </div>
 </div>
 </div>
 </div>
-<section><h2 class="section-heading" id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<section><h2 class="section-heading" id="what-this-lesson-is">What this lesson is<a class="anchor" aria-label="anchor" href="#what-this-lesson-is"></a>
 </h2>
 <hr class="half-width">
-<p>This lesson introduces Terraform through a practical, minimal
-example: launching and managing an EC2 instance on AWS.</p>
-<p>Terraform is a tool that lets you define cloud resources in
-configuration files. Instead of clicking through the AWS console, you
-describe resources such as:</p>
-<ul>
-<li>EC2 instances<br>
-</li>
-<li>security groups<br>
-</li>
-<li>key pairs<br>
-</li>
-<li>storage volumes</li>
-</ul>
-<p>Terraform then compares your configuration to what exists in AWS and
-makes the changes needed to match the desired state.</p>
-<p>By working this way, your infrastructure becomes:</p>
-<ul>
-<li>repeatable<br>
-</li>
-<li>easier to review<br>
-</li>
-<li>easier to share<br>
-</li>
-<li>easier to rebuild when something breaks</li>
-</ul>
-<p>This lesson is written in Pandoc-flavoured Markdown and built with
-The Carpentries Workbench.</p>
-
-<div id="the-terraform-workflow" class="callout">
-<div class="callout-square">
-<i class="callout-icon" data-feather="bell"></i>
-</div>
-<span class="callout-header">Callout</span>
-<div id="the-terraform-workflow" class="callout-inner">
-<h3 class="callout-title">The Terraform Workflow</h3>
-<div class="callout-content">
-<p>We will use three core commands throughout the lesson:</p>
+<p>This lesson traces the infrastructure that runs the UCLA Library
+Dataverse instance. It was written during the migration from Dataverse
+5.14 to 6.8 – not as abstract documentation, but as a way to make
+explicit what was built, why each decision was made, and how the pieces
+fit together.</p>
+<p>The audience is people doing the work or being onboarded to it: DSC
+staff, DataSquad students, and anyone who will operate or hand off this
+system. It assumes comfort with the command line and some exposure to
+cloud services or configuration management, but not infrastructure
+expertise.</p>
+</section><section><h2 class="section-heading" id="the-stack-at-a-glance">The stack at a glance<a class="anchor" aria-label="anchor" href="#the-stack-at-a-glance"></a>
+</h2>
+<hr class="half-width">
+<p>Running Dataverse requires several components working together:</p>
+<pre><code>+------------------------------------------------------------+
+|                           AWS                              |
+|                                                            |
+|  +------------------------------------------------------+  |
+|  |                    EC2 instance                      |  |
+|  |                                                      |  |
+|  |  +----------------+    +--------------------------+  |  |
+|  |  |  Apache httpd  |    |  Payara (app server)     |  |  |
+|  |  |  reverse proxy +----&gt;                          |  |  |
+|  |  |  + SSL         |    |  Dataverse (WAR file)    |  |  |
+|  |  +----------------+    +-------------+------------+  |  |
+|  |                                      |               |  |
+|  |                        +-------------v------------+  |  |
+|  |                        |  Solr (search index)     |  |  |
+|  |                        +--------------------------+  |  |
+|  +------------------------------------------------------+  |
+|                                                            |
+|  +---------------------+   +----------------------------+ |
+|  |  RDS (PostgreSQL)   |   |  S3 (file storage)         | |
+|  +---------------------+   +----------------------------+ |
++------------------------------------------------------------+</code></pre>
+<p><strong>EC2</strong> is a virtual machine running Ubuntu. Payara,
+Solr, and Apache all run here.</p>
+<p><strong>RDS</strong> is a managed PostgreSQL database hosted by AWS.
+Dataverse stores all its metadata here: datasets, files, users,
+permissions, version histories. The database is the source of truth for
+everything except the actual file content.</p>
+<p><strong>S3</strong> is object storage for the data files that users
+upload. Dataverse stores file metadata in RDS and file content in S3.
+The two must stay in sync – a file record in the database pointing to a
+missing S3 object is a broken dataset.</p>
+<p><strong>Payara</strong> is a Jakarta EE application server. Dataverse
+runs as a WAR (Web Application Archive) file deployed inside Payara,
+similar to how a web application runs inside Tomcat but targeting the
+Jakarta EE ecosystem. Most Dataverse configuration is applied via Payara
+JVM options or through the Dataverse API at first boot.</p>
+<p><strong>Solr</strong> is a search engine that powers Dataverse’s
+dataset and file search. It maintains its own index independently of the
+database. After any database restore, the Solr index must be explicitly
+rebuilt – it will not update itself. A running Dataverse with a stale or
+empty Solr index will appear to have no datasets.</p>
+<p><strong>Apache httpd</strong> acts as a reverse proxy in front of
+Payara and handles SSL termination. Requests from browsers hit Apache
+first, then are forwarded to Payara on a non-public port. Apache also
+handles URL rewriting and HTTP to HTTPS redirects.</p>
+</section><section><h2 class="section-heading" id="the-three-repositories">The three repositories<a class="anchor" aria-label="anchor" href="#the-three-repositories"></a>
+</h2>
+<hr class="half-width">
+<p>This infrastructure is managed across three repositories:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Repository</th>
+<th>What it does</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>terraform-dataverse</code></td>
+<td>Provisions AWS resources: EC2, RDS, S3, security groups, Elastic IP,
+IAM roles</td>
+</tr>
+<tr>
+<td><code>dataverse-ansible</code></td>
+<td>Configures the EC2 instance: installs and configures Payara, Solr,
+Apache, and Dataverse</td>
+</tr>
+<tr>
+<td><code>dataverse-infrastructure</code></td>
+<td>Makefile targets, tests, baseline scripts, and runbooks that tie the
+other two together</td>
+</tr>
+</tbody>
+</table>
+<p>These map onto two concerns:</p>
 <ul>
 <li>
-<code>terraform init</code> — prepare the working directory and
-download providers<br>
-</li>
+<strong>Infrastructure</strong> (Terraform): what AWS resources
+exist and how they are connected</li>
 <li>
-<code>terraform plan</code> — show what Terraform will change<br>
-</li>
-<li>
-<code>terraform apply</code> — apply the changes to real
-infrastructure</li>
+<strong>Configuration</strong> (Ansible): what software is installed
+on those resources and how it is configured</li>
 </ul>
-</div>
-</div>
-</div>
-<div id="keypoints1" class="callout keypoints">
-<div class="callout-square">
-<i class="callout-icon" data-feather="key"></i>
-</div>
-<span class="callout-header">Key Points</span>
-<div class="callout-inner">
-<div class="callout-content">
-<ul>
-<li>Terraform lets you describe infrastructure in code instead of
-clicking in a UI.<br>
-</li>
-<li>The main workflow is <code>init</code>, <code>plan</code>, and
-<code>apply</code>.<br>
-</li>
-<li>Infrastructure as code is more reproducible, reviewable, and
-maintainable.<br>
-</li>
-<li>This lesson will build up a small AWS environment step by step.</li>
-</ul>
-</div>
-</div>
-</div>
-<!--
-Place links that you need to refer to multiple times across pages here. Delete
-any links that you are not going to use.
- -->
-</section></section><section id="aio-first-terraform-config"><p>Content from <a href="first-terraform-config.html">Your First Terraform Configuration</a></p>
-<hr>
-<p>Last updated on 2025-11-30 |
-
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/first-terraform-config.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
-<div class="text-end">
-          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
-        </div>
-<div class="overview card">
-<h2 class="card-header">Overview</h2>
-<div class="row g-0">
-<div class="col-md-4">
-<div class="card-body">
-<div class="inner">
-<h3 class="card-title">Questions</h3>
-<ul>
-<li>How do I create a Terraform project?</li>
-<li>What is a <code>main.tf</code> file and what belongs in it?</li>
-<li>How does Terraform know what cloud resources to manage?</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="col-md-8">
-<div class="card-body">
-<div class="inner bordered">
-<h3 class="card-title">Objectives</h3>
-<ul>
-<li>Create a new Terraform working directory.</li>
-<li>Write a minimal <code>main.tf</code> file.</li>
-<li>Initialize Terraform and interpret the output.</li>
-<li>Explain how providers connect Terraform to AWS.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<section><h2 class="section-heading" id="creating-the-terraform-project-directory">Creating the Terraform Project Directory<a class="anchor" aria-label="anchor" href="#creating-the-terraform-project-directory"></a>
+<p>You run Terraform first to provision the resources, then Ansible to
+configure them. The <code>dataverse-infrastructure</code> repo is where
+you do both – its Makefile calls out to Terraform and Ansible so you
+rarely interact with either tool directly.</p>
+</section><section><h2 class="section-heading" id="why-infrastructure-as-code">Why infrastructure as code<a class="anchor" aria-label="anchor" href="#why-infrastructure-as-code"></a>
 </h2>
 <hr class="half-width">
-<p>Terraform works inside a folder that contains configuration files,
-usually ending in <code>.tf</code>. Start by creating a clean
-directory:</p>
-<div class="codewrapper sourceCode" id="cb1">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="fu">mkdir</span> terraform-dataverse</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1" aria-label="code-block-1-2"></a><span class="bu">cd</span> terraform-dataverse</span></code></pre>
-</div>
-<p>Inside that folder, we create our first configuration file.</p>
-</section><section><h2 class="section-heading" id="writing-a-minimal-main-tf">Writing a Minimal <code>main.tf</code>
-<a class="anchor" aria-label="anchor" href="#writing-a-minimal-main-tf"></a>
-</h2>
-<hr class="half-width">
-<p>A minimal Terraform configuration needs two blocks:</p>
-<ol style="list-style-type: decimal">
-<li>A required provider declaration<br>
-</li>
-<li>A provider configuration (here, AWS)</li>
-</ol>
-<pre class="hcl"><code>terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~&gt; 5.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "us-west-2"
-}</code></pre>
-<div class="section level3">
-<h3 id="what-this-does">What this does<a class="anchor" aria-label="anchor" href="#what-this-does"></a>
-</h3>
+<p>Before Terraform and Ansible, changes to the Dataverse environment
+meant clicking through the AWS console or running commands directly on
+the server by hand. That works until something breaks:</p>
 <ul>
-<li>The <code>terraform</code> block tells Terraform which provider
-plugin to use.</li>
-<li>The <code>provider "aws"</code> block sets your AWS region.</li>
-<li>Terraform does <em>not</em> create any infrastructure yet. It only
-knows how to talk to AWS.</li>
+<li>You cannot reproduce exactly what you did</li>
+<li>The next person does not know what state the server is in</li>
+<li>Rebuilding from scratch after a failure is slow and depends on
+memory</li>
 </ul>
-<div id="terraform-supports-many-providers" class="callout">
-<div class="callout-square">
-<i class="callout-icon" data-feather="bell"></i>
-</div>
-<span class="callout-header">Callout</span>
-<div id="terraform-supports-many-providers" class="callout-inner">
-<h3 class="callout-title">Terraform Supports Many Providers</h3>
-<div class="callout-content">
-<p>Although this lesson focuses on AWS, Terraform can manage
-infrastructure across hundreds of platforms.<br>
-A <em>provider</em> is a plugin that enables Terraform to create,
-update, and destroy resources within an ecosystem.</p>
-<p>Common categories of Terraform providers include:</p>
-<ul>
-<li><p><strong>Cloud platforms</strong><br>
-AWS, Azure, Google Cloud, Oracle Cloud, DigitalOcean, Linode</p></li>
-<li><p><strong>Version control and CI/CD</strong><br>
-GitHub, GitLab, Bitbucket, CircleCI</p></li>
-<li><p><strong>Containers &amp; orchestration</strong><br>
-Kubernetes, Helm, Docker</p></li>
-<li><p><strong>Networking &amp; security</strong><br>
-Cloudflare, Palo Alto Networks, Okta, Auth0</p></li>
-<li><p><strong>Databases &amp; analytics</strong><br>
-PostgreSQL, MySQL, Snowflake, Databricks</p></li>
-<li><p><strong>SaaS &amp; productivity tools</strong><br>
-PagerDuty, Datadog, New Relic, Fastly</p></li>
-</ul>
-<p>Terraform’s strength is that it provides a <strong>single
-workflow</strong> for all these platforms, even though they typically
-use very different APIs.</p>
-</div>
-</div>
-</div>
-</div>
-</section><section><h2 class="section-heading" id="initialize-terraform">Initialize Terraform<a class="anchor" aria-label="anchor" href="#initialize-terraform"></a>
+<p>Infrastructure as code puts the desired state of the system in
+version-controlled files. Terraform describes what AWS resources should
+exist. Ansible describes what should be installed and how it should be
+configured. Running them again should produce the same result – this
+property is called <strong>idempotency</strong>, and it is one of the
+central ideas in Episode 4.</p>
+</section><section><h2 class="section-heading" id="the-migration-context">The migration context<a class="anchor" aria-label="anchor" href="#the-migration-context"></a>
 </h2>
 <hr class="half-width">
-<p>Before Terraform can do anything, it needs to download provider
-plugins:</p>
-<div class="codewrapper sourceCode" id="cb3">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="ex">terraform</span> init</span></code></pre>
-</div>
-<p>You should see output confirming that the AWS provider was
-installed.</p>
-</section><section><h2 class="section-heading" id="running-your-first-plan">Running Your First Plan<a class="anchor" aria-label="anchor" href="#running-your-first-plan"></a>
-</h2>
-<hr class="half-width">
-<p>Even though we haven’t defined resources yet, it’s safe to run:</p>
-<div class="codewrapper sourceCode" id="cb4">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">terraform</span> plan</span></code></pre>
-</div>
-<p>Expected output:</p>
-<p>No changes. Your infrastructure matches the configuration.</p>
-<p>This means:</p>
-<ul>
-<li>Terraform is working correctly</li>
-<li>Terraform can talk to AWS</li>
-<li>Terraform sees no resources yet (because we haven’t defined
-any)</li>
-</ul>
-<div id="callout2" class="callout">
-<div class="callout-square">
-<i class="callout-icon" data-feather="bell"></i>
-</div>
-<span class="callout-header">Callout</span>
-<div class="callout-inner">
-<div class="callout-content">
-<p><strong>Why is this useful?</strong></p>
-<p>This episode establishes the foundation.<br>
-If <code>init</code> and <code>plan</code> work now, troubleshooting
-future problems becomes much easier.<br>
-Most Terraform issues start with authentication or provider errors.</p>
-</div>
-</div>
-</div>
-<div id="keypoints1" class="callout keypoints">
-<div class="callout-square">
-<i class="callout-icon" data-feather="key"></i>
-</div>
-<span class="callout-header">Key Points</span>
-<div class="callout-inner">
-<div class="callout-content">
-<ul>
-<li>Terraform configurations live in directories containing
-<code>.tf</code> files.<br>
-</li>
-<li>The <code>terraform</code> and <code>provider</code> blocks define
-how Terraform interacts with AWS.<br>
-</li>
-<li>
-<code>terraform init</code> downloads provider plugins.<br>
-</li>
-<li>
-<code>terraform plan</code> previews changes, even when the
-configuration is empty.<br>
-</li>
-<li>A clean plan confirms your AWS authentication is working.</li>
-</ul>
-</div>
-</div>
-</div>
-<!--
-Place links that you need to refer to multiple times across pages here. Delete
-any links that you are not going to use.
- -->
-</section></section><section id="aio-first-ec2-instance"><p>Content from <a href="first-ec2-instance.html">Creating Your First AWS EC2 Instance</a></p>
-<hr>
-<p>Last updated on 2025-11-29 |
-
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/first-ec2-instance.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
-<div class="text-end">
-          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
-        </div>
-<div class="overview card">
-<h2 class="card-header">Overview</h2>
-<div class="row g-0">
-<div class="col-md-4">
-<div class="card-body">
-<div class="inner">
-<h3 class="card-title">Questions</h3>
-<ul>
-<li>How do I define a cloud resource in Terraform?</li>
-<li>What is an <code>aws_instance</code> block?</li>
-<li>How does Terraform preview and apply changes?</li>
-<li>How can I safely destroy cloud resources?</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="col-md-8">
-<div class="card-body">
-<div class="inner bordered">
-<h3 class="card-title">Objectives</h3>
-<ul>
-<li>Add an EC2 instance resource to <code>main.tf</code>.</li>
-<li>Understand key arguments of the <code>aws_instance</code>
-block.</li>
-<li>Use <code>terraform plan</code> to preview changes.</li>
-<li>Use <code>terraform apply</code> to create infrastructure.</li>
-<li>Destroy resources safely with <code>terraform destroy</code>.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<section><h2 class="section-heading" id="adding-an-ec2-instance-to-main-tf">Adding an EC2 Instance to <code>main.tf</code>
-<a class="anchor" aria-label="anchor" href="#adding-an-ec2-instance-to-main-tf"></a>
-</h2>
-<hr class="half-width">
-<p>We extend our configuration from Episode 2 by adding the
-<code>aws_instance</code> resource.</p>
-<p>Add this block to your <code>main.tf</code>:</p>
-<pre class="hcl"><code>resource "aws_instance" "example" {
-  ami           = "ami-0adebe3adcec1fa34"   # Rocky Linux 9 AMI
-  instance_type = "t3.micro"
-
-  tags = {
-    Name = "terraform-example"
-  }
-}</code></pre>
-</section><section><h2 class="section-heading" id="understanding-the-key-arguments">Understanding the Key Arguments<a class="anchor" aria-label="anchor" href="#understanding-the-key-arguments"></a>
-</h2>
-<hr class="half-width">
-<ul>
-<li><p><code>resource "aws_instance" "example"</code><br>
-Creates an EC2 instance and names it <code>example</code> in the
-Terraform state.</p></li>
-<li><p><code>ami</code><br>
-Identifies the Amazon Machine Image. Different AMIs represent different
-OSes.</p></li>
-<li><p><code>instance_type</code><br>
-Sets CPU &amp; memory size.</p></li>
-<li><p><code>tags</code><br>
-Adds human-readable metadata in AWS.</p></li>
-</ul></section><section><h2 class="section-heading" id="previewing-the-change">Previewing the Change<a class="anchor" aria-label="anchor" href="#previewing-the-change"></a>
-</h2>
-<hr class="half-width">
-<p>Run:</p>
-<div class="codewrapper sourceCode" id="cb2">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="ex">terraform</span> plan</span></code></pre>
-</div>
-<p>Terraform will show:</p>
-<ul>
-<li>one resource to add<br>
-</li>
-<li>full details of what will be created<br>
-</li>
-<li>no changes to existing resources</li>
-</ul>
-<p>This preview step is important—nothing changes until we apply.</p>
-</section><section><h2 class="section-heading" id="creating-the-ec2-instance">Creating the EC2 Instance<a class="anchor" aria-label="anchor" href="#creating-the-ec2-instance"></a>
-</h2>
-<hr class="half-width">
-<p>Apply the plan:</p>
-<div class="codewrapper sourceCode" id="cb3">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="ex">terraform</span> apply</span></code></pre>
-</div>
-<p>You will be prompted:</p>
-<p>Do you want to perform these actions? Only ‘yes’ will be
-accepted.</p>
-<p>Type:</p>
-<p>yes</p>
-<p>Within about 20–60 seconds the EC2 instance will launch.</p>
-<p>Terraform will output:</p>
-<ul>
-<li>the instance ID<br>
-</li>
-<li>the public DNS<br>
-</li>
-<li>the public IP</li>
-</ul>
-<p>These values are now part of Terraform’s <strong>state</strong>, so
-it knows the instance exists.</p>
-</section><section><h2 class="section-heading" id="verifying-the-instance-in-aws">Verifying the Instance in AWS<a class="anchor" aria-label="anchor" href="#verifying-the-instance-in-aws"></a>
-</h2>
-<hr class="half-width">
-<p>Visit your AWS Console:</p>
-<ul>
-<li>EC2 → Instances<br>
-</li>
-<li>Confirm the instance named <code>terraform-example</code> is
-<strong>running</strong>
-</li>
-</ul></section><section><h2 class="section-heading" id="destroying-the-instance-optional">Destroying the Instance (Optional)<a class="anchor" aria-label="anchor" href="#destroying-the-instance-optional"></a>
-</h2>
-<hr class="half-width">
-<p>Terraform can remove everything it created:</p>
-<div class="codewrapper sourceCode" id="cb4">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">terraform</span> destroy</span></code></pre>
-</div>
-<p>This is useful while practicing to avoid unnecessary AWS charges.</p>
-<div id="practice-change-the-instance-type" class="callout challenge">
+<p>This lesson was developed during the migration of the UCLA Library
+Dataverse instance from version 5.14 to 6.8. Several decisions in the
+codebase – the Makefile targets, the baseline scripts, the FAKE DOI
+provider configuration, the 7-phase migration plan – exist because of
+constraints the migration imposed.</p>
+<p>Where those decisions appear in later episodes, we explain why they
+were made. The migration itself is the subject of the final episode.</p>
+<div id="take-stock" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <span class="callout-header">Challenge</span>
-<div id="practice-change-the-instance-type" class="callout-inner">
-<h3 class="callout-title">Practice: Change the Instance Type</h3>
+<div id="take-stock" class="callout-inner">
+<h3 class="callout-title">Take stock</h3>
 <div class="callout-content">
-<p>Modify this line:</p>
-<pre class="hcl"><code><span><span class="va">instance_type</span> <span class="op">=</span> <span class="st">"t3.micro"</span></span></code></pre>
-<p>Change it to:</p>
-<pre class="hcl"><code><span><span class="va">instance_type</span> <span class="op">=</span> <span class="st">"t3.small"</span></span></code></pre>
-<p>Run:</p>
-<div class="codewrapper sourceCode" id="cb7">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="ex">terraform</span> plan</span></code></pre>
-</div>
-<p>What does Terraform tell you it will do?</p>
+<p>Before moving on, open the three repositories in your browser:</p>
+<ul>
+<li><a href="https://github.com/ucla-data-science-center/terraform-dataverse" class="external-link uri">https://github.com/ucla-data-science-center/terraform-dataverse</a></li>
+<li><a href="https://github.com/ucla-data-science-center/dataverse-ansible" class="external-link uri">https://github.com/ucla-data-science-center/dataverse-ansible</a></li>
+<li><a href="https://github.com/ucla-data-science-center/dataverse-infrastructure" class="external-link uri">https://github.com/ucla-data-science-center/dataverse-infrastructure</a></li>
+</ul>
+<p>In each one, find:</p>
+<ol style="list-style-type: decimal">
+<li>The main configuration file or entry point</li>
+<li>At least one file that corresponds to something in the stack diagram
+above</li>
+</ol>
 </div>
 </div>
 </div>
@@ -858,15 +602,22 @@ it knows the instance exists.</p>
 </button>
 <div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
-<dl>
-<dt>Terraform should report an <strong>in-place update</strong>,
-changing only the instance type:</dt>
-<dd>
-<p>instance_type: “t3.micro” -&gt; “t3.small”</p>
-</dd>
-</dl>
-<p>No resources are destroyed unless the change requires
-replacement.</p>
+<p>Some things to look for:</p>
+<ul>
+<li>
+<code>terraform-dataverse</code>:
+<code>environments/tim/main.tf</code> or
+<code>environments/jamie/main.tf</code> for the per-operator Terraform
+config</li>
+<li>
+<code>dataverse-ansible</code>: <code>tasks/main.yml</code> for the
+role entry point; <code>group_vars/</code> for environment-specific
+configuration</li>
+<li>
+<code>dataverse-infrastructure</code>: <code>Makefile</code> for the
+operations entry point; <code>scripts/baseline-capture.sh</code> for the
+baseline tooling</li>
+</ul>
 </div>
 </div>
 </div>
@@ -879,18 +630,18 @@ replacement.</p>
 <div class="callout-inner">
 <div class="callout-content">
 <ul>
-<li>Terraform uses resource blocks to define cloud infrastructure.</li>
-<li>The AWS provider includes many resource types; EC2 is one of
-them.</li>
-<li>
-<code>terraform plan</code> previews changes before they occur.</li>
-<li>
-<code>terraform apply</code> creates or updates cloud
-resources.</li>
-<li>Terraform maintains state so it always knows what exists.</li>
-<li>
-<code>terraform destroy</code> safely removes all managed
-resources.</li>
+<li>Dataverse needs five components: Payara (app server), Solr (search),
+PostgreSQL via RDS (metadata), S3 (file content), Apache (proxy and
+SSL).</li>
+<li>Terraform provisions the AWS infrastructure; Ansible configures what
+runs on it.</li>
+<li>The three repos are <code>terraform-dataverse</code>,
+<code>dataverse-ansible</code>, and
+<code>dataverse-infrastructure</code>.</li>
+<li>Infrastructure as code makes the system reproducible, reviewable,
+and rebuildable.</li>
+<li>Many decisions in this codebase were shaped by the 5.14 to 6.8
+migration – that context appears throughout the lesson.</li>
 </ul>
 </div>
 </div>
@@ -899,11 +650,11 @@ resources.</li>
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
  -->
-</section></section><section id="aio-security-groups"><p>Content from <a href="security-groups.html">Adding Security Groups to Your EC2 Instance</a></p>
+</section></section><section id="aio-tooling-setup"><p>Content from <a href="tooling-setup.html">Tooling Setup</a></p>
 <hr>
-<p>Last updated on 2025-11-29 |
+<p>Last updated on 2026-06-08 |
 
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/security-groups.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/tooling-setup.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -915,10 +666,10 @@ any links that you are not going to use.
 <div class="inner">
 <h3 class="card-title">Questions</h3>
 <ul>
-<li>What is an AWS security group?</li>
-<li>How do I create a security group with Terraform?</li>
-<li>How do I allow SSH and web traffic to an EC2 instance?</li>
-<li>How do I attach a security group to an existing resource?</li>
+<li>What tools do I need installed to work with this
+infrastructure?</li>
+<li>How do the three repositories fit together on my local machine?</li>
+<li>How do I configure AWS credentials for the correct profile?</li>
 </ul>
 </div>
 </div>
@@ -928,159 +679,369 @@ any links that you are not going to use.
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <ul>
-<li>Explain the purpose of AWS security groups.</li>
-<li>Create a security group using Terraform.</li>
-<li>Add rules that allow SSH, HTTP, and HTTPS.</li>
-<li>Attach the security group to an EC2 instance.</li>
-<li>Preview and apply changes safely.</li>
+<li>Install and verify Terraform, Ansible, AWS CLI, and Make.</li>
+<li>Configure an AWS credentials profile named
+<code>ucla-library-dsc</code>.</li>
+<li>Clone all three repositories and orient yourself in each.</li>
+<li>Run <code>terraform init</code> and confirm Ansible can reach a
+target host.</li>
 </ul>
 </div>
 </div>
 </div>
 </div>
 </div>
-<section><h2 class="section-heading" id="what-is-a-security-group">What Is a Security Group?<a class="anchor" aria-label="anchor" href="#what-is-a-security-group"></a>
+<section><h2 class="section-heading" id="what-you-need">What you need<a class="anchor" aria-label="anchor" href="#what-you-need"></a>
 </h2>
 <hr class="half-width">
-<p>A security group acts as a virtual firewall for your EC2
-instance.<br>
-It controls which network traffic is allowed <strong>in</strong> and
-<strong>out</strong>.</p>
-<p>Common inbound rules:</p>
+<p>Four tools are required before you can work with this
+infrastructure:</p>
+<table class="table">
+<thead><tr>
+<th>Tool</th>
+<th>Purpose</th>
+<th>Version</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Terraform</td>
+<td>Provision AWS resources</td>
+<td>&gt;= 1.5</td>
+</tr>
+<tr>
+<td>Ansible</td>
+<td>Configure the EC2 instance</td>
+<td>&gt;= 2.14</td>
+</tr>
+<tr>
+<td>AWS CLI</td>
+<td>Authenticate to AWS, access S3</td>
+<td>&gt;= 2.x</td>
+</tr>
+<tr>
+<td>Make</td>
+<td>Run Makefile targets</td>
+<td>system</td>
+</tr>
+</tbody>
+</table>
+<p>Installation instructions are on the <a href="index.html#setup">Setup</a>
+page.</p>
+</section><section><h2 class="section-heading" id="aws-credentials">AWS credentials<a class="anchor" aria-label="anchor" href="#aws-credentials"></a>
+</h2>
+<hr class="half-width">
+<p>All AWS calls go through the <code>ucla-library-dsc</code> named
+profile. This includes:</p>
 <ul>
-<li>
-<strong>22</strong> — SSH</li>
-<li>
-<strong>80</strong> — HTTP</li>
-<li>
-<strong>443</strong> — HTTPS</li>
+<li>Terraform, which creates and destroys resources</li>
+<li>The baseline scripts, which read S3 object counts</li>
+<li>Any direct <code>aws</code> CLI commands you run</li>
 </ul>
-<p>Outbound rules are typically open by default.</p>
-</section><section><h2 class="section-heading" id="creating-a-security-group-in-terraform">Creating a Security Group in Terraform<a class="anchor" aria-label="anchor" href="#creating-a-security-group-in-terraform"></a>
-</h2>
-<hr class="half-width">
-<p>Add this block to your <code>main.tf</code>:</p>
-<pre class="hcl"><code>resource "aws_security_group" "web_sg" {
-  name        = "terraform-web-sg"
-  description = "Allow SSH, HTTP, and HTTPS"
-
-  ingress {
-    description = "SSH from anywhere"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTP from anywhere"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTPS from anywhere"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    description = "Allow all outbound traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}</code></pre>
-</section><section><h2 class="section-heading" id="attaching-the-security-group-to-your-ec2-instance">Attaching the Security Group to Your EC2 Instance<a class="anchor" aria-label="anchor" href="#attaching-the-security-group-to-your-ec2-instance"></a>
-</h2>
-<hr class="half-width">
-<p>Modify the EC2 resource:</p>
-<pre class="hcl"><code>resource "aws_instance" "example" {
-  ami           = "ami-0adebe3adcec1fa34"
-  instance_type = "t3.micro"
-
-  vpc_security_group_ids = [
-    aws_security_group.web_sg.id
-  ]
-
-  tags = {
-    Name = "terraform-example"
-  }
-}</code></pre>
-<p>This tells AWS:</p>
-<blockquote>
-<p>“Launch this EC2 instance with the <code>web_sg</code> firewall
-rules.”</p>
-</blockquote>
-</section><section><h2 class="section-heading" id="previewing-the-change">Previewing the Change<a class="anchor" aria-label="anchor" href="#previewing-the-change"></a>
-</h2>
-<hr class="half-width">
-<p>Run:</p>
-<div class="codewrapper sourceCode" id="cb3">
+<p>Set the profile with an environment variable:</p>
+<div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="ex">terraform</span> plan</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="bu">export</span> <span class="va">AWS_PROFILE</span><span class="op">=</span>ucla-library-dsc</span></code></pre>
 </div>
-<p>Terraform should show:</p>
-<ul>
-<li>creation of a new security group<br>
-</li>
-<li>updates to the instance to attach that group</li>
-</ul></section><section><h2 class="section-heading" id="applying-the-change">Applying the Change<a class="anchor" aria-label="anchor" href="#applying-the-change"></a>
-</h2>
-<hr class="half-width">
-<div class="codewrapper sourceCode" id="cb4">
+<p>The Makefile and scripts default to <code>ucla-library-dsc</code> if
+<code>AWS_PROFILE</code> is not set, but setting it explicitly avoids
+surprises when running commands outside the Makefile.</p>
+<p>To verify your credentials are working:</p>
+<div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">terraform</span> apply</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="ex">aws</span> sts get-caller-identity <span class="at">--profile</span> ucla-library-dsc</span></code></pre>
 </div>
-<p>Answer:</p>
-<p>yes</p>
-<p>Once complete:</p>
-<ul>
-<li>Look under <strong>EC2 → Security Groups</strong> for
-<code>terraform-web-sg</code>
-</li>
-<li>Confirm your EC2 instance now lists that security group</li>
-</ul>
-<div id="callout1" class="callout">
+<p>A successful response shows your IAM user or role ARN, account ID,
+and user ID.</p>
+<div id="jamies-profile-may-differ" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
+<div id="jamies-profile-may-differ" class="callout-inner">
+<h3 class="callout-title">Jamie’s profile may differ</h3>
+<div class="callout-content">
+<p>Jamie’s AWS profile may use a different name than
+<code>ucla-library-dsc</code>. The Makefile reads from
+<code>${AWS_PROFILE:-ucla-library-dsc}</code>, so setting
+<code>AWS_PROFILE</code> in your shell before running any
+<code>make</code> target is the safest approach for both operators.</p>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="cloning-the-repositories">Cloning the repositories<a class="anchor" aria-label="anchor" href="#cloning-the-repositories"></a>
+</h2>
+<hr class="half-width">
+<p>Clone all three repos into a common parent directory:</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/terraform-dataverse</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/dataverse-ansible</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/dataverse-infrastructure</span></code></pre>
+</div>
+<p>The <code>dataverse-infrastructure</code> repo expects the other two
+as siblings – many Makefile targets reference paths like
+<code>../dataverse-ansible</code> and
+<code>../terraform-dataverse</code>. If your directory layout differs,
+the Makefile will tell you what it expected.</p>
+</section><section><h2 class="section-heading" id="initializing-terraform">Initializing Terraform<a class="anchor" aria-label="anchor" href="#initializing-terraform"></a>
+</h2>
+<hr class="half-width">
+<p>From inside your operator environment directory:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="bu">cd</span> terraform-dataverse/environments/tim   <span class="co"># or jamie</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="ex">terraform</span> init</span></code></pre>
+</div>
+<p><code>terraform init</code> does three things:</p>
+<ul>
+<li>Downloads the AWS provider plugin</li>
+<li>Configures the remote state backend (an S3 bucket where Terraform
+stores its state file)</li>
+<li>Validates the configuration syntax</li>
+</ul>
+<p>After init, run:</p>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="ex">terraform</span> plan</span></code></pre>
+</div>
+<p>This shows what Terraform would create, change, or destroy – without
+making any changes. Read the plan output before running
+<code>terraform apply</code>. A plan that shows unexpected deletions is
+worth pausing on.</p>
+</section><section><h2 class="section-heading" id="verifying-ansible">Verifying Ansible<a class="anchor" aria-label="anchor" href="#verifying-ansible"></a>
+</h2>
+<hr class="half-width">
+<p>Ansible runs against an inventory file generated by Terraform. After
+<code>terraform apply</code>, Terraform writes an inventory file to a
+path the Makefile knows about.</p>
+<p>To check Ansible can reach the host:</p>
+<div class="codewrapper sourceCode" id="cb6">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="ex">ansible</span> <span class="at">-i</span> <span class="op">&lt;</span>inventory-file<span class="op">&gt;</span> all <span class="at">-m</span> ping</span></code></pre>
+</div>
+<p>A successful response:
+<code>dataverse | SUCCESS =&gt; {"ping": "pong"}</code></p>
+<p>If this fails, the most common causes are:</p>
+<ul>
+<li>SSH key not loaded (<code>ssh-add ~/.ssh/your-key</code>)</li>
+<li>Security group not open on port 22 (check in AWS console or
+Terraform config)</li>
+<li>EC2 instance not yet fully booted (wait 60 seconds and retry)</li>
+</ul>
+<div id="credentials-check" class="callout discussion">
+<div class="callout-square">
+<i class="callout-icon" data-feather="message-circle"></i>
+</div>
+<span class="callout-header">Discussion</span>
+<div id="credentials-check" class="callout-inner">
+<h3 class="callout-title">Credentials check</h3>
+<div class="callout-content">
+<p>Run the AWS identity check and <code>terraform init</code> commands
+above. If either fails, note the error message and check the <a href="index.html#setup">Setup</a> troubleshooting section. The most common
+issues are a missing profile in <code>~/.aws/credentials</code> or a
+role without sufficient IAM permissions.</p>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
 <div class="callout-inner">
 <div class="callout-content">
-<p>Security groups are <strong>stateful</strong>.<br>
-If inbound traffic is allowed, the response automatically flows back
-out.<br>
-You don’t need explicit outbound rules to return data.</p>
+<ul>
+<li>Four tools required: Terraform, Ansible, AWS CLI, Make.</li>
+<li>AWS profile is <code>ucla-library-dsc</code> – set
+<code>AWS_PROFILE</code> in your shell before running anything.</li>
+<li>Clone all three repos as siblings;
+<code>dataverse-infrastructure</code> expects the others nearby.</li>
+<li>
+<code>terraform init</code> must succeed before any other Terraform
+command will work.</li>
+<li>
+<code>terraform plan</code> is always safe – it shows changes
+without making them.</li>
+</ul>
 </div>
 </div>
 </div>
-<div id="challenge-restrict-ssh-to-your-ip-only" class="callout challenge">
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-terraform-infrastructure"><p>Content from <a href="terraform-infrastructure.html">Terraform: The Infrastructure Layer</a></p>
+<hr>
+<p>Last updated on 2026-06-08 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/terraform-infrastructure.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>What AWS resources does Terraform manage for this project?</li>
+<li>How is Terraform state stored and shared between operators?</li>
+<li>How are Tim’s and Jamie’s environments organized?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Read a Terraform config and identify the AWS resource types it
+defines.</li>
+<li>Explain what remote state is and why it matters for a multi-operator
+project.</li>
+<li>Describe what an Elastic IP is and why it simplifies the rebuild
+cycle.</li>
+<li>Run <code>terraform plan</code> and interpret the output.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="what-terraform-manages">What Terraform manages<a class="anchor" aria-label="anchor" href="#what-terraform-manages"></a>
+</h2>
+<hr class="half-width">
+<p>Terraform is responsible for the AWS resources that exist – the
+“what” of the infrastructure. For this project, those resources are:</p>
+<ul>
+<li>
+<strong>EC2 instance</strong>: the virtual machine where Dataverse
+and its supporting services run</li>
+<li>
+<strong>RDS instance</strong>: the managed PostgreSQL database</li>
+<li>
+<strong>S3 buckets</strong>: file storage for Dataverse, plus a
+separate bucket for migration assets and backups</li>
+<li>
+<strong>Security groups</strong>: firewall rules controlling what
+traffic reaches the EC2 instance</li>
+<li>
+<strong>Elastic IP</strong>: a static IP address attached to the EC2
+instance (more on this below)</li>
+<li>
+<strong>IAM roles and policies</strong>: permissions for the EC2
+instance to read and write S3</li>
+</ul>
+<p>Terraform does not install software. It creates the resources. Once
+the EC2 instance exists, Ansible takes over and configures it.</p>
+</section><section><h2 class="section-heading" id="repository-layout">Repository layout<a class="anchor" aria-label="anchor" href="#repository-layout"></a>
+</h2>
+<hr class="half-width">
+<p>The <code>terraform-dataverse</code> repo is organized by operator
+environment:</p>
+<pre><code>terraform-dataverse/
+  environments/
+    tim/        &lt;- Tim's dev environment
+    jamie/      &lt;- Jamie's dev environment
+  modules/      &lt;- shared resource definitions used by both environments</code></pre>
+<p>Each environment directory has its own <code>main.tf</code>,
+<code>variables.tf</code>, and <code>terraform.tfvars</code>. The
+environments are mostly identical – they share modules – but use
+different resource names and sizes so Tim and Jamie can work
+independently without affecting each other.</p>
+</section><section><h2 class="section-heading" id="remote-state">Remote state<a class="anchor" aria-label="anchor" href="#remote-state"></a>
+</h2>
+<hr class="half-width">
+<p>By default, Terraform stores its state in a local file called
+<code>terraform.tfstate</code>. This is a problem for a team: if two
+people run Terraform from different machines, their state files diverge
+and Terraform loses track of what actually exists in AWS.</p>
+<p>This project uses <strong>remote state</strong> – the state file is
+stored in an S3 bucket:</p>
+<pre><code>s3://ucla-dataverse-migration-assets/terraform/state/</code></pre>
+<p>Both operators read from and write to the same state file. Terraform
+uses DynamoDB for state locking, which prevents two people from running
+<code>terraform apply</code> at the same time and corrupting the
+state.</p>
+<div id="never-edit-the-state-file-directly" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="never-edit-the-state-file-directly" class="callout-inner">
+<h3 class="callout-title">Never edit the state file directly</h3>
+<div class="callout-content">
+<p>The state file is JSON and technically editable, but Terraform is the
+only thing that should write to it. Editing it by hand can put Terraform
+in an inconsistent state that is painful to recover from. If state gets
+out of sync, use <code>terraform state</code> subcommands to inspect and
+repair it.</p>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="elastic-ip">Elastic IP<a class="anchor" aria-label="anchor" href="#elastic-ip"></a>
+</h2>
+<hr class="half-width">
+<p>An Elastic IP (EIP) is a static IP address you reserve in AWS and
+attach to an EC2 instance.</p>
+<p>Without an Elastic IP, every time you run <code>make rebuild</code> –
+which destroys and recreates the EC2 instance – the instance gets a new
+public IP address. That means:</p>
+<ul>
+<li>The Ansible inventory file needs to be updated before Ansible can
+run</li>
+<li>Any DNS records pointing at the old IP are wrong</li>
+<li>You spend time tracking down the current IP instead of doing
+work</li>
+</ul>
+<p>With an Elastic IP attached, the public IP stays the same across
+rebuilds. The instance changes; the address does not.</p>
+<p>This was added in Phase 2 of the migration plan specifically to
+reduce friction in the development cycle.</p>
+</section><section><h2 class="section-heading" id="variables-and-tfvars">Variables and tfvars<a class="anchor" aria-label="anchor" href="#variables-and-tfvars"></a>
+</h2>
+<hr class="half-width">
+<p>Terraform configurations use variables to avoid hardcoding values
+that differ between environments.</p>
+<ul>
+<li>
+<strong><code>variables.tf</code></strong>: declares the variables
+and their types (like a function signature)</li>
+<li>
+<strong><code>terraform.tfvars</code></strong>: provides values for
+those variables (like the function call)</li>
+</ul>
+<p>The <code>terraform.tfvars</code> file for each environment is
+committed to the repo but contains no secrets – just resource sizes,
+region, names, and tags. Secrets (database passwords, API keys) are kept
+out of Terraform and passed via Ansible Vault.</p>
+<div id="read-a-terraform-plan" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <span class="callout-header">Challenge</span>
-<div id="challenge-restrict-ssh-to-your-ip-only" class="callout-inner">
-<h3 class="callout-title">Challenge: Restrict SSH to Your IP Only</h3>
+<div id="read-a-terraform-plan" class="callout-inner">
+<h3 class="callout-title">Read a Terraform plan</h3>
 <div class="callout-content">
-<p>Replace this line:</p>
-<pre class="hcl"><code>cidr_blocks = ["0.0.0.0/0"]</code></pre>
-<p>With your IP in CIDR notation (example):</p>
-<pre class="hcl"><code>cidr_blocks = ["203.0.113.24/32"]</code></pre>
-<p>Run:</p>
-<div class="codewrapper sourceCode" id="cb7">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="ex">terraform</span> plan</span></code></pre>
-</div>
-<p>What change does Terraform show?</p>
+<p>From <code>terraform-dataverse/environments/tim</code>, run
+<code>terraform plan</code>.</p>
+<p>Answer these questions from the output:</p>
+<ol style="list-style-type: decimal">
+<li>How many resources does Terraform plan to create, change, or
+destroy?</li>
+<li>Which resource type appears the most?</li>
+<li>Find the security group resource. What ports does it open, and to
+what CIDR range?</li>
+</ol>
 </div>
 </div>
 </div>
@@ -1091,15 +1052,22 @@ You don’t need explicit outbound rules to return data.</p>
 </button>
 <div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
-<dl>
-<dt>Terraform should detect and apply an <strong>in-place
-update</strong> to the SSH ingress rule:</dt>
-<dd>
-<p>cidr_blocks: [“0.0.0.0/0”] -&gt; [“203.0.113.24/32”]</p>
-</dd>
-</dl>
-<p>Only the security group rule changes. The EC2 instance does not need
-to be recreated.</p>
+<p>The exact output will depend on current state. Things to look
+for:</p>
+<ul>
+<li>
+<code>aws_instance</code> (the EC2 instance)</li>
+<li>
+<code>aws_security_group</code> and
+<code>aws_security_group_rule</code> (firewall rules)</li>
+<li>
+<code>aws_eip</code> and <code>aws_eip_association</code> (Elastic
+IP)</li>
+<li>
+<code>aws_db_instance</code> (RDS)</li>
+<li>Port 22 (SSH), 80 (HTTP), 443 (HTTPS), and 8080/4848 (Payara) in the
+security group rules</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1112,12 +1080,16 @@ to be recreated.</p>
 <div class="callout-inner">
 <div class="callout-content">
 <ul>
-<li>Security groups act as AWS firewalls.</li>
-<li>You define inbound and outbound rules in resource blocks.</li>
-<li>EC2 instances attach one or more security groups.</li>
-<li>Terraform updates security group rules without recreating the
-instance.</li>
-<li>Restricting SSH to your IP improves security.</li>
+<li>Terraform manages EC2, RDS, S3, security groups, Elastic IP, and IAM
+for this project.</li>
+<li>State is stored remotely in S3 so both operators share the same view
+of infrastructure.</li>
+<li>Each operator has their own environment directory; both use shared
+modules.</li>
+<li>Elastic IP keeps the public IP stable across rebuilds, which
+simplifies Ansible and DNS.</li>
+<li>Variables in <code>terraform.tfvars</code> configure environments;
+secrets stay out of Terraform entirely.</li>
 </ul>
 </div>
 </div>
@@ -1126,11 +1098,11 @@ instance.</li>
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
  -->
-</section></section><section id="aio-variables"><p>Content from <a href="variables.html">Using Variables in Terraform</a></p>
+</section></section><section id="aio-ansible-idempotency"><p>Content from <a href="ansible-idempotency.html">Ansible: Configuration and Idempotency</a></p>
 <hr>
-<p>Last updated on 2025-11-30 |
+<p>Last updated on 2026-06-08 |
 
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/variables.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/ansible-idempotency.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -1142,9 +1114,12 @@ any links that you are not going to use.
 <div class="inner">
 <h3 class="card-title">Questions</h3>
 <ul>
-<li>How can we make Terraform configurations flexible instead of
-hard-coded?</li>
-<li>How do we define and use variables in Terraform?</li>
+<li>What does <code>dataverse-ansible</code> configure on the EC2
+instance?</li>
+<li>What does idempotency mean in practice, and why does it matter for
+operations?</li>
+<li>How are environment-specific values managed without duplicating
+configuration?</li>
 </ul>
 </div>
 </div>
@@ -1154,443 +1129,156 @@ hard-coded?</li>
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <ul>
-<li>Define input variables in a <code>variables.tf</code> file.</li>
-<li>Use variables inside Terraform resources.</li>
-<li>Override variables from the command line or with
-<code>terraform.tfvars</code>.</li>
+<li>Explain the structure of the <code>dataverse-ansible</code>
+role.</li>
+<li>Describe what <code>group_vars</code> does and how environment
+overrides work.</li>
+<li>Run a dry-run playbook with <code>--check</code> and read the
+output.</li>
+<li>Explain what happens when you run the same playbook twice.</li>
 </ul>
 </div>
 </div>
 </div>
 </div>
 </div>
-<section><h2 class="section-heading" id="why-variables-matter">Why Variables Matter<a class="anchor" aria-label="anchor" href="#why-variables-matter"></a>
+<section><h2 class="section-heading" id="what-ansible-does">What Ansible does<a class="anchor" aria-label="anchor" href="#what-ansible-does"></a>
 </h2>
 <hr class="half-width">
-<p>In the previous episodes, we hard-coded details like the AMI ID,
-instance type, and allowed SSH CIDR. This is fine for experimentation,
-but not practical when:</p>
+<p>Ansible is responsible for configuration – the “what is installed and
+how is it set up” layer. After Terraform creates the EC2 instance,
+Ansible connects to it over SSH and:</p>
 <ul>
-<li>You deploy to different environments.</li>
-<li>You need to give learners flexibility.</li>
-<li>You plan to reuse your Terraform modules.</li>
+<li>Installs system packages (Java, Python, curl, and others)</li>
+<li>Installs and configures Payara</li>
+<li>Installs and configures Solr</li>
+<li>Installs and configures Apache with SSL</li>
+<li>Deploys the Dataverse WAR file into Payara</li>
+<li>Applies Dataverse configuration via the Dataverse API</li>
+<li>Sets JVM options in Payara for Dataverse to use</li>
 </ul>
-<p>Terraform variables make your configuration more reusable and easier
-to maintain.</p>
-<hr></section><section><h2 class="section-heading" id="creating-a-variables-tf-file">Creating a <code>variables.tf</code> File<a class="anchor" aria-label="anchor" href="#creating-a-variables-tf-file"></a>
+<p>All of this is defined in the <code>dataverse-ansible</code> role – a
+structured collection of tasks, templates, handlers, and variable
+files.</p>
+</section><section><h2 class="section-heading" id="role-structure">Role structure<a class="anchor" aria-label="anchor" href="#role-structure"></a>
 </h2>
 <hr class="half-width">
-<p>Create a new file:</p>
-<div class="codewrapper sourceCode" id="cb1">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+<p>The <code>dataverse-ansible</code> repo is an Ansible role. The key
+directories are:</p>
+<pre><code>dataverse-ansible/
+  tasks/          &lt;- what to do (ordered list of actions)
+  handlers/       &lt;- actions triggered by other tasks (e.g., restart Payara)
+  templates/      &lt;- config file templates with variable substitution
+  defaults/       &lt;- default variable values
+  vars/           &lt;- higher-priority variable values
+  group_vars/     &lt;- environment-specific overrides (not in the role itself, used by playbooks)</code></pre>
+<p>The <code>tasks/main.yml</code> file is the entry point. It calls out
+to other task files (e.g., <code>tasks/payara.yml</code>,
+<code>tasks/solr.yml</code>) to keep things organized.</p>
+</section><section><h2 class="section-heading" id="idempotency">Idempotency<a class="anchor" aria-label="anchor" href="#idempotency"></a>
+</h2>
+<hr class="half-width">
+<p>An <strong>idempotent</strong> operation produces the same result
+whether you run it once or ten times. For Ansible, this means: running
+the playbook on an already-configured server should make no changes,
+because everything is already in the desired state.</p>
+<p>Why this matters for operations:</p>
+<ul>
+<li>You can safely re-run the playbook after a partial failure without
+worrying about double-applying changes</li>
+<li>You can use <code>--check</code> mode to see what <em>would</em>
+change without actually changing anything</li>
+<li>A playbook that shows no changes is a signal that the server matches
+the expected configuration</li>
+</ul>
+<p>Ansible achieves idempotency through modules that check state before
+acting:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="fu">touch</span> variables.tf</span></code></pre>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install Java</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="at">  </span><span class="fu">apt</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1" aria-label="code-block-2-3"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> openjdk-11-jdk</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1" aria-label="code-block-2-4"></a><span class="at">    </span><span class="fu">state</span><span class="kw">:</span><span class="at"> present</span><span class="co">   # "present" means "install if not already installed"</span></span></code></pre>
 </div>
-<p>Add the following:</p>
-<pre class="hcl"><code>variable "aws_region" {
-  description = "AWS region for all resources"
-  type        = string
-  default     = "us-west-2"
-}
-
-variable "instance_type" {
-  description = "EC2 instance type"
-  type        = string
-  default     = "t3.micro"
-}
-
-variable "instance_name" {
-  description = "Name tag for the EC2 instance"
-  type        = string
-  default     = "terraform-demo"
-}
-</code></pre>
-<div id="callout1" class="callout">
+<p>The <code>apt</code> module checks whether the package is installed
+before trying to install it. If it is already installed, Ansible reports
+<code>ok</code> and moves on. If not, it installs and reports
+<code>changed</code>.</p>
+<div id="not-all-tasks-are-idempotent-by-default" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div class="callout-inner">
+<div id="not-all-tasks-are-idempotent-by-default" class="callout-inner">
+<h3 class="callout-title">Not all tasks are idempotent by default</h3>
 <div class="callout-content">
-<p>By convention, variables are collected in their own file. Terraform
-loads all .tf files automatically, so file names don’t affect execution
-order.</p>
+<p>Tasks using <code>shell</code> or <code>command</code> modules run
+every time unless you add a <code>creates:</code> or <code>when:</code>
+condition. The work to make <code>dataverse-ansible</code> reliably
+idempotent involved identifying those tasks and adding the right
+conditions. When writing new tasks, prefer modules over shell commands
+where one exists.</p>
 </div>
 </div>
 </div>
-<p>Using Variables in main.tf</p>
-<p>Update your EC2 resource to reference variables:</p>
-<pre class="hcl"><code>provider "aws" {
-  region = var.aws_region
-}
-
-resource "aws_instance" "demo" {
-  ami           = "ami-0adebe3adcec1fa34"
-  instance_type = var.instance_type
-
-  tags = {
-    Name = var.instance_name
-  }
-}</code></pre>
-</section><section><h2 class="section-heading" id="overriding-variables">Overriding Variables<a class="anchor" aria-label="anchor" href="#overriding-variables"></a>
+</section><section><h2 class="section-heading" id="group_vars-and-environment-overrides">group_vars and environment overrides<a class="anchor" aria-label="anchor" href="#group_vars-and-environment-overrides"></a>
 </h2>
 <hr class="half-width">
-<ol style="list-style-type: decimal">
-<li>Override at apply time terraform apply
--var=“instance_type=t3.small”</li>
-<li>Use a .tfvars file</li>
-</ol>
-<p>Create a <code>terraform.tfvars</code> file:</p>
+<p>The <code>group_vars/</code> directory holds variable files that
+override defaults for specific environments or host groups.</p>
+<p>For example, the production environment might set:</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="co"># group_vars/production.yml</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="fu">dataverse_doi_provider</span><span class="kw">:</span><span class="at"> </span><span class="st">"EZID"</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">dataverse_use_test_cert</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre>
+</div>
+<p>While the test environment sets:</p>
 <div class="codewrapper sourceCode" id="cb4">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">instance_type</span> = <span class="st">"t3.large"</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="ex">instance_name</span> = <span class="st">"demo-from-tfvars"</span></span></code></pre>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="co"># group_vars/test.yml</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="fu">dataverse_doi_provider</span><span class="kw">:</span><span class="at"> </span><span class="st">"FAKE"</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1" aria-label="code-block-4-3"></a><span class="fu">dataverse_use_test_cert</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre>
 </div>
-<p>Now apply normally:</p>
-<div class="codewrapper sourceCode" id="cb5">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="ex">terraform</span> apply</span></code></pre>
-</div>
-<p>Terraform automatically loads terraform.tfvars.</p>
-<div id="challenge1" class="callout challenge">
+<p>The same playbook runs against both environments; the variables
+control which behavior each environment gets. This is how we keep
+staging and production separate without maintaining two copies of the
+role.</p>
+</section><section><h2 class="section-heading" id="the-inventory">The inventory<a class="anchor" aria-label="anchor" href="#the-inventory"></a>
+</h2>
+<hr class="half-width">
+<p>Ansible needs to know which host to connect to. The inventory file
+lists hosts and their connection details. For this project, the
+inventory is generated by Terraform output:</p>
+<pre><code>[dataverse]
+ec2-12-34-56-78.us-west-2.compute.amazonaws.com ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/dataverse-key.pem</code></pre>
+<p>The Makefile generates and uses this inventory automatically when you
+run <code>make rebuild</code>.</p>
+<div id="dry-run-a-playbook" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <span class="callout-header">Challenge</span>
-<div class="callout-inner">
-<h3 class="callout-title">Challenge</h3>
+<div id="dry-run-a-playbook" class="callout-inner">
+<h3 class="callout-title">Dry run a playbook</h3>
 <div class="callout-content">
-<p>Challenge: Create Your Own Variable</p>
-<p>Add a new variable called ssh_cidr that lets the learner specify
-which IP is allowed to SSH into the instance.</p>
-<p>Then update your Security Group to use it.</p>
-</div>
-</div>
-</div>
-<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
-<div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
-  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
-</button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
-<div class="accordion-body">
-<p>Add to variables.tf:</p>
+<p>From <code>dataverse-infrastructure</code>, run:</p>
 <div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="ex">variable</span> <span class="st">"ssh_cidr"</span> {</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1" aria-label="code-block-6-2"></a>  <span class="ex">description</span> = <span class="st">"CIDR allowed for SSH"</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1" aria-label="code-block-6-3"></a>  <span class="bu">type</span>        = string</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1" aria-label="code-block-6-4"></a>  <span class="ex">default</span>     = <span class="st">"0.0.0.0/0"</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1" aria-label="code-block-6-5"></a><span class="er">}</span></span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="fu">make</span> ansible-check ENV=tim</span></code></pre>
 </div>
-<p>Update the security group:</p>
-<div class="codewrapper sourceCode" id="cb7">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="ex">ingress</span> {</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1" aria-label="code-block-7-2"></a>  <span class="ex">description</span> = <span class="st">"SSH"</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1" aria-label="code-block-7-3"></a>  <span class="ex">from_port</span>   = 22</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1" aria-label="code-block-7-4"></a>  <span class="ex">to_port</span>     = 22</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1" aria-label="code-block-7-5"></a>  <span class="ex">protocol</span>    = <span class="st">"tcp"</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1" aria-label="code-block-7-6"></a>  <span class="ex">cidr_blocks</span> = <span class="pp">[</span><span class="ss">var.ssh_cidr</span><span class="pp">]</span></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1" aria-label="code-block-7-7"></a><span class="er">}</span></span></code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="keypoints1" class="callout keypoints">
-<div class="callout-square">
-<i class="callout-icon" data-feather="key"></i>
-</div>
-<span class="callout-header">Key Points</span>
-<div class="callout-inner">
-<div class="callout-content">
-<ul>
-<li>Variables make Terraform code reusable and easier to maintain.</li>
-<li>Variables are defined once and used many times across
-configurations.</li>
-<li>You can override variables with -var or terraform.tfvars.</li>
-</ul>
-</div>
-</div>
-</div>
-<!--
-Place links that you need to refer to multiple times across pages here. Delete
-any links that you are not going to use.
- -->
-</section></section><section id="aio-remote-state"><p>Content from <a href="remote-state.html">Remote State with S3 and DynamoDB</a></p>
-<hr>
-<p>Last updated on 2025-11-30 |
-
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/remote-state.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
-<div class="text-end">
-          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
-        </div>
-<div class="overview card">
-<h2 class="card-header">Overview</h2>
-<div class="row g-0">
-<div class="col-md-4">
-<div class="card-body">
-<div class="inner">
-<h3 class="card-title">Questions</h3>
-<ul>
-<li>Why store Terraform state remotely instead of locally?</li>
-<li>How do I configure an S3 bucket and DynamoDB table for remote
-state?</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="col-md-8">
-<div class="card-body">
-<div class="inner bordered">
-<h3 class="card-title">Objectives</h3>
-<ul>
-<li>Explain the purpose and benefits of remote state.</li>
-<li>Configure an S3 backend for state storage.</li>
-<li>Add a DynamoDB table to enable state locking.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<section><h2 class="section-heading" id="why-use-remote-state">Why Use Remote State?<a class="anchor" aria-label="anchor" href="#why-use-remote-state"></a>
-</h2>
-<hr class="half-width">
-<p>By default, Terraform keeps its state in a local file named
-<code>terraform.tfstate</code>.<br>
-This works for testing or single-user setups, but it breaks down
-when:</p>
-<ul>
-<li>multiple people are working on the same infrastructure</li>
-<li>you want versioned backups of your state</li>
-<li>your laptop is not a safe place for critical infrastructure
-metadata</li>
-</ul>
-<p>A <strong>remote backend</strong> solves these problems by putting
-your state in AWS.</p>
-<p>We use:</p>
-<ul>
-<li>
-<strong>Amazon S3</strong> — stores the state file</li>
-<li>
-<strong>DynamoDB</strong> — provides a locking mechanism to prevent
-concurrent writes</li>
-</ul></section><section><h2 class="section-heading" id="s3-bucket-configuration">S3 Bucket Configuration<a class="anchor" aria-label="anchor" href="#s3-bucket-configuration"></a>
-</h2>
-<hr class="half-width">
-<p>Earlier, we created a bucket manually:</p>
-<p><code>ucla-tim-terraform-state</code></p>
-<p>You can also declare the bucket in Terraform (optional for this
-lesson):</p>
-<pre class="hcl"><code>resource "aws_s3_bucket" "tf_state" {
-  bucket = "ucla-tim-terraform-state"
-}
-
-## DynamoDB Table Configuration
-
-Terraform locking requires a simple table with a primary key named LockID.
-
-Example:
-
-```bash
-resource "aws_dynamodb_table" "tf_lock" {
-  name         = "terraform-lock"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-}</code></pre>
-</section><section><h2 class="section-heading" id="backend-configuration">Backend Configuration<a class="anchor" aria-label="anchor" href="#backend-configuration"></a>
-</h2>
-<hr class="half-width">
-<p>Add a <code>backend</code> block to your main Terraform
-configuration.</p>
-<div class="codewrapper sourceCode" id="cb2">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="ex">terraform</span> {</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a>  <span class="ex">backend</span> <span class="st">"s3"</span> {</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1" aria-label="code-block-2-3"></a>    <span class="ex">bucket</span>         = <span class="st">"ucla-tim-terraform-state"</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1" aria-label="code-block-2-4"></a>    <span class="ex">key</span>            = <span class="st">"terraform.tfstate"</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1" aria-label="code-block-2-5"></a>    <span class="ex">region</span>         = <span class="st">"us-west-2"</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1" aria-label="code-block-2-6"></a>    <span class="ex">dynamodb_table</span> = <span class="st">"terraform-lock"</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1" aria-label="code-block-2-7"></a>    <span class="ex">encrypt</span>        = true</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1" aria-label="code-block-2-8"></a>  <span class="er">}</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1" aria-label="code-block-2-9"></a><span class="er">}</span></span></code></pre>
-</div>
-<p>After adding the backend, reinitialize Terraform:</p>
-<p><code>terraform init</code></p>
-<p>Terraform will detect the backend and move your local state into
-S3.</p>
-<div id="challenge1" class="callout challenge">
-<div class="callout-square">
-<i class="callout-icon" data-feather="zap"></i>
-</div>
-<span class="callout-header">Challenge</span>
-<div class="callout-inner">
-<h3 class="callout-title">Challenge</h3>
-<div class="callout-content">
-<p>Convert Your Project to Remote State</p>
-<p>Using the bucket and DynamoDB table created above:</p>
-<p>Add a backend block to your main terraform configuration.</p>
-<p>Run terraform init.</p>
-<p>Confirm that Terraform offers to migrate your state.</p>
-<p>Verify that your S3 bucket now includes a .tfstate file.</p>
-</div>
-</div>
-</div>
-<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
-<div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
-  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
-</button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
-<div class="accordion-body">
-<p>Terraform prompts:</p>
-<p><code>Do you want to copy existing state to the new backend? (yes/no)</code></p>
-<p>Answer yes.</p>
-<p>You can view the resulting file in the AWS S3 console.</p>
-</div>
-</div>
-</div>
-</div>
-<div id="keypoints1" class="callout keypoints">
-<div class="callout-square">
-<i class="callout-icon" data-feather="key"></i>
-</div>
-<span class="callout-header">Key Points</span>
-<div class="callout-inner">
-<div class="callout-content">
-<ul>
-<li>Remote state centralizes infrastructure metadata in AWS.</li>
-<li>S3 stores the state, DynamoDB handles locking.</li>
-<li>terraform init migrates local state to the remote backend.</li>
-<li>Remote backends enable safe collaboration.</li>
-</ul>
-</div>
-</div>
-</div>
-<!--
-Place links that you need to refer to multiple times across pages here. Delete
-any links that you are not going to use.
- -->
-</section></section><section id="aio-variables-and-modules"><p>Content from <a href="variables-and-modules.html">Variables, tfvars, and Modular Patterns</a></p>
-<hr>
-<p>Last updated on 2025-11-30 |
-
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/variables-and-modules.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
-<div class="text-end">
-          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
-        </div>
-<div class="overview card">
-<h2 class="card-header">Overview</h2>
-<div class="row g-0">
-<div class="col-md-4">
-<div class="card-body">
-<div class="inner">
-<h3 class="card-title">Questions</h3>
-<ul>
-<li>How do variables improve Terraform configuration?</li>
-<li>What is the role of terraform.tfvars?</li>
-<li>Why do modules make infrastructure clearer and easier to
-manage?</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="col-md-8">
-<div class="card-body">
-<div class="inner bordered">
-<h3 class="card-title">Objectives</h3>
-<ul>
-<li>Define Terraform variables and describe their purpose.</li>
-<li>Use terraform.tfvars to store environment-specific values.</li>
-<li>Understand how modules group related infrastructure.</li>
-<li>Interpret a Terraform plan that references module outputs.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<section><h2 class="section-heading" id="why-variables-matter">Why Variables Matter<a class="anchor" aria-label="anchor" href="#why-variables-matter"></a>
-</h2>
-<hr class="half-width">
-<p>Terraform variables help you avoid hard-coding values.<br>
-Instead of embedding values directly in a resource, you define them once
-in a separate file and reference them everywhere.</p>
-<p>Example variable definition (do NOT include backticks when pasting
-into Workbench):</p>
-<p>variable “instance_type” { description = “EC2 instance size” type =
-string default = “t3.large” }</p>
-<p>Referenced in a resource:</p>
-<p>instance_type = var.instance_type</p>
-<p>This keeps your configuration clean, reusable, and portable.</p>
-</section><section><h2 class="section-heading" id="using-terraform-tfvars">Using terraform.tfvars<a class="anchor" aria-label="anchor" href="#using-terraform-tfvars"></a>
-</h2>
-<hr class="half-width">
-<p>terraform.tfvars lets you override defaults without editing your
-Terraform source files.</p>
-<p>Example contents:</p>
-<p>instance_type = “t3.xlarge” ssh_cidr = “91.196.220.29/32”</p>
-<p>Terraform automatically loads these values when you run:</p>
-<p>terraform plan</p>
-
-</section><section><h2 class="section-heading" id="why-use-modules">Why Use Modules?<a class="anchor" aria-label="anchor" href="#why-use-modules"></a>
-</h2>
-<hr class="half-width">
-<p>As your infrastructure grows, a single main.tf becomes
-cluttered.<br>
-Modules organize related resources into reusable folders.</p>
-<p>Example structure:</p>
-<p>modules/ dataverse_ec2/ main.tf variables.tf</p>
-<p>Your root configuration stays clean:</p>
-<p>module “dataverse_ec2” { source = “./modules/dataverse_ec2”
-instance_ami = var.instance_ami instance_type = var.instance_type
-key_pair_name = var.key_pair_name ssh_cidr = var.ssh_cidr instance_name
-= var.instance_name root_volume_size = var.root_volume_size }</p>
-<p>Terraform passes all variables into the module at plan time.</p>
-</section><section><h2 class="section-heading" id="putting-it-all-together">Putting It All Together<a class="anchor" aria-label="anchor" href="#putting-it-all-together"></a>
-</h2>
-<hr class="half-width">
-<p>When terraform plan runs, Terraform:</p>
+<p>(This runs the playbook with <code>--check --diff</code> against
+Tim’s environment.)</p>
+<p>Read through the output and identify:</p>
 <ol style="list-style-type: decimal">
-<li>Loads variables from variables.tf<br>
-</li>
-<li>Loads overrides from terraform.tfvars<br>
-</li>
-<li>Injects them into the module<br>
-</li>
-<li>Builds a dependency graph<br>
-</li>
-<li>Produces a plan showing expected changes</li>
-</ol>
-<p>This is the core of reproducible infrastructure.</p>
-<div id="try-it" class="callout challenge">
-<div class="callout-square">
-<i class="callout-icon" data-feather="zap"></i>
-</div>
-<span class="callout-header">Challenge</span>
-<div id="try-it" class="callout-inner">
-<h3 class="callout-title">Try It</h3>
-<div class="callout-content">
-<ol style="list-style-type: decimal">
-<li>Change your EC2 instance type in terraform.tfvars<br>
-</li>
-<li>Run terraform plan<br>
-</li>
-<li>Observe what Terraform proposes<br>
-</li>
-<li>Revert your change when done</li>
+<li>Which tasks report <code>changed</code> and which report
+<code>ok</code>?</li>
+<li>For any <code>changed</code> tasks, what would Ansible change?</li>
+<li>What does a task reporting <code>skipping</code> mean?</li>
 </ol>
 </div>
 </div>
@@ -1602,9 +1290,13 @@ key_pair_name = var.key_pair_name ssh_cidr = var.ssh_cidr instance_name
 </button>
 <div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
-<p>Terraform should show an in-place update if the instance type
-supports resizing.<br>
-If not, Terraform will propose a destroy-and-recreate operation.</p>
+<p><code>ok</code> means the system already matches the desired state –
+no change needed. <code>changed</code> means Ansible would modify
+something. <code>skipping</code> means the task has a <code>when:</code>
+condition that evaluated to false – the task was intentionally not run
+for this environment or host.</p>
+<p>A fully correct system should show mostly <code>ok</code> with zero
+<code>changed</code>.</p>
 </div>
 </div>
 </div>
@@ -1617,10 +1309,18 @@ If not, Terraform will propose a destroy-and-recreate operation.</p>
 <div class="callout-inner">
 <div class="callout-content">
 <ul>
-<li>Variables avoid hard-coded values and keep Terraform flexible.</li>
-<li>terraform.tfvars stores environment-specific settings.</li>
-<li>Modules organize infrastructure into logical components.</li>
-<li>Terraform wires everything together at plan time.</li>
+<li>
+<code>dataverse-ansible</code> installs and configures Payara, Solr,
+Apache, and Dataverse.</li>
+<li>An idempotent playbook makes no changes when the system is already
+in the desired state.</li>
+<li>
+<code>group_vars</code> provides environment-specific values without
+duplicating the role.</li>
+<li>The Ansible inventory is generated from Terraform output – the
+Makefile handles this.</li>
+<li>Use <code>--check</code> mode to preview what a playbook would
+change without running it.</li>
 </ul>
 </div>
 </div>
@@ -1629,11 +1329,11 @@ If not, Terraform will propose a destroy-and-recreate operation.</p>
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
  -->
-</section></section><section id="aio-ansible-integration"><p>Content from <a href="ansible-integration.html">Integrating Terraform with Ansible</a></p>
+</section></section><section id="aio-dataverse-stack"><p>Content from <a href="dataverse-stack.html">The Dataverse Stack: Payara, Solr, and the Data Layer</a></p>
 <hr>
-<p>Last updated on 2025-11-30 |
+<p>Last updated on 2026-06-08 |
 
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/ansible-integration.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/dataverse-stack.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -1645,10 +1345,10 @@ any links that you are not going to use.
 <div class="inner">
 <h3 class="card-title">Questions</h3>
 <ul>
-<li>How do Terraform and Ansible work together?</li>
-<li>What information must Terraform output for Ansible to use?</li>
-<li>How can Ansible provision software on a server Terraform
-created?</li>
+<li>What is Payara and why does Dataverse use it?</li>
+<li>How does Dataverse store and retrieve data across RDS, S3, and
+Solr?</li>
+<li>What breaks when Solr is out of sync, and how do you fix it?</li>
 </ul>
 </div>
 </div>
@@ -1658,136 +1358,227 @@ created?</li>
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <ul>
-<li>Explain the division of responsibilities between Terraform and
-Ansible.</li>
-<li>Generate Terraform outputs for Ansible inventory.</li>
-<li>Run Ansible against a Terraform-created EC2 instance.</li>
-<li>Describe when to run Terraform again versus when to run
-Ansible.</li>
+<li>Describe Payara’s role as a Jakarta EE application server.</li>
+<li>Explain how Dataverse configuration is applied via JVM options and
+the API.</li>
+<li>Describe how RDS, S3, and Solr each serve different data needs.</li>
+<li>Know when and why a Solr reindex is required.</li>
 </ul>
 </div>
 </div>
 </div>
 </div>
 </div>
-<section><h2 class="section-heading" id="why-terraform-ansible">Why Terraform + Ansible?<a class="anchor" aria-label="anchor" href="#why-terraform-ansible"></a>
+<section><h2 class="section-heading" id="payara-the-application-server">Payara: the application server<a class="anchor" aria-label="anchor" href="#payara-the-application-server"></a>
 </h2>
 <hr class="half-width">
-<p>Terraform builds infrastructure.<br>
-Ansible configures what is <em>on</em> that infrastructure.</p>
-<p>Think of it as:</p>
-<ul>
-<li>Terraform creates the EC2 instance, networking, storage, and
-access.</li>
-<li>Ansible installs Dataverse, Payara, PostgreSQL settings, and
-more.</li>
-</ul></section><section><h2 class="section-heading" id="what-terraform-must-output">What Terraform Must Output<a class="anchor" aria-label="anchor" href="#what-terraform-must-output"></a>
-</h2>
-<hr class="half-width">
-<p>Ansible needs:</p>
-<ul>
-<li>Public IP or DNS<br>
-</li>
-<li>SSH username<br>
-</li>
-<li>SSH key path</li>
-</ul>
-<p>Example outputs:</p>
-<div class="codewrapper sourceCode" id="cb1">
-<h3 class="code-label">SH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+<p>Payara is a Jakarta EE application server – a runtime environment for
+Java web applications. It is a community fork of GlassFish, maintained
+specifically for Jakarta EE compatibility. Dataverse chose it because
+Dataverse is a Jakarta EE application and Payara has continued to
+receive active maintenance after GlassFish development slowed.</p>
+<p>Think of Payara the way you might think of a Python WSGI server or a
+Node.js process: it is the process that loads the application, handles
+incoming requests, manages database connections, and keeps the
+application running.</p>
+<p>Dataverse is distributed as a WAR file – a Web Application Archive.
+Ansible deploys this WAR file into Payara during installation. Payara
+unpacks it and starts serving requests.</p>
+<div class="section level3">
+<h3 id="payara-ports">Payara ports<a class="anchor" aria-label="anchor" href="#payara-ports"></a>
 </h3>
-<pre class="sourceCode sh" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="kw">```</span><span class="ex">hcl</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1" aria-label="code-block-1-2"></a><span class="ex">output</span> <span class="st">"instance_public_ip"</span> {</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1" aria-label="code-block-1-3"></a>  <span class="ex">value</span> = aws_instance.dataverse.public_ip</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1" aria-label="code-block-1-4"></a><span class="er">}</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1" aria-label="code-block-1-5"></a></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1" aria-label="code-block-1-6"></a><span class="ex">output</span> <span class="st">"instance_public_dns"</span> {</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1" aria-label="code-block-1-7"></a>  <span class="ex">value</span> = aws_instance.dataverse.public_dns</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1" aria-label="code-block-1-8"></a><span class="er">}</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1" aria-label="code-block-1-9"></a><span class="kw">```</span></span></code></pre>
-</div>
-<p>Show them with:</p>
-<div class="codewrapper sourceCode" id="cb2">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="ex">terraform</span> output</span></code></pre>
-</div>
-</section><section><h2 class="section-heading" id="creating-a-simple-ansible-inventory">Creating a Simple Ansible Inventory<a class="anchor" aria-label="anchor" href="#creating-a-simple-ansible-inventory"></a>
-</h2>
-<hr class="half-width">
-<div class="codewrapper sourceCode" id="cb3">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="ex">[dataverse]</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="ex">ec2-1-2-3-4.us-west-2.compute.amazonaws.com</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1" aria-label="code-block-3-4"></a><span class="ex">[dataverse:vars]</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1" aria-label="code-block-3-5"></a><span class="va">ansible_user</span><span class="op">=</span>root</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1" aria-label="code-block-3-6"></a><span class="va">ansible_ssh_private_key_file</span><span class="op">=</span>~/.ssh/dataverse-ansible.ed25519</span></code></pre>
-</div>
-
-</section><section><h2 class="section-heading" id="running-an-ansible-playbook">Running an Ansible Playbook<a class="anchor" aria-label="anchor" href="#running-an-ansible-playbook"></a>
-</h2>
-<hr class="half-width">
-<p><code>ansible-playbook -i inventory.ini dataverse.yml</code></p>
-<p>Ansible will:</p>
-<ol style="list-style-type: decimal">
-<li>Connect over SSH</li>
-<li>Install packages</li>
-<li>Configure services</li>
-<li>Deploy Dataverse</li>
-</ol>
-<p>Terraform is not needed again unless infrastructure changes.</p>
-</section><section><h2 class="section-heading" id="when-to-use-terraform-vs-ansible">When to Use Terraform vs Ansible<a class="anchor" aria-label="anchor" href="#when-to-use-terraform-vs-ansible"></a>
-</h2>
-<hr class="half-width">
+<p>Payara listens on several ports by default:</p>
 <table class="table">
 <thead><tr>
-<th>Task</th>
-<th>Terraform</th>
-<th>Ansible</th>
+<th>Port</th>
+<th>Purpose</th>
 </tr></thead>
 <tbody>
 <tr>
-<td>Create or destroy EC2 instances</td>
-<td>✅</td>
-<td>❌</td>
+<td>8080</td>
+<td>HTTP (application)</td>
 </tr>
 <tr>
-<td>Install Dataverse</td>
-<td>❌</td>
-<td>✅</td>
+<td>8181</td>
+<td>HTTPS (application)</td>
 </tr>
 <tr>
-<td>Configure Payara</td>
-<td>❌</td>
-<td>✅</td>
+<td>4848</td>
+<td>Admin console</td>
 </tr>
 <tr>
-<td>Change instance type or disk size</td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td>Restart services / roll out config</td>
-<td>❌</td>
-<td>✅</td>
+<td>9009</td>
+<td>Debug</td>
 </tr>
 </tbody>
 </table>
-<div id="exercise-test-connectivity" class="callout challenge">
+<p>Apache sits in front of ports 80 and 443. Requests come in through
+Apache and are proxied to Payara on port 8080 or 8181. Port 4848 is the
+Payara admin console – it should not be publicly accessible and is
+locked down in the security group.</p>
+</div>
+<div class="section level3">
+<h3 id="configuring-dataverse-through-payara-jvm-options">Configuring Dataverse through Payara JVM options<a class="anchor" aria-label="anchor" href="#configuring-dataverse-through-payara-jvm-options"></a>
+</h3>
+<p>Most Dataverse configuration is not stored in a config file. Instead,
+it is set as JVM options in Payara’s domain configuration
+(<code>domain.xml</code>). These are key-value pairs that Dataverse
+reads at startup:</p>
+<pre><code>-Ddataverse.files.s3-bucket-name=ucla-dataverse-storage
+-Ddataverse.files.storage-driver-id=s3
+-Ddataverse.db.host=dev-dataverse-db.cb4k4a6gqn27.us-west-2.rds.amazonaws.com</code></pre>
+<p>Ansible sets these JVM options through the Payara admin API during
+the configure step. You can also inspect or change them manually through
+the Payara admin console on port 4848, but Ansible is the source of
+truth – any manual changes will be overwritten on the next playbook
+run.</p>
+</div>
+<div class="section level3">
+<h3 id="first-boot-and-the-dataverse-api">First boot and the Dataverse API<a class="anchor" aria-label="anchor" href="#first-boot-and-the-dataverse-api"></a>
+</h3>
+<p>Some configuration can only be applied after Dataverse is running.
+During first boot, Ansible calls the Dataverse API to:</p>
+<ul>
+<li>Set the root dataverse name and contact email</li>
+<li>Configure the DOI provider (FAKE for test environments, real EZID
+for production)</li>
+<li>Set storage credentials</li>
+<li>Apply any site-level settings</li>
+</ul>
+<p>This is why <code>make rebuild</code> takes several minutes even
+after Payara is up – the playbook is waiting for Dataverse to finish its
+own initialization before it can call the API.</p>
+</div>
+<div class="section level3">
+<h3 id="common-payara-problems">Common Payara problems<a class="anchor" aria-label="anchor" href="#common-payara-problems"></a>
+</h3>
+<ul>
+<li>
+<strong>Payara not responding after deploy</strong>: Dataverse
+startup takes 2-5 minutes on first boot. Check the Payara log at
+<code>/usr/local/payara5/glassfish/domains/domain1/logs/server.log</code>.
+Look for <code>Dataverse started</code> or exception stack traces.</li>
+<li>
+<strong>Out of memory</strong>: Payara JVM heap settings are
+configured in Ansible group_vars. Default is 2GB – increase if you see
+<code>OutOfMemoryError</code> in the Payara log.</li>
+<li>
+<strong>WAR deploy failure</strong>: The WAR file checksum or
+version may not match what Payara expects. Check the Ansible
+<code>payara.yml</code> task output for errors during the deploy
+step.</li>
+</ul>
+<div id="payara-vs.-glassfish" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="payara-vs.-glassfish" class="callout-inner">
+<h3 class="callout-title">Payara vs. GlassFish</h3>
+<div class="callout-content">
+<p>Dataverse documentation and older issues sometimes reference
+GlassFish commands and paths. Payara is API-compatible – the
+<code>asadmin</code> command and most paths are the same. If you find a
+GlassFish-specific workaround in an older issue, it will almost always
+apply to Payara as well.</p>
+</div>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="the-data-layer-rds-s3-and-solr">The data layer: RDS, S3, and Solr<a class="anchor" aria-label="anchor" href="#the-data-layer-rds-s3-and-solr"></a>
+</h2>
+<hr class="half-width">
+<p>Dataverse splits its data across three storage systems, each handling
+a different type:</p>
+<div class="section level3">
+<h3 id="rds-postgresql">RDS (PostgreSQL)<a class="anchor" aria-label="anchor" href="#rds-postgresql"></a>
+</h3>
+<p>RDS stores all structured metadata:</p>
+<ul>
+<li>Dataset records (titles, descriptions, authors, versions,
+publication dates)</li>
+<li>File records (names, checksums, file type, which dataset they belong
+to)</li>
+<li>User accounts and permissions</li>
+<li>Dataverse collection hierarchy</li>
+<li>Workflow state and notifications</li>
+</ul>
+<p>RDS is the authoritative record for what datasets and files exist.
+When you restore a database backup, you are restoring this metadata.</p>
+</div>
+<div class="section level3">
+<h3 id="s3">S3<a class="anchor" aria-label="anchor" href="#s3"></a>
+</h3>
+<p>S3 stores the actual file content – the bytes of every data file
+users have uploaded. The connection between a file record in RDS and its
+content in S3 is a storage identifier stored in the database.</p>
+<p>After a database restore, Dataverse uses the storage identifiers to
+serve files from S3. The files in S3 do not change when you restore the
+database – only the metadata does.</p>
+<p>This also means that if a file is deleted from S3 but its record
+remains in RDS, Dataverse will show the file as available but fail when
+users try to download it.</p>
+<div id="the-baseline-scripts-check-both" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="the-baseline-scripts-check-both" class="callout-inner">
+<h3 class="callout-title">The baseline scripts check both</h3>
+<div class="callout-content">
+<p>The <code>make baseline</code> command captures both database counts
+(via the Dataverse Metrics API) and S3 object counts (via
+<code>aws s3 ls</code>). Comparing pre- and post-migration baselines
+verifies that both the database and the storage bucket survived the
+migration intact.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="solr">Solr<a class="anchor" aria-label="anchor" href="#solr"></a>
+</h3>
+<p>Solr is a full-text search engine. Dataverse uses it to power all
+search and browse functionality – when you type a query in Dataverse or
+browse a collection, the results come from Solr, not directly from the
+database.</p>
+<p>Solr maintains its own index: a data structure optimized for fast
+search that is built from the content in the database. This index is
+separate from and derived from the database.</p>
+<p><strong>The index can go out of sync.</strong> If you restore the
+database to an earlier state, the Solr index may contain entries for
+datasets that no longer exist, or be missing entries for datasets that
+were added. After any database restore, you must reindex:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="fu">make</span> reindex ENV=tim</span></code></pre>
+</div>
+<p>A Dataverse instance with a stale Solr index will appear to have no
+datasets – or the wrong datasets. This is one of the most common sources
+of confusion after a rebuild.</p>
+<p>The reindex process reads all dataset metadata from the database and
+sends it to Solr. Depending on how many datasets you have, this can take
+from seconds to hours.</p>
+<div id="trace-a-file-access" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <span class="callout-header">Challenge</span>
-<div id="exercise-test-connectivity" class="callout-inner">
-<h3 class="callout-title">Exercise: Test Connectivity</h3>
+<div id="trace-a-file-access" class="callout-inner">
+<h3 class="callout-title">Trace a file access</h3>
 <div class="callout-content">
-<div class="codewrapper sourceCode" id="cb4">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">ansible</span> dataverse <span class="at">-i</span> inventory.ini <span class="at">-m</span> ping</span></code></pre>
-</div>
+<p>Given what you know about the data layer, answer these questions:</p>
+<ol style="list-style-type: decimal">
+<li>A user uploads a file to Dataverse. What gets written to RDS? What
+gets written to S3?</li>
+<li>A user searches for “climate data.” Which storage system answers
+that query?</li>
+<li>You restore the database from a week-old backup. What is the state
+of S3? What is the state of Solr?</li>
+<li>After the restore in question 3, what must you do before the system
+is usable again?</li>
+</ol>
 </div>
 </div>
 </div>
@@ -1798,10 +1589,18 @@ more.</li>
 </button>
 <div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
-<pre class="text"><code>dataverse | SUCCESS =&gt; {
-  "changed": false,
-  "ping": "pong"
-}</code></pre>
+<ol style="list-style-type: decimal">
+<li>RDS gets a new file record (name, checksum, storage identifier,
+dataset reference). S3 gets the file bytes at the storage identifier
+path.</li>
+<li>Solr answers the search query. The database is not involved in
+search.</li>
+<li>S3 is unchanged – it still has all files ever uploaded, including
+those added in the past week. Solr still has the current index built
+from the current database before the restore.</li>
+<li>Run <code>make reindex ENV=&lt;env&gt;</code> to rebuild the Solr
+index from the restored database state.</li>
+</ol>
 </div>
 </div>
 </div>
@@ -1814,11 +1613,1022 @@ more.</li>
 <div class="callout-inner">
 <div class="callout-content">
 <ul>
-<li>Terraform = infrastructure</li>
-<li>Ansible = configuration</li>
-<li>Terraform outputs feed into Ansible</li>
-<li>Use Terraform for servers and networking</li>
-<li>Use Ansible for app installation and updates</li>
+<li>Payara is a Jakarta EE application server; Dataverse runs as a WAR
+file inside it.</li>
+<li>Most Dataverse configuration is set as Payara JVM options, managed
+by Ansible.</li>
+<li>The Payara log at
+<code>glassfish/domains/domain1/logs/server.log</code> is the first
+place to look when things go wrong.</li>
+<li>RDS holds metadata; S3 holds file content; Solr holds the search
+index.</li>
+<li>Always run <code>make reindex</code> after a database restore – Solr
+does not update itself.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</div>
+</section></section><section id="aio-secrets-config"><p>Content from <a href="secrets-config.html">Secrets and Environment Configuration</a></p>
+<hr>
+<p>Last updated on 2026-06-08 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/secrets-config.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>How are secrets kept out of the repository?</li>
+<li>What configuration is different between staging and production?</li>
+<li>What is a FAKE PID provider and why does it exist?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Explain what Ansible Vault does and how to use it.</li>
+<li>Describe the differences between test and production
+configuration.</li>
+<li>Identify which config values are environment-specific
+vs. shared.</li>
+<li>View a vaulted file’s contents using the vault password.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="ansible-vault">Ansible Vault<a class="anchor" aria-label="anchor" href="#ansible-vault"></a>
+</h2>
+<hr class="half-width">
+<p>Ansible Vault is a tool for encrypting sensitive values so they can
+be stored in the repository without exposing secrets. The vault password
+decrypts them at playbook runtime.</p>
+<p>Common secrets stored in the vault for this project:</p>
+<ul>
+<li>Database password for the RDS instance</li>
+<li>Dataverse admin API token</li>
+<li>EZID credentials (production DOI registration)</li>
+<li>AWS credentials for the Dataverse application to write to S3</li>
+</ul>
+<p>To view a vaulted file:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="ex">ansible-vault</span> view group_vars/all/vault.yml</span></code></pre>
+</div>
+<p>To edit it:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="ex">ansible-vault</span> edit group_vars/all/vault.yml</span></code></pre>
+</div>
+<p>Both commands prompt for the vault password. The vault password
+itself is stored separately and shared with authorized operators – it is
+never committed to the repository.</p>
+<div id="never-commit-unencrypted-secrets" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="never-commit-unencrypted-secrets" class="callout-inner">
+<h3 class="callout-title">Never commit unencrypted secrets</h3>
+<div class="callout-content">
+<p>If you accidentally add a plaintext secret to the repo, treat it as
+compromised and rotate it. Remove it from git history using
+<code>git filter-branch</code> or <code>git filter-repo</code>, then
+notify the team. The vault exists to prevent this – if in doubt, vault
+it.</p>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="test-cert-vs--real-ssl">Test cert vs. real SSL<a class="anchor" aria-label="anchor" href="#test-cert-vs--real-ssl"></a>
+</h2>
+<hr class="half-width">
+<p>In production, Dataverse serves HTTPS using a Let’s Encrypt
+certificate obtained via Certbot. Certbot contacts Let’s Encrypt’s
+servers to verify domain ownership and issue the certificate.</p>
+<p>In test environments, running Certbot would:</p>
+<ul>
+<li>Fail if the test EC2 instance is not reachable on a public
+domain</li>
+<li>Hit Let’s Encrypt rate limits during rapid rebuilds</li>
+<li>Register a real certificate for a temporary hostname</li>
+</ul>
+<p>Instead, test environments use a self-signed certificate. In
+<code>group_vars</code>, this is controlled by:</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">dataverse_use_test_cert</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span><span class="co">   # test environments</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="fu">dataverse_use_test_cert</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span><span class="co">  # production</span></span></code></pre>
+</div>
+<p>When <code>test_cert: true</code>, Ansible generates a self-signed
+certificate locally and skips Certbot entirely. Browsers will show a
+security warning for self-signed certs – that is expected.</p>
+</section><section><h2 class="section-heading" id="fake-pid-provider">FAKE PID provider<a class="anchor" aria-label="anchor" href="#fake-pid-provider"></a>
+</h2>
+<hr class="half-width">
+<p>DOI registration is the process of minting a persistent identifier
+for a dataset and registering it with a DOI service (UCLA uses EZID,
+which registers with DataCite).</p>
+<p>In production, every published dataset gets a real, resolving DOI. In
+test environments, you do not want to:</p>
+<ul>
+<li>Mint real DOIs that point to a test server</li>
+<li>Hit EZID’s API during rapid rebuilds and testing</li>
+<li>Risk cluttering the production DOI namespace with test records</li>
+</ul>
+<p>Dataverse has a built-in FAKE PID provider for exactly this purpose.
+It generates DOI-like identifiers (they look like DOIs but do not
+resolve) without contacting any external service.</p>
+<p>In <code>group_vars</code>:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="fu">dataverse_pid_provider</span><span class="kw">:</span><span class="at"> </span><span class="st">"FAKE"</span><span class="co">    # test environments</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="fu">dataverse_pid_provider</span><span class="kw">:</span><span class="at"> </span><span class="st">"EZID"</span><span class="co">    # production</span></span></code></pre>
+</div>
+<p>The FAKE provider is used in all non-production environments
+throughout the migration. The switch to real EZID happens only at Phase
+7 (DNS cutover).</p>
+</section><section><h2 class="section-heading" id="environment-configuration-summary">Environment configuration summary<a class="anchor" aria-label="anchor" href="#environment-configuration-summary"></a>
+</h2>
+<hr class="half-width">
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Setting</th>
+<th>Test (tim, jamie)</th>
+<th>Production</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SSL certificate</td>
+<td>Self-signed (<code>test_cert: true</code>)</td>
+<td>Let’s Encrypt via Certbot</td>
+</tr>
+<tr>
+<td>DOI provider</td>
+<td>FAKE (no external calls)</td>
+<td>EZID (DataCite registration)</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>RDS dev instance</td>
+<td>RDS production instance</td>
+</tr>
+<tr>
+<td>S3 bucket</td>
+<td><code>tim-dataverse-dev-storage-...</code></td>
+<td>Production bucket</td>
+</tr>
+<tr>
+<td>Payara heap</td>
+<td>2GB</td>
+<td>4GB</td>
+</tr>
+</tbody>
+</table>
+<div id="spot-the-difference" class="callout discussion">
+<div class="callout-square">
+<i class="callout-icon" data-feather="message-circle"></i>
+</div>
+<span class="callout-header">Discussion</span>
+<div id="spot-the-difference" class="callout-inner">
+<h3 class="callout-title">Spot the difference</h3>
+<div class="callout-content">
+<p>Open <code>group_vars/all/</code> in the
+<code>dataverse-ansible</code> repo.</p>
+<ol style="list-style-type: decimal">
+<li>Which variables are shared across all environments?</li>
+<li>Which variables are overridden per environment?</li>
+<li>Find the variable that controls the DOI provider. What is its
+default value?</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>Secrets live in Ansible Vault; the vault password is shared with
+authorized operators only.</li>
+<li>Test environments use self-signed certificates; production uses
+Let’s Encrypt.</li>
+<li>The FAKE PID provider generates DOI-like identifiers without
+contacting EZID.</li>
+<li>The switch from FAKE to real EZID happens only at Phase 7 production
+cutover.</li>
+<li>
+<code>group_vars</code> is where environment-specific overrides live
+– check here first when behavior differs between environments.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-makefile-operations"><p>Content from <a href="makefile-operations.html">The Makefile: Daily Operations</a></p>
+<hr>
+<p>Last updated on 2026-06-08 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/makefile-operations.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>What can I do from the Makefile?</li>
+<li>What does <code>make rebuild</code> actually do, step by step?</li>
+<li>When do I run <code>make baseline</code>
+vs. <code>make reindex</code>?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>List the main Makefile targets and what each does.</li>
+<li>Trace the steps of <code>make rebuild</code> in order.</li>
+<li>Run <code>make baseline</code> and inspect the snapshot it
+produces.</li>
+<li>Know when each operational target should be used.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="why-a-makefile">Why a Makefile<a class="anchor" aria-label="anchor" href="#why-a-makefile"></a>
+</h2>
+<hr class="half-width">
+<p>The <code>dataverse-infrastructure</code> Makefile is the daily
+operations interface for this project. It wraps Terraform, Ansible, and
+the baseline scripts behind named targets so you rarely need to invoke
+those tools directly.</p>
+<p>A Makefile target is a named command. Running
+<code>make &lt;target&gt;</code> executes the commands associated with
+that target. For example:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="fu">make</span> rebuild ENV=tim</span></code></pre>
+</div>
+<p>…runs a sequence of Terraform and Ansible commands in the right
+order, with the right arguments, for Tim’s environment.</p>
+<p>The Makefile lives in <code>dataverse-infrastructure/</code>. Most
+targets require an <code>ENV</code> argument that specifies which
+operator environment to work with.</p>
+</section><section><h2 class="section-heading" id="main-targets">Main targets<a class="anchor" aria-label="anchor" href="#main-targets"></a>
+</h2>
+<hr class="half-width">
+<div class="section level3">
+<h3 id="make-rebuild">
+<code>make rebuild</code><a class="anchor" aria-label="anchor" href="#make-rebuild"></a>
+</h3>
+<p>Destroys and recreates the EC2 instance, then runs Ansible to
+configure it.</p>
+<p>Steps in order:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code>terraform destroy</code> – terminates the existing EC2
+instance (RDS and S3 are preserved)</li>
+<li>
+<code>terraform apply</code> – provisions a new EC2 instance with
+the Elastic IP attached</li>
+<li>Generates a new Ansible inventory from Terraform output</li>
+<li>Waits for the instance to become reachable via SSH</li>
+<li>Runs the Ansible playbook to install and configure all services</li>
+<li>Runs the Dataverse first-boot API configuration</li>
+<li>Runs the test suite to verify the instance is healthy</li>
+</ol>
+<p>Use <code>make rebuild</code> when:</p>
+<ul>
+<li>Starting fresh after a failed or degraded environment</li>
+<li>Testing infrastructure changes that require a clean EC2
+instance</li>
+<li>Validating a new Ansible configuration from scratch</li>
+</ul>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="fu">make</span> rebuild ENV=tim</span></code></pre>
+</div>
+<div id="rds-and-s3-survive-a-rebuild" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="rds-and-s3-survive-a-rebuild" class="callout-inner">
+<h3 class="callout-title">RDS and S3 survive a rebuild</h3>
+<div class="callout-content">
+<p><code>make rebuild</code> destroys only the EC2 instance. The RDS
+database and S3 bucket are not touched. This is intentional – data
+persists across rebuilds. After rebuild, Dataverse reconnects to the
+same database and storage it had before.</p>
+<p>If you want to restore the database to a specific backup as part of
+the rebuild, you need to do that as a separate step before running
+Ansible.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="make-baseline">
+<code>make baseline</code><a class="anchor" aria-label="anchor" href="#make-baseline"></a>
+</h3>
+<p>Captures a timestamped JSON snapshot of the current state of the
+Dataverse instance. The snapshot includes:</p>
+<ul>
+<li>Dataset count (published, draft, total)</li>
+<li>File count</li>
+<li>User count</li>
+<li>Dataverse collection count</li>
+<li>S3 object count and total bytes</li>
+</ul>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">make</span> baseline ENV=tim</span></code></pre>
+</div>
+<p>The snapshot is saved to <code>baselines/</code> and optionally
+uploaded to S3 if <code>BASELINE_UPLOAD_BUCKET</code> is set:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="va">BASELINE_UPLOAD_BUCKET</span><span class="op">=</span>ucla-dataverse-migration-assets <span class="fu">make</span> baseline ENV=jamie</span></code></pre>
+</div>
+<p>Jamie’s production baseline (run before migration begins) is the
+anchor for the Phase 7 post-cutover comparison. Upload it to S3 so it is
+durable and shared.</p>
+</div>
+<div class="section level3">
+<h3 id="make-baseline-compare">
+<code>make baseline-compare</code><a class="anchor" aria-label="anchor" href="#make-baseline-compare"></a>
+</h3>
+<p>Compares two baseline snapshots and reports differences:</p>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="fu">make</span> baseline-compare BEFORE=baselines/before.json AFTER=baselines/after.json</span></code></pre>
+</div>
+<p>A passing comparison shows matching counts across all fields. Any
+discrepancy in dataset or file counts after migration is a problem to
+investigate before declaring the migration complete.</p>
+</div>
+<div class="section level3">
+<h3 id="make-reindex">
+<code>make reindex</code><a class="anchor" aria-label="anchor" href="#make-reindex"></a>
+</h3>
+<p>Triggers a full Solr reindex of all datasets from the database.</p>
+<div class="codewrapper sourceCode" id="cb6">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="fu">make</span> reindex ENV=tim</span></code></pre>
+</div>
+<p>Run this after:</p>
+<ul>
+<li>Any database restore</li>
+<li>A <code>make rebuild</code> that restored from a backup</li>
+<li>Noticing that Dataverse search returns no results or stale
+results</li>
+</ul>
+<p>Reindexing triggers Dataverse to read all dataset metadata from RDS
+and send it to Solr. The time it takes depends on how many datasets
+exist.</p>
+</div>
+<div class="section level3">
+<h3 id="make-test">
+<code>make test</code><a class="anchor" aria-label="anchor" href="#make-test"></a>
+</h3>
+<p>Runs the pytest test suite against the target environment:</p>
+<div class="codewrapper sourceCode" id="cb7">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="fu">make</span> test ENV=tim</span></code></pre>
+</div>
+<p>The tests cover API smoke tests, S3 connectivity, Solr health, and
+basic CRUD operations. See Episode 8 for detail on what the tests
+check.</p>
+</div>
+</section><section><h2 class="section-heading" id="the-env-argument">The <code>ENV</code> argument<a class="anchor" aria-label="anchor" href="#the-env-argument"></a>
+</h2>
+<hr class="half-width">
+<p>Most targets require <code>ENV=&lt;operator&gt;</code> to specify
+which environment to use. Valid values are <code>tim</code> and
+<code>jamie</code>. This controls:</p>
+<ul>
+<li>Which Terraform environment directory is used
+(<code>environments/tim</code> or <code>environments/jamie</code>)</li>
+<li>Which Ansible inventory file is used</li>
+<li>Which group_vars overrides are applied</li>
+</ul>
+<p>Running <code>make rebuild</code> without <code>ENV</code> will
+error. Always specify it.</p>
+<div id="trace-a-rebuild" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="trace-a-rebuild" class="callout-inner">
+<h3 class="callout-title">Trace a rebuild</h3>
+<div class="callout-content">
+<p>Without running it, trace through what
+<code>make rebuild ENV=tim</code> does by reading the Makefile.</p>
+<ol style="list-style-type: decimal">
+<li>What is the first command it runs?</li>
+<li>At what point does the old EC2 instance stop existing?</li>
+<li>At what point does Ansible start running?</li>
+<li>What is the last thing the target does?</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div class="accordion-body">
+<p>Open <code>dataverse-infrastructure/Makefile</code> and find the
+<code>rebuild</code> target. The steps should follow the sequence
+described above: terraform destroy, terraform apply, inventory
+generation, Ansible run, and test suite. The exact commands will be
+visible in the Makefile.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>The Makefile is the daily operations interface – rarely run
+Terraform or Ansible directly.</li>
+<li>
+<code>make rebuild ENV=&lt;env&gt;</code> destroys and recreates the
+EC2 instance and reconfigures it; RDS and S3 are preserved.</li>
+<li>
+<code>make baseline ENV=&lt;env&gt;</code> captures a timestamped
+snapshot of dataset, file, and S3 counts.</li>
+<li>
+<code>make reindex ENV=&lt;env&gt;</code> rebuilds the Solr index
+after any database restore.</li>
+<li>Always specify <code>ENV=</code> – the Makefile will error without
+it.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-testing-validation"><p>Content from <a href="testing-validation.html">Testing and Validation</a></p>
+<hr>
+<p>Last updated on 2026-06-08 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/testing-validation.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>How do we know the migration worked?</li>
+<li>What does the test suite check?</li>
+<li>How do baseline comparisons verify data integrity?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Run the pytest suite and read its output.</li>
+<li>Explain what each test category checks.</li>
+<li>Compare two baseline snapshots and interpret the diff.</li>
+<li>Know what must pass before each migration phase can proceed.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="why-testing-matters-here">Why testing matters here<a class="anchor" aria-label="anchor" href="#why-testing-matters-here"></a>
+</h2>
+<hr class="half-width">
+<p>For a database migration, “did it work?” is not obvious. Dataverse
+can appear to start successfully while silently missing datasets,
+serving stale search results, or failing on file downloads.</p>
+<p>The test suite and baseline comparisons are the answer to that
+question. Together they check:</p>
+<ul>
+<li>The application is running and accepting requests</li>
+<li>The database has the expected number of datasets, files, and
+users</li>
+<li>S3 has the expected number of objects</li>
+<li>Solr is indexed and returning results</li>
+<li>File upload and download work end to end</li>
+</ul>
+<p>No migration phase is complete until these pass.</p>
+</section><section><h2 class="section-heading" id="the-pytest-suite">The pytest suite<a class="anchor" aria-label="anchor" href="#the-pytest-suite"></a>
+</h2>
+<hr class="half-width">
+<p>Tests live in <code>dataverse-infrastructure/tests/</code>. They use
+pytest and the Dataverse API.</p>
+<p>Run the full suite:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="fu">make</span> test ENV=tim</span></code></pre>
+</div>
+<p>Or run it directly with more output:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="bu">cd</span> tests</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="ex">pytest</span> <span class="at">-v</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="test-categories">Test categories<a class="anchor" aria-label="anchor" href="#test-categories"></a>
+</h3>
+<p><strong>API smoke tests</strong>: Check that the Dataverse API
+responds on expected endpoints. These are the fastest tests and fail
+first if Payara is down or misconfigured.</p>
+<p><strong>S3 connectivity</strong>: Verify that Dataverse can read from
+and write to S3. A test file is uploaded via the API and then
+downloaded. If S3 credentials or bucket config is wrong, this fails.</p>
+<p><strong>Solr health</strong>: Check that Solr is running and the
+index is not empty. An empty index does not cause Dataverse to error –
+it just silently returns no search results. This test catches that.</p>
+<p><strong>Baseline count comparison</strong>: If <code>BEFORE</code>
+and <code>AFTER</code> baseline files are set, verify that dataset and
+file counts match within an acceptable threshold.</p>
+<p><strong>DOI/FAKE validation</strong>: Verify that the configured PID
+provider works. In test environments, this checks that the FAKE provider
+mints identifiers correctly. In production, this would check EZID
+connectivity.</p>
+</div>
+<div class="section level3">
+<h3 id="reading-test-output">Reading test output<a class="anchor" aria-label="anchor" href="#reading-test-output"></a>
+</h3>
+<pre><code>PASSED tests/test_api.py::test_dataverse_api_version
+PASSED tests/test_s3.py::test_s3_upload_download
+FAILED tests/test_solr.py::test_solr_index_not_empty
+  AssertionError: Solr returned 0 results -- did you run make reindex?</code></pre>
+<p>Any <code>FAILED</code> test is a blocker. Fix the underlying problem
+before proceeding. The error message usually tells you what to do.</p>
+</div>
+</section><section><h2 class="section-heading" id="baseline-comparisons">Baseline comparisons<a class="anchor" aria-label="anchor" href="#baseline-comparisons"></a>
+</h2>
+<hr class="half-width">
+<div class="section level3">
+<h3 id="capturing-baselines">Capturing baselines<a class="anchor" aria-label="anchor" href="#capturing-baselines"></a>
+</h3>
+<p>Run <code>make baseline</code> before and after any significant
+operation:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="co"># before migration</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="fu">make</span> baseline ENV=jamie</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1" aria-label="code-block-4-3"></a><span class="fu">mv</span> baselines/latest.json baselines/pre-migration.json</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1" aria-label="code-block-4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1" aria-label="code-block-4-5"></a><span class="co"># ... do migration work ...</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1" aria-label="code-block-4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1" aria-label="code-block-4-7"></a><span class="co"># after migration</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1" aria-label="code-block-4-8"></a><span class="fu">make</span> baseline ENV=jamie</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1" aria-label="code-block-4-9"></a><span class="fu">mv</span> baselines/latest.json baselines/post-migration.json</span></code></pre>
+</div>
+</div>
+<div class="section level3">
+<h3 id="comparing">Comparing<a class="anchor" aria-label="anchor" href="#comparing"></a>
+</h3>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="fu">make</span> baseline-compare BEFORE=baselines/pre-migration.json AFTER=baselines/post-migration.json</span></code></pre>
+</div>
+<p>A clean comparison looks like:</p>
+<pre><code>datasets:    1,247  -&gt;  1,247  OK
+files:      18,903  -&gt; 18,903  OK
+users:         142  -&gt;    142  OK
+s3_objects: 18,903  -&gt; 18,903  OK
+s3_bytes:   84.2GB  -&gt;  84.2GB OK</code></pre>
+<p>Any mismatch is a problem to investigate. Common causes:</p>
+<ul>
+<li>Solr not yet reindexed (run <code>make reindex</code>, then re-run
+the comparison)</li>
+<li>A dataset was published or retracted between captures (check the
+timing)</li>
+<li>Files missing from S3 (check S3 directly with
+<code>aws s3 ls</code>)</li>
+<li>Database restore captured different data than expected (verify
+backup timestamp)</li>
+</ul>
+<div id="the-phase-7-comparison-is-the-final-gate" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="the-phase-7-comparison-is-the-final-gate" class="callout-inner">
+<h3 class="callout-title">The Phase 7 comparison is the final gate</h3>
+<div class="callout-content">
+<p>The baseline captured by Jamie before any migration work (run with
+<code>BASELINE_UPLOAD_BUCKET</code> set) is compared against the
+post-cutover production environment. If these do not match, the
+migration is not complete. Do not finalize the cutover until the
+comparison passes.</p>
+</div>
+</div>
+</div>
+<div id="interpret-a-failing-test-run" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="interpret-a-failing-test-run" class="callout-inner">
+<h3 class="callout-title">Interpret a failing test run</h3>
+<div class="callout-content">
+<p>Imagine you run <code>make test ENV=tim</code> and see:</p>
+<pre><code>PASSED tests/test_api.py::test_dataverse_api_version
+FAILED tests/test_s3.py::test_s3_upload_download
+  ConnectionError: Could not connect to S3 endpoint
+PASSED tests/test_solr.py::test_solr_index_not_empty</code></pre>
+<ol style="list-style-type: decimal">
+<li>What does this tell you about the state of the environment?</li>
+<li>What are the two most likely causes of the S3 failure?</li>
+<li>What would you check first?</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div class="accordion-body">
+<p>The API and Solr are working, so Payara is up and Solr is indexed. S3
+connectivity is the problem – Dataverse cannot reach S3.</p>
+<p>Two most likely causes:</p>
+<ol style="list-style-type: decimal">
+<li>The S3 IAM credentials or bucket name are wrong in the JVM options
+(check group_vars and verify with <code>ansible-vault view</code>)</li>
+<li>The security group or IAM role does not allow outbound HTTPS to S3
+(check the Terraform security group config)</li>
+</ol>
+<p>Start with the JVM options – they are the most common source of S3
+config problems. Check the Payara log for <code>AmazonS3Exception</code>
+or credential error messages.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>The test suite covers API smoke, S3 round-trip, Solr health, and
+baseline count comparisons.</li>
+<li>All tests must pass before a migration phase is complete.</li>
+<li>Baseline comparisons verify data integrity by comparing counts
+before and after migration.</li>
+<li>A mismatch in baseline comparison is a blocker – investigate before
+proceeding to the next phase.</li>
+<li>Jamie’s pre-migration production baseline is the anchor for the
+final Phase 7 comparison.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</div>
+</section></section><section id="aio-migration-arc"><p>Content from <a href="migration-arc.html">The Migration Arc: 5.14 to 6.8</a></p>
+<hr>
+<p>Last updated on 2026-06-08 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/migration-arc.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>What changes between Dataverse 5.14 and 6.8?</li>
+<li>Why is the migration done in phases?</li>
+<li>What happens on cutover day and what does rollback look like?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Explain the 7-phase migration plan and why it is sequenced the way
+it is.</li>
+<li>Describe what changes between Dataverse 5.14 and 6.8.</li>
+<li>Identify the rollback decision points and what each one
+requires.</li>
+<li>Explain what the Elastic IP and DNS TTL reduction accomplish at
+cutover.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="what-changes-in-6-x">What changes in 6.x<a class="anchor" aria-label="anchor" href="#what-changes-in-6-x"></a>
+</h2>
+<hr class="half-width">
+<p>Dataverse 6.x introduced several significant changes from the 5.x
+series:</p>
+<ul>
+<li>
+<strong>Storage subsystem refactor</strong>: S3 configuration moved
+to a new format; the storage driver ID must be set explicitly</li>
+<li>
+<strong>DOI/PID provider changes</strong>: The way persistent
+identifiers are configured changed; the FAKE provider configuration
+syntax differs</li>
+<li>
+<strong>Solr schema updates</strong>: The Solr index schema changed;
+the old index is incompatible and must be rebuilt from scratch</li>
+<li>
+<strong>Java version requirement</strong>: Dataverse 6.x requires
+Java 17 (up from Java 11 in 5.x)</li>
+<li>
+<strong>API changes</strong>: Some API endpoints changed or were
+deprecated; any integrations need to be verified</li>
+</ul>
+<p>These changes mean a 5.x database cannot simply be imported into a
+6.x instance without migration steps. The migration process handles
+database schema updates automatically – Dataverse runs schema migrations
+on startup – but the Solr index must be rebuilt manually.</p>
+</section><section><h2 class="section-heading" id="the-7-phase-plan">The 7-phase plan<a class="anchor" aria-label="anchor" href="#the-7-phase-plan"></a>
+</h2>
+<hr class="half-width">
+<p>The migration is structured in seven phases. Each phase ends with a
+gate: the test suite and (where applicable) baseline comparisons must
+pass before the next phase begins.</p>
+<div class="section level3">
+<h3 id="phase-1-production-baseline-capture-complete">Phase 1: Production Baseline Capture (complete)<a class="anchor" aria-label="anchor" href="#phase-1-production-baseline-capture-complete"></a>
+</h3>
+<p>Capture a timestamped snapshot of the production 5.14 instance before
+any migration work begins. This snapshot is the anchor for the final
+comparison after cutover.</p>
+<ul>
+<li>Run by Jamie against production with
+<code>BASELINE_UPLOAD_BUCKET</code> set</li>
+<li>Stored in S3 for durability</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="phase-2-rebuild-infrastructure-hardening-current">Phase 2: Rebuild + Infrastructure Hardening (current)<a class="anchor" aria-label="anchor" href="#phase-2-rebuild-infrastructure-hardening-current"></a>
+</h3>
+<p>Tim’s dev environment rebuilds cleanly with:</p>
+<ul>
+<li>Elastic IP in Terraform (stable hostname across rebuilds)</li>
+<li>FAKE DOI provider configured in Ansible</li>
+<li>
+<code>test_cert: true</code> enforced</li>
+<li>Solr reindex as an explicit post-restore gate</li>
+</ul>
+<p>Goal: a clean, repeatable rebuild cycle before touching the actual
+migration.</p>
+</div>
+<div class="section level3">
+<h3 id="phase-3-expanded-test-coverage">Phase 3: Expanded Test Coverage<a class="anchor" aria-label="anchor" href="#phase-3-expanded-test-coverage"></a>
+</h3>
+<p>Extend the test suite with:</p>
+<ul>
+<li>Baseline count comparison tests</li>
+<li>S3 file upload and download round-trip</li>
+<li>DOI/FAKE validation</li>
+<li>Explicit Solr reindex gate</li>
+</ul>
+<p>These tests gate every subsequent phase.</p>
+</div>
+<div class="section level3">
+<h3 id="phase-4-jamies-environment-onboarding">Phase 4: Jamie’s Environment Onboarding<a class="anchor" aria-label="anchor" href="#phase-4-jamies-environment-onboarding"></a>
+</h3>
+<p>Jamie can independently:</p>
+<ul>
+<li>Destroy and rebuild her environment from scratch</li>
+<li>Run the full test suite</li>
+<li>Do this using only the runbook (not by asking Tim)</li>
+</ul>
+<p>This proves the process is operator-independent. Required before
+production cutover.</p>
+</div>
+<div class="section level3">
+<h3 id="phase-5-shibboleth-sso">Phase 5: Shibboleth / SSO<a class="anchor" aria-label="anchor" href="#phase-5-shibboleth-sso"></a>
+</h3>
+<p>Configure Shibboleth authentication via Ansible, register the SP
+metadata with the UCLA campus IdP, deploy to Jamie’s environment, and
+validate the full login flow.</p>
+<p>This phase has a long lead time – campus IT needs to register the SP
+metadata. Coordination starts in Phase 2 to avoid blocking the cutover
+schedule.</p>
+</div>
+<div class="section level3">
+<h3 id="phase-6-maintenance-window-planning">Phase 6: Maintenance Window Planning<a class="anchor" aria-label="anchor" href="#phase-6-maintenance-window-planning"></a>
+</h3>
+<p>Document the complete cutover procedure before executing it:</p>
+<ul>
+<li>Step-by-step cutover sequence with timing estimates</li>
+<li>Rollback decision points and what each one requires</li>
+<li>DOI/EZID switch procedure</li>
+<li>User communication templates</li>
+<li>DNS TTL reduction checklist</li>
+</ul>
+<p>Nothing on cutover day should be improvised. This phase produces the
+document that the team follows on cutover day.</p>
+</div>
+<div class="section level3">
+<h3 id="phase-7-dns-cutover">Phase 7: DNS Cutover<a class="anchor" aria-label="anchor" href="#phase-7-dns-cutover"></a>
+</h3>
+<p>The production migration itself:</p>
+<ol style="list-style-type: decimal">
+<li>Reduce DNS TTL to 60 seconds (done days in advance)</li>
+<li>Open maintenance window; notify users</li>
+<li>Run final production DB dump</li>
+<li>Restore DB to 6.x environment</li>
+<li>Run <code>make rebuild ENV=jamie</code> against 6.x</li>
+<li>Run Solr reindex</li>
+<li>Run full test suite; baseline comparison must pass</li>
+<li>Switch DNS A record to the Elastic IP on the 6.x instance</li>
+<li>Switch DOI/EZID configuration from FAKE to real</li>
+<li>Monitor for 24 hours</li>
+<li>Terminate old 5.14 instance</li>
+</ol>
+<p>Rollback is possible until step 9 (EZID switch). If anything fails
+before that point, switch DNS back to the old instance and the 5.14
+instance is back up within the TTL window.</p>
+</div>
+</section><section><h2 class="section-heading" id="rollback-decision-points">Rollback decision points<a class="anchor" aria-label="anchor" href="#rollback-decision-points"></a>
+</h2>
+<hr class="half-width">
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Point</th>
+<th>Rollback action</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Before DNS switch</td>
+<td>Switch DNS back; old instance still running</td>
+</tr>
+<tr>
+<td>After DNS switch, before EZID</td>
+<td>Switch DNS back; new DOIs minted as FAKE can be re-minted</td>
+</tr>
+<tr>
+<td>After EZID switch</td>
+<td>Rollback is complex; requires DOI management coordination</td>
+</tr>
+</tbody>
+</table>
+<p>The goal is to not reach a point where rollback is complex. The test
+suite gate after the DB restore (step 7) is the last clean opportunity
+to stop.</p>
+</section><section><h2 class="section-heading" id="dns-ttl-and-the-elastic-ip">DNS TTL and the Elastic IP<a class="anchor" aria-label="anchor" href="#dns-ttl-and-the-elastic-ip"></a>
+</h2>
+<hr class="half-width">
+<p>DNS TTL (Time To Live) controls how long resolvers cache the DNS
+record. If the TTL is 3600 seconds (one hour) and you switch the DNS A
+record, some users will still be routed to the old IP for up to an
+hour.</p>
+<p>The procedure reduces TTL to 60 seconds several days before cutover.
+At that TTL, the propagation delay after the DNS switch is at most 60
+seconds.</p>
+<p>The Elastic IP means the new 6.x instance has a known, stable IP
+address before cutover day. The DNS change is a single A record update
+from the old production IP to the Elastic IP.</p>
+<div id="phase-check" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="phase-check" class="callout-inner">
+<h3 class="callout-title">Phase check</h3>
+<div class="callout-content">
+<p>For each phase below, identify what must be true before that phase
+can start:</p>
+<ol style="list-style-type: decimal">
+<li>Phase 3 (Expanded Test Coverage)</li>
+<li>Phase 4 (Jamie’s Environment Onboarding)</li>
+<li>Phase 7 (DNS Cutover)</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div class="accordion-body">
+<ol style="list-style-type: decimal">
+<li>Phase 3 requires Phase 2 complete: Tim’s env must rebuild cleanly
+with Elastic IP, FAKE DOI, and test_cert enforced.</li>
+<li>Phase 4 requires Phase 3 complete: the expanded test suite must pass
+on Tim’s env before onboarding Jamie.</li>
+<li>Phase 7 requires Phases 1-6 complete: production baseline captured,
+Jamie can rebuild independently, Shibboleth validated, and the cutover
+runbook is written and reviewed.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>Dataverse 6.x requires Java 17, a Solr schema rebuild, and updated
+DOI/S3 configuration.</li>
+<li>The 7-phase plan gates each phase with tests before proceeding to
+the next.</li>
+<li>Phases 1-3 establish the foundation; phases 4-6 harden for
+production; phase 7 is cutover.</li>
+<li>Rollback is straightforward until the DNS switch and EZID activation
+– that window is the target.</li>
+<li>DNS TTL reduction and the Elastic IP together make the cutover
+switchover fast and predictable.</li>
 </ul>
 </div>
 </div>
@@ -1871,14 +2681,14 @@ any links that you are not going to use.
   "inLanguage": "en",
   "dct:conformsTo": "https://bioschemas.org/profiles/LearningResource/1.0-RELEASE",
   "description": "A Carpentries Lesson teaching foundational data and coding skills to researchers worldwide",
-  "keywords": "terraform, aws, infrastructure as code, cloud, ec2",
+  "keywords": "dataverse, terraform, ansible, aws, infrastructure as code, migration, payara, solr, research data",
   "name": "All in One View",
   "creativeWorkStatus": "active",
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/aio.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/aio.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-02",
-  "datePublished": "2026-06-02"
+  "dateModified": "2026-06-08",
+  "datePublished": "2026-06-08"
 }
 
   </script><script>

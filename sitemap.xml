@@ -13,7 +13,13 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/aio.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/ansible-idempotency.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/ansible-integration.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/dataverse-stack.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/first-ec2-instance.html</loc>
@@ -40,7 +46,13 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/aio.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/ansible-idempotency.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/ansible-integration.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/dataverse-stack.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/first-ec2-instance.html</loc>
@@ -64,6 +76,12 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/key-points.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/makefile-operations.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/migration-arc.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/profiles.html</loc>
   </url>
   <url>
@@ -73,7 +91,19 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/remote-state.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/secrets-config.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/security-groups.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/terraform-infrastructure.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/testing-validation.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/tooling-setup.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/variables-and-modules.html</loc>
@@ -91,6 +121,12 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/key-points.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/makefile-operations.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/migration-arc.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/profiles.html</loc>
   </url>
   <url>
@@ -100,7 +136,19 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/remote-state.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/secrets-config.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/security-groups.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/terraform-infrastructure.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/testing-validation.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/tooling-setup.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/variables-and-modules.html</loc>

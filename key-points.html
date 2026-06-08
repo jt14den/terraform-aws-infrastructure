@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<title>Terraform for AWS Infrastructure: Key Points</title>
+<title>Dataverse Infrastructure: Terraform, Ansible, and the Migration Path: Key Points</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="assets/themetoggle.js"></script><link rel="stylesheet" type="text/css" href="assets/styles.css">
 <script src="assets/scripts.js" type="text/javascript"></script><!-- mathjax --><!-- NOTE: https://docs.mathjax.org/en/latest/output/mathml.html#mathml-support --><!-- Changes from V2 to V4: https://mathjax.github.io/MathJax-demos-web/convert-configuration/convert-configuration.html
@@ -40,7 +40,7 @@
   <div class="container-fluid top-nav-container">
     <div class="col-md-8">
       <div class="large-logo">
-        <img id="incubator-logo" alt="A Carpentries Incubator lesson on using Terraform to manage AWS infrastructure." src="assets/images/incubator-logo.svg"><span class="badge text-bg-danger">
+        <img id="incubator-logo" alt="A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible." src="assets/images/incubator-logo.svg"><span class="badge text-bg-danger">
           <abbr title="This lesson is in the pre-alpha phase, which means that it is in early development, but has not yet been taught.">
             <a href="https://docs.carpentries.org/resources/curriculum/lesson-life-cycle.html" class="external-link alert-link">
               <i aria-hidden="true" class="icon" data-feather="alert-octagon" style="border-radius: 5px"></i>
@@ -96,10 +96,10 @@
       <span class="menu-title">Menu</span>
     </button>
     <div class="nav-logo">
-      <img class="small-logo" alt="A Carpentries Incubator lesson on using Terraform to manage AWS infrastructure." src="assets/images/incubator-logo-sm.svg">
+      <img class="small-logo" alt="A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible." src="assets/images/incubator-logo-sm.svg">
 </div>
     <div class="lesson-title-md">
-      Terraform for AWS Infrastructure
+      Dataverse Infrastructure: Terraform, Ansible, and the Migration Path
     </div>
     <div class="search-icon-sm">
       <!-- TODO: do not show until we have search
@@ -110,7 +110,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 <li class="nav-item">
           <span class="lesson-title">
-            Terraform for AWS Infrastructure
+            Dataverse Infrastructure: Terraform, Ansible, and the Migration Path
           </span>
         </li>
         <li class="nav-item">
@@ -236,7 +236,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="introduction.html">1. Introduction to Terraform for AWS</a>
+        <a href="introduction.html">1. Introduction: Why We Built This Way</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -248,7 +248,7 @@
 <div class="accordion accordion-flush" id="accordionFlush3">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading3">
-        <a href="first-terraform-config.html">2. Your First Terraform Configuration</a>
+        <a href="tooling-setup.html">2. Tooling Setup</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -260,7 +260,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="first-ec2-instance.html">3. Creating Your First AWS EC2 Instance</a>
+        <a href="terraform-infrastructure.html">3. Terraform: The Infrastructure Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -272,7 +272,7 @@
 <div class="accordion accordion-flush" id="accordionFlush5">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading5">
-        <a href="security-groups.html">4. Adding Security Groups to Your EC2 Instance</a>
+        <a href="ansible-idempotency.html">4. Ansible: Configuration and Idempotency</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -284,7 +284,7 @@
 <div class="accordion accordion-flush" id="accordionFlush6">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading6">
-        <a href="variables.html">5. Using Variables in Terraform</a>
+        <a href="dataverse-stack.html">5. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -296,7 +296,7 @@
 <div class="accordion accordion-flush" id="accordionFlush7">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading7">
-        <a href="remote-state.html">6. Remote State with S3 and DynamoDB</a>
+        <a href="secrets-config.html">6. Secrets and Environment Configuration</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -308,7 +308,7 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="variables-and-modules.html">7. Variables, tfvars, and Modular Patterns</a>
+        <a href="makefile-operations.html">7. The Makefile: Daily Operations</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -320,7 +320,19 @@
 <div class="accordion accordion-flush" id="accordionFlush9">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading9">
-        <a href="ansible-integration.html">8. Integrating Terraform with Ansible</a>
+        <a href="testing-validation.html">8. Testing and Validation</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush10">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading10">
+        <a href="migration-arc.html">9. The Migration Arc: 5.14 to 6.8</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -383,89 +395,132 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Key Points</h1>
         
-<section id="introduction"><h2 class="section-heading"><a href="introduction.html">Introduction to Terraform for AWS</a></h2>
+<section id="introduction"><h2 class="section-heading"><a href="introduction.html">Introduction: Why We Built This Way</a></h2>
 <hr class="half-width">
 <ul>
-<li>Terraform lets you describe infrastructure in code instead of
-clicking in a UI.<br>
-</li>
-<li>The main workflow is <code>init</code>, <code>plan</code>, and
-<code>apply</code>.<br>
-</li>
-<li>Infrastructure as code is more reproducible, reviewable, and
-maintainable.<br>
-</li>
-<li>This lesson will build up a small AWS environment step by step.</li>
-</ul></section><section id="first-terraform-config"><h2 class="section-heading"><a href="first-terraform-config.html">Your First Terraform Configuration</a></h2>
+<li>Dataverse needs five components: Payara (app server), Solr (search),
+PostgreSQL via RDS (metadata), S3 (file content), Apache (proxy and
+SSL).</li>
+<li>Terraform provisions the AWS infrastructure; Ansible configures what
+runs on it.</li>
+<li>The three repos are <code>terraform-dataverse</code>,
+<code>dataverse-ansible</code>, and
+<code>dataverse-infrastructure</code>.</li>
+<li>Infrastructure as code makes the system reproducible, reviewable,
+and rebuildable.</li>
+<li>Many decisions in this codebase were shaped by the 5.14 to 6.8
+migration – that context appears throughout the lesson.</li>
+</ul></section><section id="tooling-setup"><h2 class="section-heading"><a href="tooling-setup.html">Tooling Setup</a></h2>
 <hr class="half-width">
 <ul>
-<li>Terraform configurations live in directories containing
-<code>.tf</code> files.<br>
-</li>
-<li>The <code>terraform</code> and <code>provider</code> blocks define
-how Terraform interacts with AWS.<br>
-</li>
+<li>Four tools required: Terraform, Ansible, AWS CLI, Make.</li>
+<li>AWS profile is <code>ucla-library-dsc</code> – set
+<code>AWS_PROFILE</code> in your shell before running anything.</li>
+<li>Clone all three repos as siblings;
+<code>dataverse-infrastructure</code> expects the others nearby.</li>
 <li>
-<code>terraform init</code> downloads provider plugins.<br>
-</li>
+<code>terraform init</code> must succeed before any other Terraform
+command will work.</li>
 <li>
-<code>terraform plan</code> previews changes, even when the
-configuration is empty.<br>
-</li>
-<li>A clean plan confirms your AWS authentication is working.</li>
-</ul></section><section id="first-ec2-instance"><h2 class="section-heading"><a href="first-ec2-instance.html">Creating Your First AWS EC2 Instance</a></h2>
+<code>terraform plan</code> is always safe – it shows changes
+without making them.</li>
+</ul></section><section id="terraform-infrastructure"><h2 class="section-heading"><a href="terraform-infrastructure.html">Terraform: The Infrastructure Layer</a></h2>
 <hr class="half-width">
 <ul>
-<li>Terraform uses resource blocks to define cloud infrastructure.</li>
-<li>The AWS provider includes many resource types; EC2 is one of
-them.</li>
+<li>Terraform manages EC2, RDS, S3, security groups, Elastic IP, and IAM
+for this project.</li>
+<li>State is stored remotely in S3 so both operators share the same view
+of infrastructure.</li>
+<li>Each operator has their own environment directory; both use shared
+modules.</li>
+<li>Elastic IP keeps the public IP stable across rebuilds, which
+simplifies Ansible and DNS.</li>
+<li>Variables in <code>terraform.tfvars</code> configure environments;
+secrets stay out of Terraform entirely.</li>
+</ul></section><section id="ansible-idempotency"><h2 class="section-heading"><a href="ansible-idempotency.html">Ansible: Configuration and Idempotency</a></h2>
+<hr class="half-width">
+<ul>
 <li>
-<code>terraform plan</code> previews changes before they occur.</li>
+<code>dataverse-ansible</code> installs and configures Payara, Solr,
+Apache, and Dataverse.</li>
+<li>An idempotent playbook makes no changes when the system is already
+in the desired state.</li>
 <li>
-<code>terraform apply</code> creates or updates cloud
-resources.</li>
-<li>Terraform maintains state so it always knows what exists.</li>
+<code>group_vars</code> provides environment-specific values without
+duplicating the role.</li>
+<li>The Ansible inventory is generated from Terraform output – the
+Makefile handles this.</li>
+<li>Use <code>--check</code> mode to preview what a playbook would
+change without running it.</li>
+</ul></section><section id="dataverse-stack"><h2 class="section-heading"><a href="dataverse-stack.html">The Dataverse Stack: Payara, Solr, and the Data Layer</a></h2>
+<hr class="half-width">
+<ul>
+<li>Payara is a Jakarta EE application server; Dataverse runs as a WAR
+file inside it.</li>
+<li>Most Dataverse configuration is set as Payara JVM options, managed
+by Ansible.</li>
+<li>The Payara log at
+<code>glassfish/domains/domain1/logs/server.log</code> is the first
+place to look when things go wrong.</li>
+<li>RDS holds metadata; S3 holds file content; Solr holds the search
+index.</li>
+<li>Always run <code>make reindex</code> after a database restore – Solr
+does not update itself.</li>
+</ul></section><section id="secrets-config"><h2 class="section-heading"><a href="secrets-config.html">Secrets and Environment Configuration</a></h2>
+<hr class="half-width">
+<ul>
+<li>Secrets live in Ansible Vault; the vault password is shared with
+authorized operators only.</li>
+<li>Test environments use self-signed certificates; production uses
+Let’s Encrypt.</li>
+<li>The FAKE PID provider generates DOI-like identifiers without
+contacting EZID.</li>
+<li>The switch from FAKE to real EZID happens only at Phase 7 production
+cutover.</li>
 <li>
-<code>terraform destroy</code> safely removes all managed
-resources.</li>
-</ul></section><section id="security-groups"><h2 class="section-heading"><a href="security-groups.html">Adding Security Groups to Your EC2 Instance</a></h2>
+<code>group_vars</code> is where environment-specific overrides live
+– check here first when behavior differs between environments.</li>
+</ul></section><section id="makefile-operations"><h2 class="section-heading"><a href="makefile-operations.html">The Makefile: Daily Operations</a></h2>
 <hr class="half-width">
 <ul>
-<li>Security groups act as AWS firewalls.</li>
-<li>You define inbound and outbound rules in resource blocks.</li>
-<li>EC2 instances attach one or more security groups.</li>
-<li>Terraform updates security group rules without recreating the
-instance.</li>
-<li>Restricting SSH to your IP improves security.</li>
-</ul></section><section id="variables"><h2 class="section-heading"><a href="variables.html">Using Variables in Terraform</a></h2>
+<li>The Makefile is the daily operations interface – rarely run
+Terraform or Ansible directly.</li>
+<li>
+<code>make rebuild ENV=&lt;env&gt;</code> destroys and recreates the
+EC2 instance and reconfigures it; RDS and S3 are preserved.</li>
+<li>
+<code>make baseline ENV=&lt;env&gt;</code> captures a timestamped
+snapshot of dataset, file, and S3 counts.</li>
+<li>
+<code>make reindex ENV=&lt;env&gt;</code> rebuilds the Solr index
+after any database restore.</li>
+<li>Always specify <code>ENV=</code> – the Makefile will error without
+it.</li>
+</ul></section><section id="testing-validation"><h2 class="section-heading"><a href="testing-validation.html">Testing and Validation</a></h2>
 <hr class="half-width">
 <ul>
-<li>Variables make Terraform code reusable and easier to maintain.</li>
-<li>Variables are defined once and used many times across
-configurations.</li>
-<li>You can override variables with -var or terraform.tfvars.</li>
-</ul></section><section id="remote-state"><h2 class="section-heading"><a href="remote-state.html">Remote State with S3 and DynamoDB</a></h2>
+<li>The test suite covers API smoke, S3 round-trip, Solr health, and
+baseline count comparisons.</li>
+<li>All tests must pass before a migration phase is complete.</li>
+<li>Baseline comparisons verify data integrity by comparing counts
+before and after migration.</li>
+<li>A mismatch in baseline comparison is a blocker – investigate before
+proceeding to the next phase.</li>
+<li>Jamie’s pre-migration production baseline is the anchor for the
+final Phase 7 comparison.</li>
+</ul></section><section id="migration-arc"><h2 class="section-heading"><a href="migration-arc.html">The Migration Arc: 5.14 to 6.8</a></h2>
 <hr class="half-width">
 <ul>
-<li>Remote state centralizes infrastructure metadata in AWS.</li>
-<li>S3 stores the state, DynamoDB handles locking.</li>
-<li>terraform init migrates local state to the remote backend.</li>
-<li>Remote backends enable safe collaboration.</li>
-</ul></section><section id="variables-and-modules"><h2 class="section-heading"><a href="variables-and-modules.html">Variables, tfvars, and Modular Patterns</a></h2>
-<hr class="half-width">
-<ul>
-<li>Variables avoid hard-coded values and keep Terraform flexible.</li>
-<li>terraform.tfvars stores environment-specific settings.</li>
-<li>Modules organize infrastructure into logical components.</li>
-<li>Terraform wires everything together at plan time.</li>
-</ul></section><section id="ansible-integration"><h2 class="section-heading"><a href="ansible-integration.html">Integrating Terraform with Ansible</a></h2>
-<hr class="half-width">
-<ul>
-<li>Terraform = infrastructure</li>
-<li>Ansible = configuration</li>
-<li>Terraform outputs feed into Ansible</li>
-<li>Use Terraform for servers and networking</li>
-<li>Use Ansible for app installation and updates</li>
+<li>Dataverse 6.x requires Java 17, a Solr schema rebuild, and updated
+DOI/S3 configuration.</li>
+<li>The 7-phase plan gates each phase with tests before proceeding to
+the next.</li>
+<li>Phases 1-3 establish the foundation; phases 4-6 harden for
+production; phase 7 is cutover.</li>
+<li>Rollback is straightforward until the DNS switch and EZID activation
+– that window is the target.</li>
+<li>DNS TTL reduction and the Elastic IP together make the cutover
+switchover fast and predictable.</li>
 </ul></section>
 </div>
     </main>
@@ -510,14 +565,14 @@ configurations.</li>
   "inLanguage": "en",
   "dct:conformsTo": "https://bioschemas.org/profiles/LearningResource/1.0-RELEASE",
   "description": "A Carpentries Lesson teaching foundational data and coding skills to researchers worldwide",
-  "keywords": "terraform, aws, infrastructure as code, cloud, ec2",
+  "keywords": "dataverse, terraform, ansible, aws, infrastructure as code, migration, payara, solr, research data",
   "name": "Key Points",
   "creativeWorkStatus": "active",
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/key-points.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/key-points.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-02",
-  "datePublished": "2026-06-02"
+  "dateModified": "2026-06-08",
+  "datePublished": "2026-06-08"
 }
 
   </script><script>
