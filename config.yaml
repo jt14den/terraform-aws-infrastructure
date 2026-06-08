@@ -33,6 +33,7 @@ episodes:
   - secrets-config.md
   - makefile-operations.md
   - testing-validation.md
+  - using-ai.md
   - migration-arc.md
 
 learners:
