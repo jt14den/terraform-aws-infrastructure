@@ -39,7 +39,8 @@ No migration phase is complete until these pass.
 
 ## The pytest suite
 
-Tests live in `dataverse-infrastructure/tests/`. They use pytest and the Dataverse API.
+Tests live in `dataverse-ansible/tests/integration/` -- the child repo, not the
+orchestration repo. There's no `tests/` directory in `dataverse-infrastructure` itself.
 
 Run the full suite:
 
@@ -47,32 +48,40 @@ Run the full suite:
 make test ENV=tim
 ```
 
-Or run it directly with more output:
+That target expands to, roughly:
 
 ```bash
-cd tests
-pytest -v
+cd dataverse-ansible && uv run pytest tests/integration -v --dataverse-url=https://<hostname>
 ```
 
-### Test categories
+Note `uv`, not a bare `pytest` -- and the `--dataverse-url` flag is required, since these
+tests hit a live instance over the network rather than running against localhost.
 
-**API smoke tests**: Check that the Dataverse API responds on expected endpoints.
+### Test categories (real classes, from `test_smoke.py`)
+
+**`TestAPIHealth`**: Check that the Dataverse API responds on expected endpoints.
 These are the fastest tests and fail first if Payara is down or misconfigured.
 
-**S3 connectivity**: Verify that Dataverse can read from and write to S3.
-A test file is uploaded via the API and then downloaded. If S3 credentials or bucket
-config is wrong, this fails.
+**`TestS3Integration`**: Verify that Dataverse can read from and write to S3.
+A test file is uploaded via the API and then downloaded. If the IAM instance profile or
+bucket config is wrong, this fails.
 
-**Solr health**: Check that Solr is running and the index is not empty.
+**`TestSolrIndexing`**: Check that Solr is running and the index is not empty.
 An empty index does not cause Dataverse to error -- it just silently returns no search results.
 This test catches that.
 
-**Baseline count comparison**: If `BEFORE` and `AFTER` baseline files are set,
-verify that dataset and file counts match within an acceptable threshold.
+**`TestSearch`, `TestDataverse`, `TestDatasets`, `TestWebInterface`, `TestAuthentication`**:
+round out the smoke suite -- basic CRUD, page rendering, and login checks.
 
-**DOI/FAKE validation**: Verify that the configured PID provider works.
-In test environments, this checks that the FAKE provider mints identifiers correctly.
-In production, this would check EZID connectivity.
+**Baseline count comparison** is a separate step (`make baseline-compare`), not a pytest
+class -- it compares two JSON snapshots, not live API responses.
+
+**PID/DOI checks exist, but are narrower than they sound.** `test_migration.py` has a
+`TestPIDConfiguration` class, but it only runs with the `migration` pytest marker
+(`make ansible-migration`, not the default `make test`), and it mostly checks that PID
+*settings exist* in the database -- it doesn't distinguish FAKE from a real EZID
+connection. A dedicated DOI/FAKE-provider validation test is planned (roadmap `03-03`)
+but not yet built.
 
 ### Reading test output
 
@@ -95,19 +104,22 @@ Run `make baseline` before and after any significant operation:
 ```bash
 # before migration
 make baseline ENV=jamie
-mv baselines/latest.json baselines/pre-migration.json
+mv baseline-snapshots/baseline_<timestamp>.json baseline-snapshots/pre-migration.json
 
 # ... do migration work ...
 
 # after migration
 make baseline ENV=jamie
-mv baselines/latest.json baselines/post-migration.json
+mv baseline-snapshots/baseline_<timestamp>.json baseline-snapshots/post-migration.json
 ```
+
+There's no `latest.json` -- every capture gets its own timestamped filename, so renaming
+(or tracking the filename `make baseline` prints) is how you keep pre/post straight.
 
 ### Comparing
 
 ```bash
-make baseline-compare BEFORE=baselines/pre-migration.json AFTER=baselines/post-migration.json
+make baseline-compare BEFORE=baseline-snapshots/pre-migration.json AFTER=baseline-snapshots/post-migration.json
 ```
 
 A clean comparison looks like:
@@ -120,7 +132,11 @@ s3_objects: 18,903  -> 18,903  OK
 s3_bytes:   84.2GB  ->  84.2GB OK
 ```
 
-Any mismatch is a problem to investigate. Common causes:
+Any mismatch is a problem to investigate -- **except one field.** `downloads`/guestbook
+history is deliberately treated as informational-only in `baseline-compare.sh`, not a
+failure: download counts legitimately keep incrementing as long as the instance is live,
+so a "drift" there doesn't mean data was lost. Datasets and files are the fields that
+must match exactly. Common causes of a real mismatch:
 
 - Solr not yet reindexed (run `make reindex`, then re-run the comparison)
 - A dataset was published or retracted between captures (check the timing)
@@ -161,22 +177,43 @@ S3 connectivity is the problem -- Dataverse cannot reach S3.
 
 Two most likely causes:
 
-1. The S3 IAM credentials or bucket name are wrong in the JVM options (check group_vars and verify with `ansible-vault view`)
-2. The security group or IAM role does not allow outbound HTTPS to S3 (check the Terraform security group config)
+1. The S3 bucket name is wrong in the JVM options, or the IAM instance profile attached
+   to the EC2 instance doesn't grant the right permissions on that bucket (check `group_vars`
+   for the bucket name, and the Terraform IAM role/policy for permissions -- there are no
+   AWS access keys to check, since this uses an instance profile, not vaulted credentials)
+2. The security group does not allow outbound HTTPS to S3 (check the Terraform security group config)
 
-Start with the JVM options -- they are the most common source of S3 config problems.
-Check the Payara log for `AmazonS3Exception` or credential error messages.
+Start with the bucket name and IAM policy -- they're the most common source of S3 config
+problems. Check the Payara log for `AmazonS3Exception` or `AccessDenied` messages.
 
 ::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
+::::::::::::::::::::::::::::::::::::: challenge
+
+### The one field that's allowed to drift
+
+Without checking the episode: a `baseline-compare` run shows `datasets: 1,247 -> 1,247 OK`,
+`files: 18,903 -> 18,903 OK`, but `downloads: 3,401 -> 3,512`. Is this a failure? Why or why not?
+
+:::::::::::::::::::::::::::::::::::: solution
+
+Not a failure. `downloads`/guestbook history is treated as informational-only by
+`baseline-compare.sh` -- download counts naturally keep incrementing while an instance
+is live and serving traffic, so a difference there reflects normal usage, not lost or
+corrupted data. Datasets and files matching exactly is what actually gates a migration phase.
+
+::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
 ::::::::::::::::::::::::::::::::::::: keypoints
 
-- The test suite covers API smoke, S3 round-trip, Solr health, and baseline count comparisons.
-- All tests must pass before a migration phase is complete.
-- Baseline comparisons verify data integrity by comparing counts before and after migration.
-- A mismatch in baseline comparison is a blocker -- investigate before proceeding to the next phase.
+- The test suite (`dataverse-ansible/tests/integration/`, run via `make test`) covers API health, search, S3 round-trip, and Solr indexing as real pytest classes.
+- PID/DOI-specific validation is thin today: a `TestPIDConfiguration` class exists but only runs under the `migration` marker and mostly checks settings exist, not FAKE-vs-EZID behavior.
+- Baseline comparisons verify data integrity by comparing counts before and after migration, saved to `baseline-snapshots/` (no `latest.json`).
+- Every baseline field must match exactly **except** `downloads`, which is deliberately informational-only.
 - Jamie's pre-migration production baseline is the anchor for the final Phase 7 comparison.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

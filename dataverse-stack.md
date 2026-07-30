@@ -83,7 +83,8 @@ is waiting for Dataverse to finish its own initialization before it can call the
 ### Common Payara problems
 
 - **Payara not responding after deploy**: Dataverse startup takes 2-5 minutes on first boot.
-  Check the Payara log at `/usr/local/payara5/glassfish/domains/domain1/logs/server.log`.
+  Check the Payara log at `/usr/local/payara6/glassfish/domains/domain1/logs/server.log`
+  (Payara 6, since the move to Dataverse 6.8 -- older docs and issues may still say `payara5`).
   Look for `Dataverse started` or exception stack traces.
 - **Out of memory**: Payara JVM heap settings are configured in Ansible group_vars.
   Default is 2GB -- increase if you see `OutOfMemoryError` in the Payara log.
@@ -163,6 +164,25 @@ wrong datasets. This is one of the most common sources of confusion after a rebu
 The reindex process reads all dataset metadata from the database and sends it to Solr.
 Depending on how many datasets you have, this can take from seconds to hours.
 
+::::::::::::::::::::::::::::::::::::: callout
+
+### `make reindex` only works because the admin API is open -- and that's a problem
+
+Look at the real target: it's `curl -X DELETE https://$HOST/api/admin/index` over public
+HTTPS. That works *only* because Dataverse's admin API is currently unauthenticated and
+reachable from the internet on this instance -- which the infrastructure security audit
+flags as a Critical finding (F1): the same open admin API also allows dataset destroy on
+an instance that will eventually hold production research data. `make baseline` and
+`make test` have the identical dependency (F5).
+
+These aren't separable problems. Closing F1 (blocking the admin API at the proxy, the
+correct fix) breaks reindex, baseline, and test unless they're rewritten first to go
+over SSH instead (`ssh rocky@$IP 'curl -s localhost:8080/api/admin/...'`). That
+SSH-based rewrite is planned work, not yet done. Until it lands, every reindex you run
+is quietly depending on an exposure that shouldn't exist on a prod-data instance.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 ::::::::::::::::::::::::::::::::::::: challenge
 
 ### Trace a file access
@@ -185,12 +205,33 @@ Given what you know about the data layer, answer these questions:
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Why reindex works today (and why that's not fine)
+
+1. What HTTP call does `make reindex` actually make, and what does it depend on being true about the server?
+2. If that dependency were removed tomorrow (admin API blocked at the proxy), what would break, and what's the planned fix?
+
+:::::::::::::::::::::::::::::::::::: solution
+
+1. `curl -X DELETE https://$HOST/api/admin/index` -- a public-HTTPS call to Dataverse's
+   admin API. It depends on that API being unauthenticated and reachable from outside
+   the instance, which it currently is (audit finding F1, Critical).
+2. `make reindex`, `make baseline`, and `make test` would all start failing (F5) --
+   they all hit admin/metrics endpoints the same way. The planned fix is rewriting those
+   calls to go over SSH to `localhost:8080` on the instance instead of public HTTPS.
+
+::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
 ::::::::::::::::::::::::::::::::::::: keypoints
 
 - Payara is a Jakarta EE application server; Dataverse runs as a WAR file inside it.
 - Most Dataverse configuration is set as Payara JVM options, managed by Ansible.
-- The Payara log at `glassfish/domains/domain1/logs/server.log` is the first place to look when things go wrong.
+- The Payara log at `payara6/glassfish/domains/domain1/logs/server.log` is the first place to look when things go wrong.
 - RDS holds metadata; S3 holds file content; Solr holds the search index.
 - Always run `make reindex` after a database restore -- Solr does not update itself.
+- `make reindex`/`baseline`/`test` currently depend on the admin API being open over public HTTPS -- a known Critical security exposure (F1/F5), not a stable design choice.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
