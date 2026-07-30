@@ -95,7 +95,7 @@ Dataverse's configuration uses the term "PID provider" to refer to the DOI regis
 **test cert**
 A self-signed SSL certificate used in test environments instead of a Let's Encrypt certificate.
 Triggers a browser security warning but is functionally equivalent for testing purposes.
-Controlled by `dataverse_use_test_cert: true` in Ansible group_vars.
+Controlled by `letsencrypt.certbot.test_cert: true` in Ansible group_vars.
 
 ---
 
@@ -124,10 +124,12 @@ A single file stored in S3. Dataverse creates one S3 object per uploaded file. T
 key (path) is derived from the storage identifier stored in the database.
 
 **Elastic IP (EIP)**
-A static IP address reserved in AWS and attached to an EC2 instance. Unlike a regular EC2
-public IP, an Elastic IP does not change when the instance is stopped, started, or terminated
-and replaced. This makes it possible to rebuild the EC2 instance without updating DNS or
-Ansible inventory. See: [make rebuild].
+A static IP address reserved in AWS that can be reassociated with a different EC2 instance,
+so the address itself doesn't have to change when the instance does. In this project,
+`aws_eip.dataverse` is defined in the same Terraform module as the EC2 instance and
+associated directly to it -- so today it's destroyed and recreated along with the instance
+on every `terraform destroy`/`apply` cycle, and does *not* yet survive a rebuild. Making it
+persistent is open work (roadmap `02-01`). See: [make rebuild].
 
 **IAM**
 Identity and Access Management. AWS's permission system. The EC2 instance uses an IAM role
@@ -199,8 +201,10 @@ A reusable Terraform configuration component. The `terraform-dataverse` repo use
 to share resource definitions between Tim's and Jamie's environments.
 
 **tfvars**
-A Terraform variable values file (`terraform.tfvars`). Contains environment-specific values
-(instance size, region, bucket names) without secrets.
+A Terraform variable values file (`terraform.tfvars`), one per environment, gitignored
+(never committed). Intended to hold environment-specific non-secret values (instance
+size, region, bucket names), but in practice Tim's copy also has a plaintext `db_password`
+-- a known gap (audit finding F8), not the intended design.
 
 ---
 
@@ -216,18 +220,19 @@ An Ansible YAML file that defines what to do on which hosts. Calls roles and tas
 The main playbook for this project runs the `dataverse-ansible` role against the target host.
 
 **Role**
-A structured, reusable unit of Ansible configuration. The `dataverse-ansible` role installs
-and configures Payara, Solr, Apache, and Dataverse. Roles have a specific directory structure
-(`tasks/`, `handlers/`, `templates/`, `defaults/`, `vars/`).
+A structured, reusable unit of Ansible configuration. The entire `dataverse-ansible` repo
+is treated as one role, entered via `site.yml` at the repo root -- not a `tasks/main.yml`
+dispatcher. Its directories: `tasks/` (~90 flat per-service files), `handlers/`, `templates/`,
+`defaults/`, `group_vars/`. There's no top-level `vars/` directory in this role.
 
 **Task**
 A single action in an Ansible playbook or role. Examples: install a package, copy a file,
 restart a service. Tasks are defined in YAML and use Ansible modules.
 
 **Module**
-An Ansible built-in operation. Examples: `apt` (install packages), `template` (render and copy
-a config file), `service` (start/stop/restart a service). Prefer modules over `shell` or `command`
-for idempotency.
+An Ansible built-in operation. Examples: `dnf` (install packages on Rocky/RHEL), `template`
+(render and copy a config file), `service` (start/stop/restart a service). Prefer modules
+over `shell` or `command` for idempotency.
 
 **Handler**
 An Ansible task that only runs when notified by another task. Used for restarts: a task that
@@ -236,13 +241,17 @@ Handlers only run once per play even if notified multiple times.
 
 **Idempotency**
 The property of an operation that produces the same result whether run once or many times.
-An idempotent Ansible playbook makes no changes on a system that is already in the desired state.
-Ansible reports `ok` for tasks where no change was needed. See: [Ansible].
+Individual Ansible modules (like `dnf`) are generally idempotent -- they check state before
+acting and report `ok` when no change is needed. This is a per-task property, not a
+guarantee about a whole playbook: `dataverse-ansible` as a whole is explicitly **not**
+safe to re-run against a live instance (see `CONTEXT.md`'s "NOT idempotent" rule) because
+some `shell`/`command` tasks aren't guarded. See: [Ansible].
 
 **group_vars**
-A directory of YAML variable files that apply to specific host groups. Used to provide
-environment-specific configuration overrides without modifying the role itself.
-Files in `group_vars/all/` apply to all hosts; files named after a group apply only to that group.
+A directory of YAML variable files that apply to specific environments. For this project
+the files are flat -- `all.yml`, `dev.yml`, `test.yml`, `staging.yml`, `TEMPLATE.yml` --
+not a nested `group_vars/all/` directory. `all.yml` applies to every environment unless a
+more specific file overrides a given key.
 
 **Ansible Vault**
 A tool for encrypting sensitive values in Ansible files. Vaulted files can be stored in the
@@ -262,12 +271,16 @@ making any changes. Useful for auditing configuration drift.
 ## Operations
 
 **make rebuild**
-The primary Makefile target for recreating an environment from scratch. Runs `terraform destroy`,
-`terraform apply`, generates a new inventory, and runs the Ansible playbook. See: [Makefile].
+The primary Makefile target for recreating an environment from scratch. Requires `DB_PASS`.
+Runs `terraform destroy` (tears down EC2, RDS, **and** S3 together, not just EC2),
+`terraform apply`, a manual DNS-update pause, the Ansible playbook, a database restore
+from an S3 dump, starting Payara over SSH, and finally a Solr reindex. Data survives a
+rebuild only because of the restore step -- not by default. See: [Makefile].
 
 **make baseline**
-Captures a timestamped JSON snapshot of dataset, file, user, and S3 counts from a running
-Dataverse instance. Used to verify data integrity before and after migration.
+Captures a timestamped JSON snapshot (`baseline-snapshots/baseline_<timestamp>.json`) of
+dataset, file, user, and S3 counts from a running Dataverse instance. Used to verify data
+integrity before and after migration.
 
 **make reindex**
 Triggers a full Solr reindex of all datasets from the database. Required after any database

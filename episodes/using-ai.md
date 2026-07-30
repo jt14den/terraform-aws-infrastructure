@@ -287,6 +287,50 @@ use a placeholder when the real name is not needed to answer the question.
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Name the failure mode
+
+An AI-written Ansible task worked fine when it was added. Six months later, it misbehaves
+in a new context and you can't figure out why.
+
+1. Without re-reading the section above, name the specific failure mode this episode uses for why you can't debug it.
+2. Name one concrete practice from this episode that would have prevented it.
+
+:::::::::::::::::::::::::::::::::::: solution
+
+1. **Automation bias** (over-trusting output that's usually correct, so you stop building
+   the mental model needed to catch it when it's wrong) is the underlying pattern; the
+   proximate cause here is that the *understanding was never transferred* -- the task
+   worked, so you moved on without owning why it worked.
+2. Any of: asking for an explanation before accepting the output, reading the generated
+   config line by line, or writing your own explanation of what the task does (retrieval
+   practice) at the time it was added -- not six months later when it breaks.
+
+::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Which tool, and why it matters
+
+Which AI tool is UCLA's licensed option for this kind of work, and why does that matter
+operationally (not just for compliance) when the config you're discussing includes real
+hostnames, bucket names, or infrastructure details?
+
+:::::::::::::::::::::::::::::::::::: solution
+
+Gemini via Google Workspace. It matters beyond compliance because a licensed institutional
+tool comes with data-handling terms your institution has actually reviewed -- an
+unlicensed consumer tool may retain or train on what you paste in, which matters even
+after redacting credentials, since hostnames, bucket-naming patterns, and architecture
+details are still information about UCLA's infrastructure.
+
+::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
 ::::::::::::::::::::::::::::::::::::: keypoints
 
 - Use your institution's licensed AI tools for work; at UCLA, that is Gemini via Google Workspace.

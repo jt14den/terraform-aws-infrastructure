@@ -59,7 +59,7 @@ Running Dataverse requires several components working together:
 +------------------------------------------------------------+
 ```
 
-**EC2** is a virtual machine running Ubuntu. Payara, Solr, and Apache all run here.
+**EC2** is a virtual machine running Rocky Linux 9. Payara, Solr, and Apache all run here.
 
 **RDS** is a managed PostgreSQL database hosted by AWS. Dataverse stores all its metadata here:
 datasets, files, users, permissions, version histories. The database is the source of truth
@@ -146,8 +146,26 @@ In each one, find:
 Some things to look for:
 
 - `terraform-dataverse`: `environments/tim/main.tf` or `environments/jamie/main.tf` for the per-operator Terraform config
-- `dataverse-ansible`: `tasks/main.yml` for the role entry point; `group_vars/` for environment-specific configuration
+- `dataverse-ansible`: `site.yml` for the role entry point (the whole repo is treated as one Ansible role); `group_vars/` for environment-specific configuration
 - `dataverse-infrastructure`: `Makefile` for the operations entry point; `scripts/baseline-capture.sh` for the baseline tooling
+
+::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Who owns what
+
+Without looking back at the table above, answer from memory:
+
+1. If a dataset's files return a 404 because an S3 bucket policy is wrong, which repo do you fix?
+2. If Solr comes up with an empty index after a database restore, which repo (or manual step) is responsible for rebuilding it, and why doesn't it happen automatically?
+
+:::::::::::::::::::::::::::::::::: solution
+
+1. `terraform-dataverse` -- bucket policy and IAM are AWS resources, which is Terraform's domain, not Ansible's.
+2. Neither repo does it automatically. Solr's index is built from what's in RDS, and Solr has no way to know the database changed underneath it. Rebuilding is a separate, explicit step (`make reindex` in `dataverse-infrastructure`) that must be run after any restore -- see Episode 5.
 
 ::::::::::::::::::::::::::::::::::::::::::
 

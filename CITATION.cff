@@ -6,6 +6,7 @@
 
 
 cff-version: 1.2.0
+message: "If you use this lesson, please cite it using the metadata in this file."
 title: "Terraform for AWS Infrastructure"
 authors:
   - name: "Tim Dennis"

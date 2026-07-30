@@ -23,7 +23,7 @@ exercises: 10
 
 ## What you need
 
-Four tools are required before you can work with this infrastructure:
+Five tools are required before you can work with this infrastructure:
 
 | Tool | Purpose | Version |
 |---|---|---|
@@ -31,6 +31,7 @@ Four tools are required before you can work with this infrastructure:
 | Ansible | Configure the EC2 instance | >= 2.14 |
 | AWS CLI | Authenticate to AWS, access S3 | >= 2.x |
 | Make | Run Makefile targets | system |
+| uv | Python package manager, runs the integration test suite | latest |
 
 Installation instructions are on the [Setup](../learners/setup.md) page.
 
@@ -71,17 +72,21 @@ before running any `make` target is the safest approach for both operators.
 
 ## Cloning the repositories
 
-Clone all three repos into a common parent directory:
+`dataverse-infrastructure` is the orchestration repo -- clone it first, then let it clone
+the other two as children of itself. It has a bootstrap target for exactly this:
 
 ```bash
-git clone https://github.com/ucla-data-science-center/terraform-dataverse
-git clone https://github.com/ucla-data-science-center/dataverse-ansible
 git clone https://github.com/ucla-data-science-center/dataverse-infrastructure
+cd dataverse-infrastructure
+make bootstrap
 ```
 
-The `dataverse-infrastructure` repo expects the other two as siblings -- many Makefile
-targets reference paths like `../dataverse-ansible` and `../terraform-dataverse`.
-If your directory layout differs, the Makefile will tell you what it expected.
+`make bootstrap` clones `terraform-dataverse` and `dataverse-ansible` **into** the
+`dataverse-infrastructure` directory (not as siblings next to it) and wires up an
+`upstream` remote on `dataverse-ansible` pointing at the generic [gdcc/dataverse-ansible](https://github.com/gdcc/dataverse-ansible)
+role this one is forked from. The Makefile's paths (`terraform-dataverse/environments/$(ENV)`,
+`dataverse-ansible`) all assume this nested layout -- if you clone the child repos
+somewhere else, nothing in the Makefile will find them.
 
 ## Initializing Terraform
 
@@ -107,6 +112,21 @@ terraform plan
 This shows what Terraform would create, change, or destroy -- without making any changes.
 Read the plan output before running `terraform apply`. A plan that shows unexpected
 deletions is worth pausing on.
+
+## Setting up Ansible Vault
+
+Secrets in `group_vars` (database passwords, admin passwords, API tokens) are encrypted
+with Ansible Vault. Before Ansible can decrypt them, you need a local vault password file:
+
+```bash
+cd dataverse-ansible
+openssl rand -base64 24 > .vault-password
+```
+
+`.vault-password` is gitignored -- it never gets committed, and if you lose it the
+vault-encrypted secrets in `group_vars` are unrecoverable. Save its contents somewhere
+durable (a password manager, not just your laptop) before doing anything else. Without
+this file, `ansible-playbook` fails the moment it hits a vaulted variable.
 
 ## Verifying Ansible
 
@@ -138,11 +158,39 @@ or a role without sufficient IAM permissions.
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Two ways to fail before you even start
+
+Without checking the episode, answer from memory:
+
+1. You clone `dataverse-infrastructure` and run `git clone` on the other two repos yourself,
+   as siblings next to it. Then you run `make rebuild ENV=tim`. What happens, and why?
+2. You have all three repos cloned correctly and `terraform apply` succeeds. Then
+   `ansible-playbook` fails immediately on a vaulted variable. What file is missing,
+   and what command creates it?
+
+:::::::::::::::::::::::::::::::::::: solution
+
+1. The Makefile can't find `terraform-dataverse` or `dataverse-ansible` -- it expects
+   them cloned *inside* `dataverse-infrastructure` (via `make bootstrap`), not as
+   sibling directories next to it. Targets fail with missing-path errors.
+2. `dataverse-ansible/.vault-password` is missing. Create it with
+   `openssl rand -base64 24 > .vault-password` from inside `dataverse-ansible`, and save
+   a copy somewhere durable -- if it's lost, the vaulted secrets can't be recovered.
+
+::::::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
 ::::::::::::::::::::::::::::::::::::: keypoints
 
-- Four tools required: Terraform, Ansible, AWS CLI, Make.
+- Five tools required: Terraform, Ansible, AWS CLI, Make, uv.
 - AWS profile is `ucla-library-dsc` -- set `AWS_PROFILE` in your shell before running anything.
-- Clone all three repos as siblings; `dataverse-infrastructure` expects the others nearby.
+- Clone `dataverse-infrastructure` first, then run `make bootstrap` -- it nests the other
+  two repos inside it. They are not siblings.
+- Ansible Vault needs a local `.vault-password` file (`openssl rand -base64 24 > .vault-password`
+  in `dataverse-ansible`) before any vaulted `group_vars` can be decrypted.
 - `terraform init` must succeed before any other Terraform command will work.
 - `terraform plan` is always safe -- it shows changes without making them.
 
