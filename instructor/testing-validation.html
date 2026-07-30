@@ -357,7 +357,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Testing and Validation</h1>
-        <p>Last updated on 2026-06-08 |
+        <p>Last updated on 2026-07-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/testing-validation.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -411,39 +411,54 @@ users</li>
 <li>File upload and download work end to end</li>
 </ul><p>No migration phase is complete until these pass.</p>
 </section><section><h2 class="section-heading" id="the-pytest-suite">The pytest suite<a class="anchor" aria-label="anchor" href="#the-pytest-suite"></a></h2>
-<hr class="half-width"><p>Tests live in <code>dataverse-infrastructure/tests/</code>. They use
-pytest and the Dataverse API.</p>
+<hr class="half-width"><p>Tests live in <code>dataverse-ansible/tests/integration/</code> – the
+child repo, not the orchestration repo. There’s no <code>tests/</code>
+directory in <code>dataverse-infrastructure</code> itself.</p>
 <p>Run the full suite:</p>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="fu">make</span> test ENV=tim</span></code></pre>
 </div>
-<p>Or run it directly with more output:</p>
+<p>That target expands to, roughly:</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="bu">cd</span> tests</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="ex">pytest</span> <span class="at">-v</span></span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="bu">cd</span> dataverse-ansible <span class="kw">&amp;&amp;</span> <span class="ex">uv</span> run pytest tests/integration <span class="at">-v</span> <span class="at">--dataverse-url</span><span class="op">=</span>https://<span class="op">&lt;</span>hostname<span class="op">&gt;</span></span></code></pre>
 </div>
+<p>Note <code>uv</code>, not a bare <code>pytest</code> – and the
+<code>--dataverse-url</code> flag is required, since these tests hit a
+live instance over the network rather than running against
+localhost.</p>
 <div class="section level3">
-<h3 id="test-categories">Test categories<a class="anchor" aria-label="anchor" href="#test-categories"></a></h3>
-<p><strong>API smoke tests</strong>: Check that the Dataverse API
-responds on expected endpoints. These are the fastest tests and fail
+<h3 id="test-categories-real-classes-from-test_smoke-py">Test categories (real classes, from <code>test_smoke.py</code>)<a class="anchor" aria-label="anchor" href="#test-categories-real-classes-from-test_smoke-py"></a></h3>
+<p><strong><code>TestAPIHealth</code></strong>: Check that the Dataverse
+API responds on expected endpoints. These are the fastest tests and fail
 first if Payara is down or misconfigured.</p>
-<p><strong>S3 connectivity</strong>: Verify that Dataverse can read from
-and write to S3. A test file is uploaded via the API and then
-downloaded. If S3 credentials or bucket config is wrong, this fails.</p>
-<p><strong>Solr health</strong>: Check that Solr is running and the
-index is not empty. An empty index does not cause Dataverse to error –
-it just silently returns no search results. This test catches that.</p>
-<p><strong>Baseline count comparison</strong>: If <code>BEFORE</code>
-and <code>AFTER</code> baseline files are set, verify that dataset and
-file counts match within an acceptable threshold.</p>
-<p><strong>DOI/FAKE validation</strong>: Verify that the configured PID
-provider works. In test environments, this checks that the FAKE provider
-mints identifiers correctly. In production, this would check EZID
-connectivity.</p>
+<p><strong><code>TestS3Integration</code></strong>: Verify that
+Dataverse can read from and write to S3. A test file is uploaded via the
+API and then downloaded. If the IAM instance profile or bucket config is
+wrong, this fails.</p>
+<p><strong><code>TestSolrIndexing</code></strong>: Check that Solr is
+running and the index is not empty. An empty index does not cause
+Dataverse to error – it just silently returns no search results. This
+test catches that.</p>
+<p><strong><code>TestSearch</code>, <code>TestDataverse</code>,
+<code>TestDatasets</code>, <code>TestWebInterface</code>,
+<code>TestAuthentication</code></strong>: round out the smoke suite –
+basic CRUD, page rendering, and login checks.</p>
+<p><strong>Baseline count comparison</strong> is a separate step
+(<code>make baseline-compare</code>), not a pytest class – it compares
+two JSON snapshots, not live API responses.</p>
+<p><strong>PID/DOI checks exist, but are narrower than they
+sound.</strong> <code>test_migration.py</code> has a
+<code>TestPIDConfiguration</code> class, but it only runs with the
+<code>migration</code> pytest marker
+(<code>make ansible-migration</code>, not the default
+<code>make test</code>), and it mostly checks that PID <em>settings
+exist</em> in the database – it doesn’t distinguish FAKE from a real
+EZID connection. A dedicated DOI/FAKE-provider validation test is
+planned (roadmap <code>03-03</code>) but not yet built.</p>
 </div>
 <div class="section level3">
 <h3 id="reading-test-output">Reading test output<a class="anchor" aria-label="anchor" href="#reading-test-output"></a></h3>
@@ -464,21 +479,25 @@ operation:</p>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="co"># before migration</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="fu">make</span> baseline ENV=jamie</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1" aria-label="code-block-4-3"></a><span class="fu">mv</span> baselines/latest.json baselines/pre-migration.json</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1" aria-label="code-block-4-3"></a><span class="fu">mv</span> baseline-snapshots/baseline_<span class="op">&lt;</span>timestamp<span class="op">&gt;</span>.json baseline-snapshots/pre-migration.json</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1" aria-label="code-block-4-4"></a></span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1" aria-label="code-block-4-5"></a><span class="co"># ... do migration work ...</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1" aria-label="code-block-4-6"></a></span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1" aria-label="code-block-4-7"></a><span class="co"># after migration</span></span>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1" aria-label="code-block-4-8"></a><span class="fu">make</span> baseline ENV=jamie</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1" aria-label="code-block-4-9"></a><span class="fu">mv</span> baselines/latest.json baselines/post-migration.json</span></code></pre>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1" aria-label="code-block-4-9"></a><span class="fu">mv</span> baseline-snapshots/baseline_<span class="op">&lt;</span>timestamp<span class="op">&gt;</span>.json baseline-snapshots/post-migration.json</span></code></pre>
 </div>
+<p>There’s no <code>latest.json</code> – every capture gets its own
+timestamped filename, so renaming (or tracking the filename
+<code>make baseline</code> prints) is how you keep pre/post
+straight.</p>
 </div>
 <div class="section level3">
 <h3 id="comparing">Comparing<a class="anchor" aria-label="anchor" href="#comparing"></a></h3>
 <div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="fu">make</span> baseline-compare BEFORE=baselines/pre-migration.json AFTER=baselines/post-migration.json</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="fu">make</span> baseline-compare BEFORE=baseline-snapshots/pre-migration.json AFTER=baseline-snapshots/post-migration.json</span></code></pre>
 </div>
 <p>A clean comparison looks like:</p>
 <pre><code>datasets:    1,247  -&gt;  1,247  OK
@@ -486,7 +505,13 @@ files:      18,903  -&gt; 18,903  OK
 users:         142  -&gt;    142  OK
 s3_objects: 18,903  -&gt; 18,903  OK
 s3_bytes:   84.2GB  -&gt;  84.2GB OK</code></pre>
-<p>Any mismatch is a problem to investigate. Common causes:</p>
+<p>Any mismatch is a problem to investigate – <strong>except one
+field.</strong> <code>downloads</code>/guestbook history is deliberately
+treated as informational-only in <code>baseline-compare.sh</code>, not a
+failure: download counts legitimately keep incrementing as long as the
+instance is live, so a “drift” there doesn’t mean data was lost.
+Datasets and files are the fields that must match exactly. Common causes
+of a real mismatch:</p>
 <ul><li>Solr not yet reindexed (run <code>make reindex</code>, then re-run
 the comparison)</li>
 <li>A dataset was published or retracted between captures (check the
@@ -540,13 +565,51 @@ PASSED tests/test_solr.py::test_solr_index_not_empty</code></pre>
 <p>The API and Solr are working, so Payara is up and Solr is indexed. S3
 connectivity is the problem – Dataverse cannot reach S3.</p>
 <p>Two most likely causes:</p>
-<ol style="list-style-type: decimal"><li>The S3 IAM credentials or bucket name are wrong in the JVM options
-(check group_vars and verify with <code>ansible-vault view</code>)</li>
-<li>The security group or IAM role does not allow outbound HTTPS to S3
-(check the Terraform security group config)</li>
-</ol><p>Start with the JVM options – they are the most common source of S3
-config problems. Check the Payara log for <code>AmazonS3Exception</code>
-or credential error messages.</p>
+<ol style="list-style-type: decimal"><li>The S3 bucket name is wrong in the JVM options, or the IAM instance
+profile attached to the EC2 instance doesn’t grant the right permissions
+on that bucket (check <code>group_vars</code> for the bucket name, and
+the Terraform IAM role/policy for permissions – there are no AWS access
+keys to check, since this uses an instance profile, not vaulted
+credentials)</li>
+<li>The security group does not allow outbound HTTPS to S3 (check the
+Terraform security group config)</li>
+</ol><p>Start with the bucket name and IAM policy – they’re the most common
+source of S3 config problems. Check the Payara log for
+<code>AmazonS3Exception</code> or <code>AccessDenied</code>
+messages.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="the-one-field-thats-allowed-to-drift" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="the-one-field-thats-allowed-to-drift" class="callout-inner">
+<h3 class="callout-title">The one field that’s allowed to drift</h3>
+<div class="callout-content">
+<p>Without checking the episode: a <code>baseline-compare</code> run
+shows <code>datasets: 1,247 -&gt; 1,247 OK</code>,
+<code>files: 18,903 -&gt; 18,903 OK</code>, but
+<code>downloads: 3,401 -&gt; 3,512</code>. Is this a failure? Why or why
+not?</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div class="accordion-body">
+<p>Not a failure. <code>downloads</code>/guestbook history is treated as
+informational-only by <code>baseline-compare.sh</code> – download counts
+naturally keep incrementing while an instance is live and serving
+traffic, so a difference there reflects normal usage, not lost or
+corrupted data. Datasets and files matching exactly is what actually
+gates a migration phase.</p>
 </div>
 </div>
 </div>
@@ -558,13 +621,18 @@ or credential error messages.</p>
 <span class="callout-header">Key Points</span>
 <div class="callout-inner">
 <div class="callout-content">
-<ul><li>The test suite covers API smoke, S3 round-trip, Solr health, and
-baseline count comparisons.</li>
-<li>All tests must pass before a migration phase is complete.</li>
+<ul><li>The test suite (<code>dataverse-ansible/tests/integration/</code>,
+run via <code>make test</code>) covers API health, search, S3
+round-trip, and Solr indexing as real pytest classes.</li>
+<li>PID/DOI-specific validation is thin today: a
+<code>TestPIDConfiguration</code> class exists but only runs under the
+<code>migration</code> marker and mostly checks settings exist, not
+FAKE-vs-EZID behavior.</li>
 <li>Baseline comparisons verify data integrity by comparing counts
-before and after migration.</li>
-<li>A mismatch in baseline comparison is a blocker – investigate before
-proceeding to the next phase.</li>
+before and after migration, saved to <code>baseline-snapshots/</code>
+(no <code>latest.json</code>).</li>
+<li>Every baseline field must match exactly <strong>except</strong>
+<code>downloads</code>, which is deliberately informational-only.</li>
 <li>Jamie’s pre-migration production baseline is the anchor for the
 final Phase 7 comparison.</li>
 </ul></div>
@@ -605,7 +673,7 @@ any links that you are not going to use.
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="../citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -635,8 +703,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/testing-validation.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/testing-validation.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-08",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>

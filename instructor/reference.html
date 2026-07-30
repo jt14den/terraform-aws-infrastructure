@@ -336,7 +336,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Reference: Glossary</h1>
-        <p>Last updated on 2026-06-08 |
+        <p>Last updated on 2026-07-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/learners/reference.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -431,8 +431,8 @@ registration service.</p>
 <p><strong>test cert</strong> A self-signed SSL certificate used in test
 environments instead of a Let’s Encrypt certificate. Triggers a browser
 security warning but is functionally equivalent for testing purposes.
-Controlled by <code>dataverse_use_test_cert: true</code> in Ansible
-group_vars.</p>
+Controlled by <code>letsencrypt.certbot.test_cert: true</code> in
+Ansible group_vars.</p>
 <hr></section><section><h2 class="section-heading" id="infrastructure-aws">Infrastructure (AWS)<a class="anchor" aria-label="anchor" href="#infrastructure-aws"></a></h2>
 <hr class="half-width"><p><strong>EC2</strong> Elastic Compute Cloud. AWS’s virtual machine
 service. The Dataverse application, Payara, Solr, and Apache all run on
@@ -454,11 +454,14 @@ from the dev buckets. The bucket name is a Payara JVM option.</p>
 creates one S3 object per uploaded file. The object key (path) is
 derived from the storage identifier stored in the database.</p>
 <p><strong>Elastic IP (EIP)</strong> A static IP address reserved in AWS
-and attached to an EC2 instance. Unlike a regular EC2 public IP, an
-Elastic IP does not change when the instance is stopped, started, or
-terminated and replaced. This makes it possible to rebuild the EC2
-instance without updating DNS or Ansible inventory. See: [make
-rebuild].</p>
+that can be reassociated with a different EC2 instance, so the address
+itself doesn’t have to change when the instance does. In this project,
+<code>aws_eip.dataverse</code> is defined in the same Terraform module
+as the EC2 instance and associated directly to it – so today it’s
+destroyed and recreated along with the instance on every
+<code>terraform destroy</code>/<code>apply</code> cycle, and does
+<em>not</em> yet survive a rebuild. Making it persistent is open work
+(roadmap <code>02-01</code>). See: [make rebuild].</p>
 <p><strong>IAM</strong> Identity and Access Management. AWS’s permission
 system. The EC2 instance uses an IAM role with a policy that allows it
 to read and write the Dataverse S3 bucket.</p>
@@ -519,8 +522,11 @@ EC2 instance as its first step.</p>
 The <code>terraform-dataverse</code> repo uses modules to share resource
 definitions between Tim’s and Jamie’s environments.</p>
 <p><strong>tfvars</strong> A Terraform variable values file
-(<code>terraform.tfvars</code>). Contains environment-specific values
-(instance size, region, bucket names) without secrets.</p>
+(<code>terraform.tfvars</code>), one per environment, gitignored (never
+committed). Intended to hold environment-specific non-secret values
+(instance size, region, bucket names), but in practice Tim’s copy also
+has a plaintext <code>db_password</code> – a known gap (audit finding
+F8), not the intended design.</p>
 <hr></section><section><h2 class="section-heading" id="ansible">Ansible<a class="anchor" aria-label="anchor" href="#ansible"></a></h2>
 <hr class="half-width"><p><strong>Ansible</strong> An agentless configuration management tool.
 Uses SSH to connect to servers and apply configuration defined in YAML
@@ -532,33 +538,40 @@ do on which hosts. Calls roles and tasks. The main playbook for this
 project runs the <code>dataverse-ansible</code> role against the target
 host.</p>
 <p><strong>Role</strong> A structured, reusable unit of Ansible
-configuration. The <code>dataverse-ansible</code> role installs and
-configures Payara, Solr, Apache, and Dataverse. Roles have a specific
-directory structure (<code>tasks/</code>, <code>handlers/</code>,
-<code>templates/</code>, <code>defaults/</code>,
-<code>vars/</code>).</p>
+configuration. The entire <code>dataverse-ansible</code> repo is treated
+as one role, entered via <code>site.yml</code> at the repo root – not a
+<code>tasks/main.yml</code> dispatcher. Its directories:
+<code>tasks/</code> (~90 flat per-service files),
+<code>handlers/</code>, <code>templates/</code>, <code>defaults/</code>,
+<code>group_vars/</code>. There’s no top-level <code>vars/</code>
+directory in this role.</p>
 <p><strong>Task</strong> A single action in an Ansible playbook or role.
 Examples: install a package, copy a file, restart a service. Tasks are
 defined in YAML and use Ansible modules.</p>
 <p><strong>Module</strong> An Ansible built-in operation. Examples:
-<code>apt</code> (install packages), <code>template</code> (render and
-copy a config file), <code>service</code> (start/stop/restart a
-service). Prefer modules over <code>shell</code> or <code>command</code>
-for idempotency.</p>
+<code>dnf</code> (install packages on Rocky/RHEL), <code>template</code>
+(render and copy a config file), <code>service</code>
+(start/stop/restart a service). Prefer modules over <code>shell</code>
+or <code>command</code> for idempotency.</p>
 <p><strong>Handler</strong> An Ansible task that only runs when notified
 by another task. Used for restarts: a task that modifies a config file
 notifies the handler, which restarts the service at the end of the play.
 Handlers only run once per play even if notified multiple times.</p>
 <p><strong>Idempotency</strong> The property of an operation that
-produces the same result whether run once or many times. An idempotent
-Ansible playbook makes no changes on a system that is already in the
-desired state. Ansible reports <code>ok</code> for tasks where no change
-was needed. See: <a href="#ansible">Ansible</a>.</p>
+produces the same result whether run once or many times. Individual
+Ansible modules (like <code>dnf</code>) are generally idempotent – they
+check state before acting and report <code>ok</code> when no change is
+needed. This is a per-task property, not a guarantee about a whole
+playbook: <code>dataverse-ansible</code> as a whole is explicitly
+<strong>not</strong> safe to re-run against a live instance (see
+<code>CONTEXT.md</code>’s “NOT idempotent” rule) because some
+<code>shell</code>/<code>command</code> tasks aren’t guarded. See: <a href="#ansible">Ansible</a>.</p>
 <p><strong>group_vars</strong> A directory of YAML variable files that
-apply to specific host groups. Used to provide environment-specific
-configuration overrides without modifying the role itself. Files in
-<code>group_vars/all/</code> apply to all hosts; files named after a
-group apply only to that group.</p>
+apply to specific environments. For this project the files are flat –
+<code>all.yml</code>, <code>dev.yml</code>, <code>test.yml</code>,
+<code>staging.yml</code>, <code>TEMPLATE.yml</code> – not a nested
+<code>group_vars/all/</code> directory. <code>all.yml</code> applies to
+every environment unless a more specific file overrides a given key.</p>
 <p><strong>Ansible Vault</strong> A tool for encrypting sensitive values
 in Ansible files. Vaulted files can be stored in the repository – they
 are decrypted at runtime using the vault password. Used for database
@@ -572,11 +585,16 @@ key.</p>
 making any changes. Useful for auditing configuration drift.</p>
 <hr></section><section><h2 class="section-heading" id="operations">Operations<a class="anchor" aria-label="anchor" href="#operations"></a></h2>
 <hr class="half-width"><p><strong>make rebuild</strong> The primary Makefile target for
-recreating an environment from scratch. Runs
-<code>terraform destroy</code>, <code>terraform apply</code>, generates
-a new inventory, and runs the Ansible playbook. See: [Makefile].</p>
+recreating an environment from scratch. Requires <code>DB_PASS</code>.
+Runs <code>terraform destroy</code> (tears down EC2, RDS,
+<strong>and</strong> S3 together, not just EC2),
+<code>terraform apply</code>, a manual DNS-update pause, the Ansible
+playbook, a database restore from an S3 dump, starting Payara over SSH,
+and finally a Solr reindex. Data survives a rebuild only because of the
+restore step – not by default. See: [Makefile].</p>
 <p><strong>make baseline</strong> Captures a timestamped JSON snapshot
-of dataset, file, user, and S3 counts from a running Dataverse instance.
+(<code>baseline-snapshots/baseline_&lt;timestamp&gt;.json</code>) of
+dataset, file, user, and S3 counts from a running Dataverse instance.
 Used to verify data integrity before and after migration.</p>
 <p><strong>make reindex</strong> Triggers a full Solr reindex of all
 datasets from the database. Required after any database restore. See:
@@ -665,7 +683,7 @@ any links that you are not going to use.
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="../citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -695,8 +713,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/reference.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/reference.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-08",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>

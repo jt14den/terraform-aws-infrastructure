@@ -222,6 +222,7 @@
 <li><a href="#aws-credentials">AWS credentials</a></li>
 <li><a href="#cloning-the-repositories">Cloning the repositories</a></li>
 <li><a href="#initializing-terraform">Initializing Terraform</a></li>
+<li><a href="#setting-up-ansible-vault">Setting up Ansible Vault</a></li>
 <li><a href="#verifying-ansible">Verifying Ansible</a></li>
         </ul></div><!--/div.accordion-body-->
     </div><!--/div.accordion-collapse-->
@@ -359,7 +360,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Tooling Setup</h1>
-        <p>Last updated on 2026-06-08 |
+        <p>Last updated on 2026-07-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/tooling-setup.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -401,9 +402,9 @@ target host.</li>
 </div>
 </div>
 <section><h2 class="section-heading" id="what-you-need">What you need<a class="anchor" aria-label="anchor" href="#what-you-need"></a></h2>
-<hr class="half-width"><p>Four tools are required before you can work with this
+<hr class="half-width"><p>Five tools are required before you can work with this
 infrastructure:</p>
-<table class="table"><thead><tr><th>Tool</th>
+<table class="table"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><thead><tr><th>Tool</th>
 <th>Purpose</th>
 <th>Version</th>
 </tr></thead><tbody><tr><td>Terraform</td>
@@ -418,6 +419,9 @@ infrastructure:</p>
 </tr><tr><td>Make</td>
 <td>Run Makefile targets</td>
 <td>system</td>
+</tr><tr><td>uv</td>
+<td>Python package manager, runs the integration test suite</td>
+<td>latest</td>
 </tr></tbody></table><p>Installation instructions are on the <a href="index.html#setup">Setup</a>
 page.</p>
 </section><section><h2 class="section-heading" id="aws-credentials">AWS credentials<a class="anchor" aria-label="anchor" href="#aws-credentials"></a></h2>
@@ -460,19 +464,26 @@ and user ID.</p>
 </div>
 </div>
 </section><section><h2 class="section-heading" id="cloning-the-repositories">Cloning the repositories<a class="anchor" aria-label="anchor" href="#cloning-the-repositories"></a></h2>
-<hr class="half-width"><p>Clone all three repos into a common parent directory:</p>
+<hr class="half-width"><p><code>dataverse-infrastructure</code> is the orchestration repo –
+clone it first, then let it clone the other two as children of itself.
+It has a bootstrap target for exactly this:</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/terraform-dataverse</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/dataverse-ansible</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/dataverse-infrastructure</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/dataverse-infrastructure</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="bu">cd</span> dataverse-infrastructure</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">make</span> bootstrap</span></code></pre>
 </div>
-<p>The <code>dataverse-infrastructure</code> repo expects the other two
-as siblings – many Makefile targets reference paths like
-<code>../dataverse-ansible</code> and
-<code>../terraform-dataverse</code>. If your directory layout differs,
-the Makefile will tell you what it expected.</p>
+<p><code>make bootstrap</code> clones <code>terraform-dataverse</code>
+and <code>dataverse-ansible</code> <strong>into</strong> the
+<code>dataverse-infrastructure</code> directory (not as siblings next to
+it) and wires up an <code>upstream</code> remote on
+<code>dataverse-ansible</code> pointing at the generic <a href="https://github.com/gdcc/dataverse-ansible" class="external-link">gdcc/dataverse-ansible</a>
+role this one is forked from. The Makefile’s paths
+(<code>terraform-dataverse/environments/$(ENV)</code>,
+<code>dataverse-ansible</code>) all assume this nested layout – if you
+clone the child repos somewhere else, nothing in the Makefile will find
+them.</p>
 </section><section><h2 class="section-heading" id="initializing-terraform">Initializing Terraform<a class="anchor" aria-label="anchor" href="#initializing-terraform"></a></h2>
 <hr class="half-width"><p>From inside your operator environment directory:</p>
 <div class="codewrapper sourceCode" id="cb4">
@@ -496,15 +507,31 @@ stores its state file)</li>
 making any changes. Read the plan output before running
 <code>terraform apply</code>. A plan that shows unexpected deletions is
 worth pausing on.</p>
+</section><section><h2 class="section-heading" id="setting-up-ansible-vault">Setting up Ansible Vault<a class="anchor" aria-label="anchor" href="#setting-up-ansible-vault"></a></h2>
+<hr class="half-width"><p>Secrets in <code>group_vars</code> (database passwords, admin
+passwords, API tokens) are encrypted with Ansible Vault. Before Ansible
+can decrypt them, you need a local vault password file:</p>
+<div class="codewrapper sourceCode" id="cb6">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="bu">cd</span> dataverse-ansible</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1" aria-label="code-block-6-2"></a><span class="ex">openssl</span> rand <span class="at">-base64</span> 24 <span class="op">&gt;</span> .vault-password</span></code></pre>
+</div>
+<p><code>.vault-password</code> is gitignored – it never gets committed,
+and if you lose it the vault-encrypted secrets in
+<code>group_vars</code> are unrecoverable. Save its contents somewhere
+durable (a password manager, not just your laptop) before doing anything
+else. Without this file, <code>ansible-playbook</code> fails the moment
+it hits a vaulted variable.</p>
 </section><section><h2 class="section-heading" id="verifying-ansible">Verifying Ansible<a class="anchor" aria-label="anchor" href="#verifying-ansible"></a></h2>
 <hr class="half-width"><p>Ansible runs against an inventory file generated by Terraform. After
 <code>terraform apply</code>, Terraform writes an inventory file to a
 path the Makefile knows about.</p>
 <p>To check Ansible can reach the host:</p>
-<div class="codewrapper sourceCode" id="cb6">
+<div class="codewrapper sourceCode" id="cb7">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="ex">ansible</span> <span class="at">-i</span> <span class="op">&lt;</span>inventory-file<span class="op">&gt;</span> all <span class="at">-m</span> ping</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="ex">ansible</span> <span class="at">-i</span> <span class="op">&lt;</span>inventory-file<span class="op">&gt;</span> all <span class="at">-m</span> ping</span></code></pre>
 </div>
 <p>A successful response:
 <code>dataverse | SUCCESS =&gt; {"ping": "pong"}</code></p>
@@ -528,6 +555,47 @@ role without sufficient IAM permissions.</p>
 </div>
 </div>
 </div>
+<div id="two-ways-to-fail-before-you-even-start" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="two-ways-to-fail-before-you-even-start" class="callout-inner">
+<h3 class="callout-title">Two ways to fail before you even start</h3>
+<div class="callout-content">
+<p>Without checking the episode, answer from memory:</p>
+<ol style="list-style-type: decimal"><li>You clone <code>dataverse-infrastructure</code> and run
+<code>git clone</code> on the other two repos yourself, as siblings next
+to it. Then you run <code>make rebuild ENV=tim</code>. What happens, and
+why?</li>
+<li>You have all three repos cloned correctly and
+<code>terraform apply</code> succeeds. Then
+<code>ansible-playbook</code> fails immediately on a vaulted variable.
+What file is missing, and what command creates it?</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div class="accordion-body">
+<ol style="list-style-type: decimal"><li>The Makefile can’t find <code>terraform-dataverse</code> or
+<code>dataverse-ansible</code> – it expects them cloned <em>inside</em>
+<code>dataverse-infrastructure</code> (via <code>make bootstrap</code>),
+not as sibling directories next to it. Targets fail with missing-path
+errors.</li>
+<li>
+<code>dataverse-ansible/.vault-password</code> is missing. Create it
+with <code>openssl rand -base64 24 &gt; .vault-password</code> from
+inside <code>dataverse-ansible</code>, and save a copy somewhere durable
+– if it’s lost, the vaulted secrets can’t be recovered.</li>
+</ol></div>
+</div>
+</div>
+</div>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -535,11 +603,16 @@ role without sufficient IAM permissions.</p>
 <span class="callout-header">Key Points</span>
 <div class="callout-inner">
 <div class="callout-content">
-<ul><li>Four tools required: Terraform, Ansible, AWS CLI, Make.</li>
+<ul><li>Five tools required: Terraform, Ansible, AWS CLI, Make, uv.</li>
 <li>AWS profile is <code>ucla-library-dsc</code> – set
 <code>AWS_PROFILE</code> in your shell before running anything.</li>
-<li>Clone all three repos as siblings;
-<code>dataverse-infrastructure</code> expects the others nearby.</li>
+<li>Clone <code>dataverse-infrastructure</code> first, then run
+<code>make bootstrap</code> – it nests the other two repos inside it.
+They are not siblings.</li>
+<li>Ansible Vault needs a local <code>.vault-password</code> file
+(<code>openssl rand -base64 24 &gt; .vault-password</code> in
+<code>dataverse-ansible</code>) before any vaulted
+<code>group_vars</code> can be decrypted.</li>
 <li>
 <code>terraform init</code> must succeed before any other Terraform
 command will work.</li>
@@ -583,7 +656,7 @@ any links that you are not going to use.
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -613,8 +686,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/tooling-setup.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/tooling-setup.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-08",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>

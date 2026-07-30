@@ -425,11 +425,16 @@ migration – that context appears throughout the lesson.</li>
 </ul></section><section id="tooling-setup"><h2 class="section-heading"><a href="tooling-setup.html">Tooling Setup</a></h2>
 <hr class="half-width">
 <ul>
-<li>Four tools required: Terraform, Ansible, AWS CLI, Make.</li>
+<li>Five tools required: Terraform, Ansible, AWS CLI, Make, uv.</li>
 <li>AWS profile is <code>ucla-library-dsc</code> – set
 <code>AWS_PROFILE</code> in your shell before running anything.</li>
-<li>Clone all three repos as siblings;
-<code>dataverse-infrastructure</code> expects the others nearby.</li>
+<li>Clone <code>dataverse-infrastructure</code> first, then run
+<code>make bootstrap</code> – it nests the other two repos inside it.
+They are not siblings.</li>
+<li>Ansible Vault needs a local <code>.vault-password</code> file
+(<code>openssl rand -base64 24 &gt; .vault-password</code> in
+<code>dataverse-ansible</code>) before any vaulted
+<code>group_vars</code> can be decrypted.</li>
 <li>
 <code>terraform init</code> must succeed before any other Terraform
 command will work.</li>
@@ -439,31 +444,43 @@ without making them.</li>
 </ul></section><section id="terraform-infrastructure"><h2 class="section-heading"><a href="terraform-infrastructure.html">Terraform: The Infrastructure Layer</a></h2>
 <hr class="half-width">
 <ul>
-<li>Terraform manages EC2, RDS, S3, security groups, Elastic IP, and IAM
-for this project.</li>
-<li>State is stored remotely in S3 so both operators share the same view
-of infrastructure.</li>
+<li>Terraform manages EC2, RDS, S3, security groups, an Elastic IP
+resource, and IAM for this project.</li>
+<li>State is stored remotely in S3, but Tim and Jamie each have their
+own bucket/key – state is isolated per operator, not shared.</li>
 <li>Each operator has their own environment directory; both use shared
 modules.</li>
-<li>Elastic IP keeps the public IP stable across rebuilds, which
-simplifies Ansible and DNS.</li>
-<li>Variables in <code>terraform.tfvars</code> configure environments;
-secrets stay out of Terraform entirely.</li>
+<li>An Elastic IP resource exists, but it’s tied to the instance’s
+lifecycle, so it does <strong>not</strong> yet survive
+<code>make rebuild</code> – that’s still open work (roadmap
+<code>02-01</code>).</li>
+<li>
+<code>terraform.tfvars</code> is gitignored per environment, but is
+not currently secret-free in practice – a known gap (audit F8).</li>
 </ul></section><section id="ansible-idempotency"><h2 class="section-heading"><a href="ansible-idempotency.html">Ansible: Configuration and Idempotency</a></h2>
 <hr class="half-width">
 <ul>
 <li>
 <code>dataverse-ansible</code> installs and configures Payara, Solr,
-Apache, and Dataverse.</li>
-<li>An idempotent playbook makes no changes when the system is already
-in the desired state.</li>
+Apache, and Dataverse; <code>site.yml</code> is the entry point, and the
+whole repo is treated as one role.</li>
+<li>Individual modules (like <code>dnf</code>) are idempotent – but this
+role, as a whole, is <strong>not</strong> safe to re-run against a live
+instance. The operating rule is destroy-and-rebuild, not
+re-run-in-place.</li>
 <li>
-<code>group_vars</code> provides environment-specific values without
-duplicating the role.</li>
-<li>The Ansible inventory is generated from Terraform output – the
-Makefile handles this.</li>
-<li>Use <code>--check</code> mode to preview what a playbook would
-change without running it.</li>
+<code>group_vars</code> (<code>all.yml</code>, <code>dev.yml</code>,
+<code>test.yml</code>, <code>staging.yml</code>) provides
+environment-specific values without duplicating the role; DOI config
+lives under nested <code>pid:</code>/<code>doi:</code> blocks, not flat
+keys.</li>
+<li>The Ansible inventory is generated from Terraform output
+(<code>ansible_user: rocky</code>) – gitignored, regenerated on every
+<code>apply</code>, never hand-edited.</li>
+<li>Unguarded <code>shell</code>/<code>command</code> tasks are the
+reason re-running isn’t safe – prefer modules, and guard shell tasks
+with <code>creates:</code>/<code>when:</code> when you can’t avoid
+them.</li>
 </ul></section><section id="dataverse-stack"><h2 class="section-heading"><a href="dataverse-stack.html">The Dataverse Stack: Payara, Solr, and the Data Layer</a></h2>
 <hr class="half-width">
 <ul>
@@ -472,52 +489,69 @@ file inside it.</li>
 <li>Most Dataverse configuration is set as Payara JVM options, managed
 by Ansible.</li>
 <li>The Payara log at
-<code>glassfish/domains/domain1/logs/server.log</code> is the first
-place to look when things go wrong.</li>
+<code>payara6/glassfish/domains/domain1/logs/server.log</code> is the
+first place to look when things go wrong.</li>
 <li>RDS holds metadata; S3 holds file content; Solr holds the search
 index.</li>
 <li>Always run <code>make reindex</code> after a database restore – Solr
 does not update itself.</li>
+<li>
+<code>make reindex</code>/<code>baseline</code>/<code>test</code>
+currently depend on the admin API being open over public HTTPS – a known
+Critical security exposure (F1/F5), not a stable design choice.</li>
 </ul></section><section id="secrets-config"><h2 class="section-heading"><a href="secrets-config.html">Secrets and Environment Configuration</a></h2>
 <hr class="half-width">
 <ul>
-<li>Secrets live in Ansible Vault; the vault password is shared with
-authorized operators only.</li>
-<li>Test environments use self-signed certificates; production uses
+<li>Secrets are vaulted inline inside
+<code>group_vars/&lt;env&gt;.yml</code> (<code>!vault |</code> blocks) –
+there is no separate <code>group_vars/all/vault.yml</code> file.</li>
+<li>S3 access uses an IAM instance profile, not vaulted AWS credentials
+– there’s no access key to leak.</li>
+<li>Test environments use self-signed certificates
+(<code>letsencrypt.certbot.test_cert: true</code>); production would use
 Let’s Encrypt.</li>
-<li>The FAKE PID provider generates DOI-like identifiers without
-contacting EZID.</li>
-<li>The switch from FAKE to real EZID happens only at Phase 7 production
-cutover.</li>
-<li>
-<code>group_vars</code> is where environment-specific overrides live
-– check here first when behavior differs between environments.</li>
+<li>DOI config is two nested blocks, <code>pid:</code> and
+<code>doi:</code>, not one flat provider variable. FAKE is used
+everywhere non-production; EZID is planned for Phase 7 and has no
+group_vars file yet.</li>
+<li>Vaulting is incomplete today: <code>test.yml</code> has real
+unvaulted <code>CHANGE_ME_USE_VAULT</code> placeholders. Don’t assume
+every environment is equally secret-safe.</li>
 </ul></section><section id="makefile-operations"><h2 class="section-heading"><a href="makefile-operations.html">The Makefile: Daily Operations</a></h2>
 <hr class="half-width">
 <ul>
 <li>The Makefile is the daily operations interface – rarely run
 Terraform or Ansible directly.</li>
 <li>
-<code>make rebuild ENV=&lt;env&gt;</code> destroys and recreates the
-EC2 instance and reconfigures it; RDS and S3 are preserved.</li>
+<code>make rebuild ENV=&lt;env&gt; DB_PASS=&lt;pass&gt;</code>
+destroys and recreates EC2, RDS, <strong>and</strong> S3 together, then
+restores the database from an S3 dump. It does not preserve data by
+default – the restore step is what puts data back.</li>
 <li>
 <code>make baseline ENV=&lt;env&gt;</code> captures a timestamped
-snapshot of dataset, file, and S3 counts.</li>
+snapshot to <code>baseline-snapshots/</code>, with dataset, file, and S3
+counts.</li>
 <li>
 <code>make reindex ENV=&lt;env&gt;</code> rebuilds the Solr index
-after any database restore.</li>
+after any database restore – and depends on the admin API being open
+over public HTTPS (a known security gap, Episode 5).</li>
 <li>Always specify <code>ENV=</code> – the Makefile will error without
 it.</li>
 </ul></section><section id="testing-validation"><h2 class="section-heading"><a href="testing-validation.html">Testing and Validation</a></h2>
 <hr class="half-width">
 <ul>
-<li>The test suite covers API smoke, S3 round-trip, Solr health, and
-baseline count comparisons.</li>
-<li>All tests must pass before a migration phase is complete.</li>
+<li>The test suite (<code>dataverse-ansible/tests/integration/</code>,
+run via <code>make test</code>) covers API health, search, S3
+round-trip, and Solr indexing as real pytest classes.</li>
+<li>PID/DOI-specific validation is thin today: a
+<code>TestPIDConfiguration</code> class exists but only runs under the
+<code>migration</code> marker and mostly checks settings exist, not
+FAKE-vs-EZID behavior.</li>
 <li>Baseline comparisons verify data integrity by comparing counts
-before and after migration.</li>
-<li>A mismatch in baseline comparison is a blocker – investigate before
-proceeding to the next phase.</li>
+before and after migration, saved to <code>baseline-snapshots/</code>
+(no <code>latest.json</code>).</li>
+<li>Every baseline field must match exactly <strong>except</strong>
+<code>downloads</code>, which is deliberately informational-only.</li>
 <li>Jamie’s pre-migration production baseline is the anchor for the
 final Phase 7 comparison.</li>
 </ul></section><section id="using-ai"><h2 class="section-heading"><a href="using-ai.html">Using AI Tools in Infrastructure Work</a></h2>
@@ -542,13 +576,16 @@ the tool periodically, teach it to someone else.</li>
 <li>Dataverse 6.x requires Java 17, a Solr schema rebuild, and updated
 DOI/S3 configuration.</li>
 <li>The 7-phase plan gates each phase with tests before proceeding to
-the next.</li>
+the next – but “current phase” doesn’t mean “current phase complete.”
+Phase 2 is one-third done as of this writing.</li>
 <li>Phases 1-3 establish the foundation; phases 4-6 harden for
 production; phase 7 is cutover.</li>
 <li>Rollback is straightforward until the DNS switch and EZID activation
 – that window is the target.</li>
-<li>DNS TTL reduction and the Elastic IP together make the cutover
-switchover fast and predictable.</li>
+<li>DNS TTL reduction and a <em>persistent</em> Elastic IP would
+together make the cutover switchover fast and predictable – but the EIP
+isn’t persistent yet, and the automated cutover sequence has no step
+that moves file bytes, a gap found after the roadmap was written.</li>
 </ul></section>
 </div>
     </main>
@@ -568,7 +605,7 @@ switchover fast and predictable.</li>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -599,8 +636,8 @@ switchover fast and predictable.</li>
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/key-points.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/key-points.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-07-28",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>

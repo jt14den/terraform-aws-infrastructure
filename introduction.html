@@ -359,7 +359,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Introduction: Why We Built This Way</h1>
-        <p>Last updated on 2026-06-08 |
+        <p>Last updated on 2026-07-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/introduction.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -436,8 +436,8 @@ expertise.</p>
 |  |  RDS (PostgreSQL)   |   |  S3 (file storage)         | |
 |  +---------------------+   +----------------------------+ |
 +------------------------------------------------------------+</code></pre>
-<p><strong>EC2</strong> is a virtual machine running Ubuntu. Payara,
-Solr, and Apache all run here.</p>
+<p><strong>EC2</strong> is a virtual machine running Rocky Linux 9.
+Payara, Solr, and Apache all run here.</p>
 <p><strong>RDS</strong> is a managed PostgreSQL database hosted by AWS.
 Dataverse stores all its metadata here: datasets, files, users,
 permissions, version histories. The database is the source of truth for
@@ -530,7 +530,7 @@ above</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>Some things to look for:</p>
 <ul><li>
@@ -539,14 +539,50 @@ above</li>
 <code>environments/jamie/main.tf</code> for the per-operator Terraform
 config</li>
 <li>
-<code>dataverse-ansible</code>: <code>tasks/main.yml</code> for the
-role entry point; <code>group_vars/</code> for environment-specific
-configuration</li>
+<code>dataverse-ansible</code>: <code>site.yml</code> for the role
+entry point (the whole repo is treated as one Ansible role);
+<code>group_vars/</code> for environment-specific configuration</li>
 <li>
 <code>dataverse-infrastructure</code>: <code>Makefile</code> for the
 operations entry point; <code>scripts/baseline-capture.sh</code> for the
 baseline tooling</li>
 </ul></div>
+</div>
+</div>
+</div>
+<div id="who-owns-what" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="who-owns-what" class="callout-inner">
+<h3 class="callout-title">Who owns what</h3>
+<div class="callout-content">
+<p>Without looking back at the table above, answer from memory:</p>
+<ol style="list-style-type: decimal"><li>If a dataset’s files return a 404 because an S3 bucket policy is
+wrong, which repo do you fix?</li>
+<li>If Solr comes up with an empty index after a database restore, which
+repo (or manual step) is responsible for rebuilding it, and why doesn’t
+it happen automatically?</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div class="accordion-body">
+<ol style="list-style-type: decimal"><li>
+<code>terraform-dataverse</code> – bucket policy and IAM are AWS
+resources, which is Terraform’s domain, not Ansible’s.</li>
+<li>Neither repo does it automatically. Solr’s index is built from
+what’s in RDS, and Solr has no way to know the database changed
+underneath it. Rebuilding is a separate, explicit step
+(<code>make reindex</code> in <code>dataverse-infrastructure</code>)
+that must be run after any restore – see Episode 5.</li>
+</ol></div>
 </div>
 </div>
 </div>
@@ -606,7 +642,7 @@ any links that you are not going to use.
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -636,8 +672,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/introduction.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/introduction.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-08",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>

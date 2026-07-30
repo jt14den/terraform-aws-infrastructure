@@ -238,7 +238,7 @@
       <div class="accordion-body">
         <ul><li><a href="#what-ansible-does">What Ansible does</a></li>
 <li><a href="#role-structure">Role structure</a></li>
-<li><a href="#idempotency">Idempotency</a></li>
+<li><a href="#idempotency-the-concept-vs.-this-role-the-reality">Idempotency (the concept) vs. this role (the reality)</a></li>
 <li><a href="#group_vars-and-environment-overrides">group_vars and environment overrides</a></li>
 <li><a href="#the-inventory">The inventory</a></li>
         </ul></div><!--/div.accordion-body-->
@@ -359,7 +359,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Ansible: Configuration and Idempotency</h1>
-        <p>Last updated on 2026-06-08 |
+        <p>Last updated on 2026-07-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/ansible-idempotency.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -395,9 +395,9 @@ configuration?</li>
 role.</li>
 <li>Describe what <code>group_vars</code> does and how environment
 overrides work.</li>
-<li>Run a dry-run playbook with <code>--check</code> and read the
-output.</li>
-<li>Explain what happens when you run the same playbook twice.</li>
+<li>Run the playbook and read the output.</li>
+<li>Explain the difference between module-level idempotency and
+playbook-level re-run safety, and why this role only has the first.</li>
 </ul></div>
 </div>
 </div>
@@ -421,110 +421,141 @@ files.</p>
 <hr class="half-width"><p>The <code>dataverse-ansible</code> repo is an Ansible role. The key
 directories are:</p>
 <pre><code>dataverse-ansible/
-  tasks/          &lt;- what to do (ordered list of actions)
+  site.yml        &lt;- the entry point playbook
+  tasks/          &lt;- what to do (~90 flat task files, one per concern)
   handlers/       &lt;- actions triggered by other tasks (e.g., restart Payara)
   templates/      &lt;- config file templates with variable substitution
   defaults/       &lt;- default variable values
-  vars/           &lt;- higher-priority variable values
-  group_vars/     &lt;- environment-specific overrides (not in the role itself, used by playbooks)</code></pre>
-<p>The <code>tasks/main.yml</code> file is the entry point. It calls out
-to other task files (e.g., <code>tasks/payara.yml</code>,
-<code>tasks/solr.yml</code>) to keep things organized.</p>
-</section><section><h2 class="section-heading" id="idempotency">Idempotency<a class="anchor" aria-label="anchor" href="#idempotency"></a></h2>
+  group_vars/     &lt;- environment-specific overrides</code></pre>
+<p><code>site.yml</code> at the repo root is the entry point – the
+repo’s own comment describes the whole thing as “this repository itself
+is the Dataverse ansible role.” Instead of one
+<code>tasks/main.yml</code> dispatching to sub-files,
+<code>tasks/</code> holds a flat collection of per-service files
+(<code>payara.yml</code>, <code>solr.yml</code>,
+<code>dataverse-prereqs.yml</code>, and so on) that
+<code>site.yml</code> pulls in directly. There’s no top-level
+<code>vars/</code> directory in this role – just <code>defaults/</code>
+for role defaults and <code>group_vars/</code> for environment
+overrides.</p>
+</section><section><h2 class="section-heading" id="idempotency-the-concept-vs--this-role-the-reality">Idempotency (the concept) vs. this role (the reality)<a class="anchor" aria-label="anchor" href="#idempotency-the-concept-vs--this-role-the-reality"></a></h2>
 <hr class="half-width"><p>An <strong>idempotent</strong> operation produces the same result
 whether you run it once or ten times. For Ansible, this means: running
 the playbook on an already-configured server should make no changes,
-because everything is already in the desired state.</p>
-<p>Why this matters for operations:</p>
-<ul><li>You can safely re-run the playbook after a partial failure without
-worrying about double-applying changes</li>
-<li>You can use <code>--check</code> mode to see what <em>would</em>
-change without actually changing anything</li>
-<li>A playbook that shows no changes is a signal that the server matches
-the expected configuration</li>
-</ul><p>Ansible achieves idempotency through modules that check state before
-acting:</p>
+because everything is already in the desired state. Individual Ansible
+<em>modules</em> are generally built this way:</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install Java</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="at">  </span><span class="fu">apt</span><span class="kw">:</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1" aria-label="code-block-2-3"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> openjdk-11-jdk</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1" aria-label="code-block-2-2"></a><span class="at">  </span><span class="fu">dnf</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1" aria-label="code-block-2-3"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> </span><span class="st">"java-{{ java.version }}-openjdk-devel"</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1" aria-label="code-block-2-4"></a><span class="at">    </span><span class="fu">state</span><span class="kw">:</span><span class="at"> present</span><span class="co">   # "present" means "install if not already installed"</span></span></code></pre>
 </div>
-<p>The <code>apt</code> module checks whether the package is installed
+<p>The <code>dnf</code> module checks whether the package is installed
 before trying to install it. If it is already installed, Ansible reports
 <code>ok</code> and moves on. If not, it installs and reports
-<code>changed</code>.</p>
-<div id="not-all-tasks-are-idempotent-by-default" class="callout">
+<code>changed</code>. That’s real, and it’s how most tasks in
+<code>dataverse-ansible</code> behave.</p>
+<p><strong>But module-level idempotency is not the same as
+playbook-level re-run safety, and this role does not have the second
+one.</strong> The repo’s own operating rule, stated plainly in
+<code>CONTEXT.md</code>: <em>“Ansible is NOT idempotent. You must fully
+destroy the environment before re-running. Do not re-run
+ansible-playbook against an existing instance.”</em> In practice that
+means: after any <code>make rebuild</code>, if something fails partway
+through, the fix is <code>terraform destroy</code> and start over – not
+“just run <code>make ansible</code> again and let idempotent modules
+sort it out.”</p>
+<div id="why-re-running-isnt-safe-here" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="not-all-tasks-are-idempotent-by-default" class="callout-inner">
-<h3 class="callout-title">Not all tasks are idempotent by default</h3>
+<div id="why-re-running-isnt-safe-here" class="callout-inner">
+<h3 class="callout-title">Why re-running isn’t safe here</h3>
 <div class="callout-content">
-<p>Tasks using <code>shell</code> or <code>command</code> modules run
-every time unless you add a <code>creates:</code> or <code>when:</code>
-condition. The work to make <code>dataverse-ansible</code> reliably
-idempotent involved identifying those tasks and adding the right
-conditions. When writing new tasks, prefer modules over shell commands
-where one exists.</p>
+<p><code>shell</code> and <code>command</code> tasks run every time
+unless guarded with <code>creates:</code> or <code>when:</code> – and a
+role this size has a number of them: first-boot Dataverse API calls,
+database schema bootstrapping, Let’s Encrypt certificate issuance. Any
+one of those re-running against an already-configured instance can fail
+outright or leave the system in a state none of the individual
+<code>ok</code>/<code>changed</code> reports would have predicted. The
+safe mental model for this specific role is <strong>destroy-and-rebuild,
+not re-run-in-place</strong> – treat the per-module idempotency as a
+nice property of individual steps, not a guarantee about the playbook as
+a whole.</p>
 </div>
 </div>
 </div>
 </section><section><h2 class="section-heading" id="group_vars-and-environment-overrides">group_vars and environment overrides<a class="anchor" aria-label="anchor" href="#group_vars-and-environment-overrides"></a></h2>
 <hr class="half-width"><p>The <code>group_vars/</code> directory holds variable files that
-override defaults for specific environments or host groups.</p>
-<p>For example, the production environment might set:</p>
+override defaults for specific environments. The real files are
+<code>all.yml</code> (non-secret defaults shared everywhere),
+<code>dev.yml</code>, <code>test.yml</code>, <code>staging.yml</code>,
+and <code>TEMPLATE.yml</code> (a starting point for a new environment) –
+there is no <code>production.yml</code> yet.</p>
+<p>Dev and test both point at the FAKE DOI provider, but the real
+variables are nested under <code>pid:</code> and <code>doi:</code>
+blocks, not a single flat <code>dataverse_doi_provider</code> key:</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="co"># group_vars/production.yml</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="fu">dataverse_doi_provider</span><span class="kw">:</span><span class="at"> </span><span class="st">"EZID"</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">dataverse_use_test_cert</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="co"># group_vars/dev.yml</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="fu">pid</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="at">  </span><span class="fu">authority</span><span class="kw">:</span><span class="at"> </span><span class="st">"10.5072"</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1" aria-label="code-block-3-4"></a><span class="at">  </span><span class="fu">protocol</span><span class="kw">:</span><span class="at"> doi</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1" aria-label="code-block-3-5"></a><span class="at">  </span><span class="fu">shoulder</span><span class="kw">:</span><span class="at"> </span><span class="st">"FK2/"</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1" aria-label="code-block-3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1" aria-label="code-block-3-7"></a><span class="fu">doi</span><span class="kw">:</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1" aria-label="code-block-3-8"></a><span class="at">  </span><span class="fu">provider</span><span class="kw">:</span><span class="at"> FAKE</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1" aria-label="code-block-3-9"></a><span class="at">  </span><span class="fu">baseurl</span><span class="kw">:</span><span class="at"> </span><span class="st">"https://mds.test.datacite.org/"</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1" aria-label="code-block-3-10"></a><span class="at">  </span><span class="fu">username</span><span class="kw">:</span><span class="at"> </span><span class="st">"testaccount"</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1" aria-label="code-block-3-11"></a><span class="at">  </span><span class="fu">password</span><span class="kw">:</span><span class="at"> </span><span class="st">"notmypassword"</span><span class="co">   # not vaulted in dev -- see Episode 6</span></span></code></pre>
 </div>
-<p>While the test environment sets:</p>
-<div class="codewrapper sourceCode" id="cb4">
-<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="co"># group_vars/test.yml</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="fu">dataverse_doi_provider</span><span class="kw">:</span><span class="at"> </span><span class="st">"FAKE"</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1" aria-label="code-block-4-3"></a><span class="fu">dataverse_use_test_cert</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre>
-</div>
-<p>The same playbook runs against both environments; the variables
-control which behavior each environment gets. This is how we keep
-staging and production separate without maintaining two copies of the
+<p>The same playbook runs against every environment; the variables
+control which behavior each environment gets. This is how we keep dev,
+test, and staging separate without maintaining separate copies of the
 role.</p>
 </section><section><h2 class="section-heading" id="the-inventory">The inventory<a class="anchor" aria-label="anchor" href="#the-inventory"></a></h2>
 <hr class="half-width"><p>Ansible needs to know which host to connect to. The inventory file
 lists hosts and their connection details. For this project, the
-inventory is generated by Terraform output:</p>
+inventory is generated by Terraform output, and the real EC2 user is
+<code>rocky</code> (Rocky Linux 9), not <code>ubuntu</code>:</p>
 <pre><code>[dataverse]
-ec2-12-34-56-78.us-west-2.compute.amazonaws.com ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/dataverse-key.pem</code></pre>
+ec2-12-34-56-78.us-west-2.compute.amazonaws.com ansible_user=rocky ansible_ssh_private_key_file=~/.ssh/dataverse-key.pem</code></pre>
 <p>The Makefile generates and uses this inventory automatically when you
-run <code>make rebuild</code>.</p>
-<div id="dry-run-a-playbook" class="callout challenge">
+run <code>make rebuild</code>. <code>CONTEXT.md</code> flags this file
+specifically: it’s gitignored and regenerated by Terraform on every
+<code>apply</code> – never edit it by hand, your edits will just be
+overwritten.</p>
+<div id="run-the-real-playbook-and-read-the-output" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <span class="callout-header">Challenge</span>
-<div id="dry-run-a-playbook" class="callout-inner">
-<h3 class="callout-title">Dry run a playbook</h3>
+<div id="run-the-real-playbook-and-read-the-output" class="callout-inner">
+<h3 class="callout-title">Run the real playbook and read the output</h3>
 <div class="callout-content">
-<p>From <code>dataverse-infrastructure</code>, run:</p>
-<div class="codewrapper sourceCode" id="cb6">
+<p>There is no <code>--check</code>-mode wrapper for this role today –
+<code>make ansible ENV=tim</code> runs the real thing:</p>
+<div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="fu">make</span> ansible-check ENV=tim</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="bu">cd</span> dataverse-infrastructure</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1" aria-label="code-block-5-2"></a><span class="fu">make</span> ansible ENV=tim</span></code></pre>
 </div>
-<p>(This runs the playbook with <code>--check --diff</code> against
-Tim’s environment.)</p>
+<p>(Under the hood:
+<code>cd dataverse-ansible &amp;&amp; ansible-playbook -i ../&lt;inventory&gt; site.yml</code>.)</p>
 <p>Read through the output and identify:</p>
 <ol style="list-style-type: decimal"><li>Which tasks report <code>changed</code> and which report
 <code>ok</code>?</li>
-<li>For any <code>changed</code> tasks, what would Ansible change?</li>
-<li>What does a task reporting <code>skipping</code> mean?</li>
+<li>Find one <code>shell</code> or <code>command</code> task in
+<code>tasks/</code>. Does it have a <code>creates:</code> or
+<code>when:</code> guard?</li>
+<li>If this run failed halfway through, per <code>CONTEXT.md</code> what
+is the supported way to recover?</li>
 </ol></div>
 </div>
 </div>
@@ -533,15 +564,55 @@ Tim’s environment.)</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
-<p><code>ok</code> means the system already matches the desired state –
-no change needed. <code>changed</code> means Ansible would modify
-something. <code>skipping</code> means the task has a <code>when:</code>
-condition that evaluated to false – the task was intentionally not run
-for this environment or host.</p>
-<p>A fully correct system should show mostly <code>ok</code> with zero
-<code>changed</code>.</p>
+<p><code>ok</code> means the module checked state and found nothing to
+do. <code>changed</code> means it modified something. A
+freshly-provisioned instance should show mostly <code>changed</code> on
+first run; re-running against the <em>same still-fresh</em> instance
+would show more <code>ok</code>s for the guarded tasks – but that’s not
+a scenario this role is meant to be run in twice.</p>
+<p>Some <code>shell</code>/<code>command</code> tasks are guarded, some
+aren’t – that inconsistency is exactly why the repo-wide rule
+exists.</p>
+<p>Per <code>CONTEXT.md</code>: destroy and rebuild
+(<code>make rebuild</code>), not re-run in place. There is no supported
+partial-recovery path.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="module-idempotency-vs.-playbook-safety" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="module-idempotency-vs.-playbook-safety" class="callout-inner">
+<h3 class="callout-title">Module idempotency vs. playbook safety</h3>
+<div class="callout-content">
+<p>In your own words: what’s the difference between “this
+<code>dnf</code> task is idempotent” and “this playbook is safe to
+re-run against a live instance”? Why can the first be true while the
+second is false?</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div class="accordion-body">
+<p>Module idempotency is a per-task property: a well-written module
+checks current state before acting, so running it twice in a row causes
+no harm. Playbook-level re-run safety depends on <em>every</em> task in
+the run having that property, including
+<code>shell</code>/<code>command</code> tasks that don’t check anything
+by default. One unguarded task – a schema bootstrap, a cert request, a
+first-boot API call – is enough to make the whole playbook unsafe to
+re-run, even though most of its individual tasks are perfectly
+idempotent on their own.</p>
 </div>
 </div>
 </div>
@@ -555,16 +626,25 @@ for this environment or host.</p>
 <div class="callout-content">
 <ul><li>
 <code>dataverse-ansible</code> installs and configures Payara, Solr,
-Apache, and Dataverse.</li>
-<li>An idempotent playbook makes no changes when the system is already
-in the desired state.</li>
+Apache, and Dataverse; <code>site.yml</code> is the entry point, and the
+whole repo is treated as one role.</li>
+<li>Individual modules (like <code>dnf</code>) are idempotent – but this
+role, as a whole, is <strong>not</strong> safe to re-run against a live
+instance. The operating rule is destroy-and-rebuild, not
+re-run-in-place.</li>
 <li>
-<code>group_vars</code> provides environment-specific values without
-duplicating the role.</li>
-<li>The Ansible inventory is generated from Terraform output – the
-Makefile handles this.</li>
-<li>Use <code>--check</code> mode to preview what a playbook would
-change without running it.</li>
+<code>group_vars</code> (<code>all.yml</code>, <code>dev.yml</code>,
+<code>test.yml</code>, <code>staging.yml</code>) provides
+environment-specific values without duplicating the role; DOI config
+lives under nested <code>pid:</code>/<code>doi:</code> blocks, not flat
+keys.</li>
+<li>The Ansible inventory is generated from Terraform output
+(<code>ansible_user: rocky</code>) – gitignored, regenerated on every
+<code>apply</code>, never hand-edited.</li>
+<li>Unguarded <code>shell</code>/<code>command</code> tasks are the
+reason re-running isn’t safe – prefer modules, and guard shell tasks
+with <code>creates:</code>/<code>when:</code> when you can’t avoid
+them.</li>
 </ul></div>
 </div>
 </div>
@@ -602,7 +682,7 @@ any links that you are not going to use.
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -632,8 +712,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/ansible-idempotency.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/ansible-idempotency.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-08",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>

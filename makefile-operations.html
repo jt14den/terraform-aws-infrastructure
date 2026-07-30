@@ -357,7 +357,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>The Makefile: Daily Operations</h1>
-        <p>Last updated on 2026-06-08 |
+        <p>Last updated on 2026-07-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/makefile-operations.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -418,45 +418,74 @@ operator environment to work with.</p>
 </section><section><h2 class="section-heading" id="main-targets">Main targets<a class="anchor" aria-label="anchor" href="#main-targets"></a></h2>
 <hr class="half-width"><div class="section level3">
 <h3 id="make-rebuild"><code>make rebuild</code><a class="anchor" aria-label="anchor" href="#make-rebuild"></a></h3>
-<p>Destroys and recreates the EC2 instance, then runs Ansible to
-configure it.</p>
-<p>Steps in order:</p>
+<p>Destroys and recreates <strong>the entire environment</strong> – EC2,
+RDS, and S3 together – then configures it and restores data. It requires
+<code>DB_PASS</code> and prints a real warning before it runs, because
+of exactly the misconception this section used to encode: this is not an
+EC2-only operation.</p>
+<p>The real 7 steps, from the Makefile itself:</p>
 <ol style="list-style-type: decimal"><li>
-<code>terraform destroy</code> – terminates the existing EC2
-instance (RDS and S3 are preserved)</li>
+<strong>Destroy</strong> – <code>terraform destroy</code> tears down
+the whole per-environment module: EC2, RDS, and the S3 bucket all go
+together. Nothing about this step is EC2-scoped.</li>
 <li>
-<code>terraform apply</code> – provisions a new EC2 instance with
-the Elastic IP attached</li>
-<li>Generates a new Ansible inventory from Terraform output</li>
-<li>Waits for the instance to become reachable via SSH</li>
-<li>Runs the Ansible playbook to install and configure all services</li>
-<li>Runs the Dataverse first-boot API configuration</li>
-<li>Runs the test suite to verify the instance is healthy</li>
-</ol><p>Use <code>make rebuild</code> when:</p>
+<strong>Provision</strong> – <code>terraform init -upgrade</code>
+then <code>terraform apply</code> builds all of it back from scratch:
+new EC2 instance, new empty RDS database, new empty S3 bucket.</li>
+<li>
+<strong>DNS propagation</strong> – prints the new EC2 IP and pauses
+for you to manually update the DNS A record (this is the Elastic IP gap
+from Episode 3 in practice – the IP really did change, and nothing
+updates DNS automatically yet).</li>
+<li>
+<strong>Ansible</strong> – runs <code>site.yml</code> to install and
+configure Payara, Solr, Apache, and Dataverse.</li>
+<li>
+<strong>Restore the database from S3</strong> –
+<code>scripts/restore-db.sh</code> pulls the latest dump and loads it
+into the just-created, currently-empty RDS instance. This step exists
+<em>because</em> step 1 wiped the database – without it, rebuild would
+hand you an empty Dataverse.</li>
+<li>
+<strong>Start Payara</strong> – over SSH
+(<code>ssh rocky@$IP 'sudo systemctl start payara'</code>).</li>
+<li>
+<strong>Wait, then reindex</strong> – polls the app until it
+responds, then runs <code>make reindex</code> to rebuild Solr from the
+just-restored database.</li>
+</ol><p>There is no test-suite step at the end – rebuild ends at reindex and
+tells you to <code>make logs</code> to monitor. Running
+<code>make test</code> afterward is a separate, manual step.</p>
+<p>Use <code>make rebuild</code> when:</p>
 <ul><li>Starting fresh after a failed or degraded environment</li>
-<li>Testing infrastructure changes that require a clean EC2
-instance</li>
+<li>Testing infrastructure changes that require a clean stack</li>
 <li>Validating a new Ansible configuration from scratch</li>
 </ul><div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="fu">make</span> rebuild ENV=tim</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="fu">make</span> rebuild ENV=tim DB_PASS=<span class="op">&lt;</span>dataverse_postgresql_password<span class="op">&gt;</span></span></code></pre>
 </div>
-<div id="rds-and-s3-survive-a-rebuild" class="callout">
+<div id="nothing-survives-a-rebuild-by-default-the-restore-step-is-what-saves-you" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="rds-and-s3-survive-a-rebuild" class="callout-inner">
-<h3 class="callout-title">RDS and S3 survive a rebuild</h3>
+<div id="nothing-survives-a-rebuild-by-default-the-restore-step-is-what-saves-you" class="callout-inner">
+<h3 class="callout-title">Nothing survives a rebuild by default – the
+restore step is what saves you</h3>
 <div class="callout-content">
-<p><code>make rebuild</code> destroys only the EC2 instance. The RDS
-database and S3 bucket are not touched. This is intentional – data
-persists across rebuilds. After rebuild, Dataverse reconnects to the
-same database and storage it had before.</p>
-<p>If you want to restore the database to a specific backup as part of
-the rebuild, you need to do that as a separate step before running
-Ansible.</p>
+<p>The single most consequential fact about <code>make rebuild</code>:
+it destroys RDS and S3 along with EC2, and the reason the environment
+isn’t empty afterward is step 5, restoring from a database dump in S3
+(<code>ucla-dataverse-migration-assets</code>) – a <em>separate</em>
+bucket from the one <code>terraform destroy</code> just deleted. The
+security/reliability audit of this repo calls this restore-every-rebuild
+pattern “the single most valuable reliability practice here” – it means
+every rebuild is implicitly a disaster-recovery drill, proving the
+backup actually works. But it also means a stale or missing dump turns
+rebuild into “spin up an empty Dataverse,” not “restore my environment.”
+There’s no confirmation step that checks dump freshness before restoring
+(a known gap, audit F4).</p>
 </div>
 </div>
 </div>
@@ -475,8 +504,10 @@ Dataverse instance. The snapshot includes:</p>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">make</span> baseline ENV=tim</span></code></pre>
 </div>
-<p>The snapshot is saved to <code>baselines/</code> and optionally
-uploaded to S3 if <code>BASELINE_UPLOAD_BUCKET</code> is set:</p>
+<p>The snapshot is saved to
+<code>baseline-snapshots/baseline_&lt;timestamp&gt;.json</code> and
+optionally uploaded to S3 if <code>BASELINE_UPLOAD_BUCKET</code> is
+set:</p>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -492,10 +523,13 @@ durable and shared.</p>
 <div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="fu">make</span> baseline-compare BEFORE=baselines/before.json AFTER=baselines/after.json</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="fu">make</span> baseline-compare BEFORE=baseline-snapshots/before.json AFTER=baseline-snapshots/after.json</span></code></pre>
 </div>
-<p>A passing comparison shows matching counts across all fields. Any
-discrepancy in dataset or file counts after migration is a problem to
+<p>A passing comparison shows matching counts across all fields – with
+one deliberate exception: <code>downloads</code>/guestbook-history drift
+is treated as informational only, not a failure, since download counts
+can legitimately keep changing between the two snapshots. Any
+discrepancy in dataset or file counts, though, is a problem to
 investigate before declaring the migration complete.</p>
 </div>
 <div class="section level3">
@@ -514,6 +548,11 @@ results</li>
 </ul><p>Reindexing triggers Dataverse to read all dataset metadata from RDS
 and send it to Solr. The time it takes depends on how many datasets
 exist.</p>
+<p>Under the hood this is a <code>curl -X DELETE</code> to Dataverse’s
+admin API over public HTTPS – which only works today because that API is
+currently open to the internet, a Critical security finding covered in
+depth in Episode 5. <code>make baseline</code> and
+<code>make test</code> share the same dependency.</p>
 </div>
 <div class="section level3">
 <h3 id="make-test"><code>make test</code><a class="anchor" aria-label="anchor" href="#make-test"></a></h3>
@@ -537,20 +576,24 @@ which environment to use. Valid values are <code>tim</code> and
 <li>Which group_vars overrides are applied</li>
 </ul><p>Running <code>make rebuild</code> without <code>ENV</code> will
 error. Always specify it.</p>
-<div id="trace-a-rebuild" class="callout challenge">
+<div id="trace-a-rebuild-for-real-this-time" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
 </div>
 <span class="callout-header">Challenge</span>
-<div id="trace-a-rebuild" class="callout-inner">
-<h3 class="callout-title">Trace a rebuild</h3>
+<div id="trace-a-rebuild-for-real-this-time" class="callout-inner">
+<h3 class="callout-title">Trace a rebuild – for real this time</h3>
 <div class="callout-content">
-<p>Without running it, trace through what
-<code>make rebuild ENV=tim</code> does by reading the Makefile.</p>
-<ol style="list-style-type: decimal"><li>What is the first command it runs?</li>
-<li>At what point does the old EC2 instance stop existing?</li>
-<li>At what point does Ansible start running?</li>
-<li>What is the last thing the target does?</li>
+<p>Open <code>dataverse-infrastructure/Makefile</code> and find the
+<code>rebuild</code> target. Without relying on memory of this episode,
+answer from the actual Makefile:</p>
+<ol style="list-style-type: decimal"><li>What happens to the RDS database during step 1? What restores it,
+and from where?</li>
+<li>Does the target end with a test run? What does it actually end
+with?</li>
+<li>What manual action does step 3 require from the operator, and what
+does that tell you about the Elastic IP’s current state (Episode
+3)?</li>
 </ol></div>
 </div>
 </div>
@@ -559,14 +602,23 @@ error. Always specify it.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
-<p>Open <code>dataverse-infrastructure/Makefile</code> and find the
-<code>rebuild</code> target. The steps should follow the sequence
-described above: terraform destroy, terraform apply, inventory
-generation, Ansible run, and test suite. The exact commands will be
-visible in the Makefile.</p>
-</div>
+<ol style="list-style-type: decimal"><li>
+<code>terraform destroy</code> in step 1 deletes the RDS instance
+along with EC2 and S3 – the whole module goes together. Step 5,
+<code>scripts/restore-db.sh</code>, restores it from a dump pulled from
+the <code>ucla-dataverse-migration-assets</code> S3 bucket (a separate
+bucket from the one that just got destroyed).</li>
+<li>No. It ends with step 7 (wait for the app, then
+<code>make reindex</code>) and a message pointing you to
+<code>make logs</code> to monitor. <code>make test</code> is a separate
+command you run yourself afterward.</li>
+<li>Step 3 pauses and prints the new EC2 IP, asking you to update the
+DNS A record by hand before continuing. That’s only necessary because
+the Elastic IP doesn’t yet survive a rebuild (Episode 3) – if it did,
+this manual step wouldn’t exist.</li>
+</ol></div>
 </div>
 </div>
 </div>
@@ -580,14 +632,18 @@ visible in the Makefile.</p>
 <ul><li>The Makefile is the daily operations interface – rarely run
 Terraform or Ansible directly.</li>
 <li>
-<code>make rebuild ENV=&lt;env&gt;</code> destroys and recreates the
-EC2 instance and reconfigures it; RDS and S3 are preserved.</li>
+<code>make rebuild ENV=&lt;env&gt; DB_PASS=&lt;pass&gt;</code>
+destroys and recreates EC2, RDS, <strong>and</strong> S3 together, then
+restores the database from an S3 dump. It does not preserve data by
+default – the restore step is what puts data back.</li>
 <li>
 <code>make baseline ENV=&lt;env&gt;</code> captures a timestamped
-snapshot of dataset, file, and S3 counts.</li>
+snapshot to <code>baseline-snapshots/</code>, with dataset, file, and S3
+counts.</li>
 <li>
 <code>make reindex ENV=&lt;env&gt;</code> rebuilds the Solr index
-after any database restore.</li>
+after any database restore – and depends on the admin API being open
+over public HTTPS (a known security gap, Episode 5).</li>
 <li>Always specify <code>ENV=</code> – the Makefile will error without
 it.</li>
 </ul></div>
@@ -627,7 +683,7 @@ any links that you are not going to use.
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -657,8 +713,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/makefile-operations.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/makefile-operations.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-08",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>

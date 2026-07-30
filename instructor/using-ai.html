@@ -361,7 +361,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Using AI Tools in Infrastructure Work</h1>
-        <p>Last updated on 2026-06-08 |
+        <p>Last updated on 2026-07-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/using-ai.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -664,6 +664,76 @@ needed to answer the question.</p>
 </div>
 </div>
 </div>
+<div id="name-the-failure-mode" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="name-the-failure-mode" class="callout-inner">
+<h3 class="callout-title">Name the failure mode</h3>
+<div class="callout-content">
+<p>An AI-written Ansible task worked fine when it was added. Six months
+later, it misbehaves in a new context and you can’t figure out why.</p>
+<ol style="list-style-type: decimal"><li>Without re-reading the section above, name the specific failure mode
+this episode uses for why you can’t debug it.</li>
+<li>Name one concrete practice from this episode that would have
+prevented it.</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div class="accordion-body">
+<ol style="list-style-type: decimal"><li>
+<strong>Automation bias</strong> (over-trusting output that’s
+usually correct, so you stop building the mental model needed to catch
+it when it’s wrong) is the underlying pattern; the proximate cause here
+is that the <em>understanding was never transferred</em> – the task
+worked, so you moved on without owning why it worked.</li>
+<li>Any of: asking for an explanation before accepting the output,
+reading the generated config line by line, or writing your own
+explanation of what the task does (retrieval practice) at the time it
+was added – not six months later when it breaks.</li>
+</ol></div>
+</div>
+</div>
+</div>
+<div id="which-tool-and-why-it-matters" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="which-tool-and-why-it-matters" class="callout-inner">
+<h3 class="callout-title">Which tool, and why it matters</h3>
+<div class="callout-content">
+<p>Which AI tool is UCLA’s licensed option for this kind of work, and
+why does that matter operationally (not just for compliance) when the
+config you’re discussing includes real hostnames, bucket names, or
+infrastructure details?</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution3" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
+  <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
+</button>
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div class="accordion-body">
+<p>Gemini via Google Workspace. It matters beyond compliance because a
+licensed institutional tool comes with data-handling terms your
+institution has actually reviewed – an unlicensed consumer tool may
+retain or train on what you paste in, which matters even after redacting
+credentials, since hostnames, bucket-naming patterns, and architecture
+details are still information about UCLA’s infrastructure.</p>
+</div>
+</div>
+</div>
+</div>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -721,7 +791,7 @@ any links that you are not going to use.
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="../citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -751,8 +821,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/using-ai.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/using-ai.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-08",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>

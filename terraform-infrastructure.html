@@ -359,7 +359,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Terraform: The Infrastructure Layer</h1>
-        <p>Last updated on 2026-06-08 |
+        <p>Last updated on 2026-07-30 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/terraform-infrastructure.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -392,8 +392,8 @@
 defines.</li>
 <li>Explain what remote state is and why it matters for a multi-operator
 project.</li>
-<li>Describe what an Elastic IP is and why it simplifies the rebuild
-cycle.</li>
+<li>Describe what an Elastic IP is and why the one defined here doesn’t
+yet simplify the rebuild cycle.</li>
 <li>Run <code>terraform plan</code> and interpret the output.</li>
 </ul></div>
 </div>
@@ -440,13 +440,23 @@ independently without affecting each other.</p>
 <code>terraform.tfstate</code>. This is a problem for a team: if two
 people run Terraform from different machines, their state files diverge
 and Terraform loses track of what actually exists in AWS.</p>
-<p>This project uses <strong>remote state</strong> – the state file is
-stored in an S3 bucket:</p>
-<pre><code>s3://ucla-dataverse-migration-assets/terraform/state/</code></pre>
-<p>Both operators read from and write to the same state file. Terraform
-uses DynamoDB for state locking, which prevents two people from running
-<code>terraform apply</code> at the same time and corrupting the
-state.</p>
+<p>This project uses <strong>remote state</strong> – but each operator
+has their own bucket and key, not a shared one:</p>
+<pre><code>Tim:   s3://ucla-tim-terraform-state/terraform-dataverse/tim/terraform.tfstate
+Jamie: s3://ucla-library-terraform-state/terraform-dataverse/jamie/terraform.tfstate</code></pre>
+<p>Tim’s <code>apply</code> and Jamie’s <code>apply</code> cannot see or
+affect each other’s state at all – they are backed by different buckets.
+This is deliberate: it means destroying or rebuilding one operator’s
+environment can’t touch the other’s, which matters a lot given how often
+<code>make rebuild</code> tears an environment down and recreates it
+(Episode 6). Both backends still use a shared DynamoDB table
+(<code>terraform-locks</code>) for locking, which prevents two
+<code>terraform apply</code> runs against the <em>same</em> state from
+racing each other – but that only protects an operator against
+themselves (e.g. two terminal tabs), not against each other.</p>
+<p><code>s3://ucla-dataverse-migration-assets/</code> is a different
+bucket entirely – it holds database dumps and migration assets, not
+Terraform state. Don’t confuse the two.</p>
 <div id="never-edit-the-state-file-directly" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -474,10 +484,23 @@ run</li>
 <li>Any DNS records pointing at the old IP are wrong</li>
 <li>You spend time tracking down the current IP instead of doing
 work</li>
-</ul><p>With an Elastic IP attached, the public IP stays the same across
-rebuilds. The instance changes; the address does not.</p>
-<p>This was added in Phase 2 of the migration plan specifically to
-reduce friction in the development cycle.</p>
+</ul><p>In principle, an Elastic IP fixes this: reserve the address once,
+reassociate it with whatever instance exists, and the address survives
+even when the instance doesn’t.</p>
+<p><strong>That’s not what happens today, though.</strong> The
+<code>aws_eip.dataverse</code> resource in
+<code>modules/dataverse_ec2/main.tf</code> is defined in the <em>same
+module</em> as the EC2 instance, associated directly to
+<code>aws_instance.dataverse.id</code>. When <code>make rebuild</code>
+runs <code>terraform destroy</code>, it tears down the whole module –
+instance and EIP together – so the address does <em>not</em> survive a
+rebuild yet. Roadmap item <code>02-01</code> (“Elastic IP resource… for
+both environments”) is still unchecked for exactly this reason: having
+an <code>aws_eip</code> resource isn’t the same as having a
+<em>persistent</em> one. The real <code>make rebuild</code> output today
+prints a new IP and pauses for you to update the DNS A record by hand
+(<code>Makefile</code>, the <code>rebuild</code> target) – which is the
+friction this feature is meant to remove, and hasn’t yet.</p>
 </section><section><h2 class="section-heading" id="variables-and-tfvars">Variables and tfvars<a class="anchor" aria-label="anchor" href="#variables-and-tfvars"></a></h2>
 <hr class="half-width"><p>Terraform configurations use variables to avoid hardcoding values
 that differ between environments.</p>
@@ -488,9 +511,16 @@ and their types (like a function signature)</li>
 <strong><code>terraform.tfvars</code></strong>: provides values for
 those variables (like the function call)</li>
 </ul><p>The <code>terraform.tfvars</code> file for each environment is
-committed to the repo but contains no secrets – just resource sizes,
-region, names, and tags. Secrets (database passwords, API keys) are kept
-out of Terraform and passed via Ansible Vault.</p>
+<strong>gitignored, not committed</strong> – each operator creates their
+own from <code>terraform.tfvars.example</code> during setup (Episode 2).
+That’s intentional, because in practice it’s not secret-free: Tim’s real
+<code>tfvars</code> includes a plaintext <code>db_password</code>. This
+is a known, flagged gap (the security audit calls it out as finding F8)
+– the intended design keeps secrets in Ansible Vault, not Terraform, but
+<code>db_password</code> currently lives in both places, and the
+Terraform copy isn’t encrypted. Don’t treat “it’s gitignored” as
+equivalent to “it’s safe” – gitignore keeps a file out of version
+control, it doesn’t encrypt what’s on disk.</p>
 <div id="read-a-terraform-plan" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -535,6 +565,45 @@ security group rules</li>
 </div>
 </div>
 </div>
+<div id="state-isolation-and-ip-stability" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="state-isolation-and-ip-stability" class="callout-inner">
+<h3 class="callout-title">State isolation and IP stability</h3>
+<div class="callout-content">
+<p>Without checking the episode:</p>
+<ol style="list-style-type: decimal"><li>Can Tim accidentally destroy Jamie’s environment by running
+<code>terraform destroy</code> in his own environment directory? Point
+to the specific piece of config that proves your answer.</li>
+<li>Does today’s public EC2 IP survive
+<code>make rebuild ENV=tim</code>? Why or why not?</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div class="accordion-body">
+<ol style="list-style-type: decimal"><li>No – each environment’s <code>main.tf</code> points at a different
+S3 bucket/key for its backend (<code>ucla-tim-terraform-state</code>
+vs. <code>ucla-library-terraform-state</code>, different keys).
+Terraform only knows about resources tracked in the state it’s pointed
+at, so Tim’s <code>destroy</code> has no way to reach anything in
+Jamie’s state file.</li>
+<li>No. <code>aws_eip.dataverse</code> lives in the same module as
+<code>aws_instance.dataverse</code> and is associated directly to it, so
+<code>terraform destroy</code> removes both together. The address
+changes on every rebuild until roadmap item <code>02-01</code> makes the
+EIP persistent.</li>
+</ol></div>
+</div>
+</div>
+</div>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -542,16 +611,19 @@ security group rules</li>
 <span class="callout-header">Key Points</span>
 <div class="callout-inner">
 <div class="callout-content">
-<ul><li>Terraform manages EC2, RDS, S3, security groups, Elastic IP, and IAM
-for this project.</li>
-<li>State is stored remotely in S3 so both operators share the same view
-of infrastructure.</li>
+<ul><li>Terraform manages EC2, RDS, S3, security groups, an Elastic IP
+resource, and IAM for this project.</li>
+<li>State is stored remotely in S3, but Tim and Jamie each have their
+own bucket/key – state is isolated per operator, not shared.</li>
 <li>Each operator has their own environment directory; both use shared
 modules.</li>
-<li>Elastic IP keeps the public IP stable across rebuilds, which
-simplifies Ansible and DNS.</li>
-<li>Variables in <code>terraform.tfvars</code> configure environments;
-secrets stay out of Terraform entirely.</li>
+<li>An Elastic IP resource exists, but it’s tied to the instance’s
+lifecycle, so it does <strong>not</strong> yet survive
+<code>make rebuild</code> – that’s still open work (roadmap
+<code>02-01</code>).</li>
+<li>
+<code>terraform.tfvars</code> is gitignored per environment, but is
+not currently secret-free in practice – a known gap (audit F8).</li>
 </ul></div>
 </div>
 </div>
@@ -589,7 +661,7 @@ any links that you are not going to use.
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/CONTRIBUTING.md" class="external-link">Contributing</a>
         | <a href="https://github.com/jt14den/terraform-aws-infrastructure/" class="external-link">Source</a></p>
         <p>
-        <a href="https://github.com/jt14den/terraform-aws-infrastructure/blob/main/" class="external-link">Cite</a>
+        <a href="citation.html">Cite</a>
         | <a href="mailto:tdennis@library.ucla.edu">Contact</a> | <a href="https://carpentries.org/about/" class="external-link">About</a></p>
 		</div>
 		<div class="col-md-6">
@@ -619,8 +691,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/terraform-infrastructure.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/terraform-infrastructure.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-06-08",
-  "datePublished": "2026-07-28"
+  "dateModified": "2026-07-30",
+  "datePublished": "2026-07-30"
 }
 
   </script><script>
