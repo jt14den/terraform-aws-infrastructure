@@ -88,7 +88,7 @@ If you do not have this information, contact your AWS administrator.
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
-## 3. Configure AWS Credentials (IAM Identity Center / SSO)
+## 3. Configure AWS credentials (IAM Identity Center / SSO)
 
 ::::::::::::::::::::::::::::::::::::: callout
 
@@ -216,7 +216,7 @@ Verify installation:
 terraform version
 ```
 
-## 5. Create a Working Directory
+## 5. Create a working directory
 
 Create a folder where your Terraform configuration files will live:
 
@@ -225,7 +225,7 @@ mkdir terraform-dataverse
 cd terraform-dataverse
 ```
 
-## 6. (Optional) Clone the Lesson Repository
+## 6. (Optional) Clone the lesson repository
 
 If you want the example files from this lesson:
 

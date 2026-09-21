@@ -6,7 +6,7 @@ exercises: 10
 
 :::::::::::::::::::::::::::::::::::::: questions
 
-- How do we know the migration worked?
+- How do I know the migration worked?
 - What does the test suite check?
 - How do baseline comparisons verify data integrity?
 
@@ -17,7 +17,7 @@ exercises: 10
 - Run the pytest suite and read its output.
 - Explain what each test category checks.
 - Compare two baseline snapshots and interpret the diff.
-- Know what must pass before each migration phase can proceed.
+- Identify what must pass before each migration phase can proceed.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -39,7 +39,7 @@ No migration phase is complete until these pass.
 
 ## The pytest suite
 
-Tests live in `dataverse-ansible/tests/integration/` -- the child repo, not the
+Tests live in `dataverse-ansible/tests/integration/`: the child repo, not the
 orchestration repo. There's no `tests/` directory in `dataverse-infrastructure` itself.
 
 Run the full suite:
@@ -54,7 +54,7 @@ That target expands to, roughly:
 cd dataverse-ansible && uv run pytest tests/integration -v --dataverse-url=https://<hostname>
 ```
 
-Note `uv`, not a bare `pytest` -- and the `--dataverse-url` flag is required, since these
+Note `uv`, not a bare `pytest`, and the `--dataverse-url` flag is required, since these
 tests hit a live instance over the network rather than running against localhost.
 
 ### Test categories (real classes, from `test_smoke.py`)
@@ -67,19 +67,19 @@ A test file is uploaded via the API and then downloaded. If the IAM instance pro
 bucket config is wrong, this fails.
 
 **`TestSolrIndexing`**: Check that Solr is running and the index is not empty.
-An empty index does not cause Dataverse to error -- it just silently returns no search results.
+An empty index does not cause Dataverse to error: it silently returns no search results.
 This test catches that.
 
 **`TestSearch`, `TestDataverse`, `TestDatasets`, `TestWebInterface`, `TestAuthentication`**:
-round out the smoke suite -- basic CRUD, page rendering, and login checks.
+round out the smoke suite: basic CRUD, page rendering, and login checks.
 
 **Baseline count comparison** is a separate step (`make baseline-compare`), not a pytest
-class -- it compares two JSON snapshots, not live API responses.
+class: it compares two JSON snapshots, not live API responses.
 
 **PID/DOI checks exist, but are narrower than they sound.** `test_migration.py` has a
 `TestPIDConfiguration` class, but it only runs with the `migration` pytest marker
 (`make ansible-migration`, not the default `make test`), and it mostly checks that PID
-*settings exist* in the database -- it doesn't distinguish FAKE from a real EZID
+*settings exist* in the database: it doesn't distinguish FAKE from a real EZID
 connection. A dedicated DOI/FAKE-provider validation test is planned (roadmap `03-03`)
 but not yet built.
 
@@ -113,7 +113,7 @@ make baseline ENV=jamie
 mv baseline-snapshots/baseline_<timestamp>.json baseline-snapshots/post-migration.json
 ```
 
-There's no `latest.json` -- every capture gets its own timestamped filename, so renaming
+There's no `latest.json`: every capture gets its own timestamped filename, so renaming
 (or tracking the filename `make baseline` prints) is how you keep pre/post straight.
 
 ### Comparing
@@ -132,7 +132,7 @@ s3_objects: 18,903  -> 18,903  OK
 s3_bytes:   84.2GB  ->  84.2GB OK
 ```
 
-Any mismatch is a problem to investigate -- **except one field.** `downloads`/guestbook
+Any mismatch is a problem to investigate, **except one field.** `downloads`/guestbook
 history is deliberately treated as informational-only in `baseline-compare.sh`, not a
 failure: download counts legitimately keep incrementing as long as the instance is live,
 so a "drift" there doesn't mean data was lost. Datasets and files are the fields that
@@ -173,17 +173,17 @@ PASSED tests/test_solr.py::test_solr_index_not_empty
 :::::::::::::::::::::::::::::::::: solution
 
 The API and Solr are working, so Payara is up and Solr is indexed.
-S3 connectivity is the problem -- Dataverse cannot reach S3.
+S3 connectivity is the problem: Dataverse cannot reach S3.
 
 Two most likely causes:
 
 1. The S3 bucket name is wrong in the JVM options, or the IAM instance profile attached
    to the EC2 instance doesn't grant the right permissions on that bucket (check `group_vars`
-   for the bucket name, and the Terraform IAM role/policy for permissions -- there are no
+   for the bucket name, and the Terraform IAM role/policy for permissions; there are no
    AWS access keys to check, since this uses an instance profile, not vaulted credentials)
 2. The security group does not allow outbound HTTPS to S3 (check the Terraform security group config)
 
-Start with the bucket name and IAM policy -- they're the most common source of S3 config
+Start with the bucket name and IAM policy: they're the most common source of S3 config
 problems. Check the Payara log for `AmazonS3Exception` or `AccessDenied` messages.
 
 ::::::::::::::::::::::::::::::::::::::::::
@@ -200,7 +200,7 @@ Without checking the episode: a `baseline-compare` run shows `datasets: 1,247 ->
 :::::::::::::::::::::::::::::::::::: solution
 
 Not a failure. `downloads`/guestbook history is treated as informational-only by
-`baseline-compare.sh` -- download counts naturally keep incrementing while an instance
+`baseline-compare.sh`: download counts naturally keep incrementing while an instance
 is live and serving traffic, so a difference there reflects normal usage, not lost or
 corrupted data. Datasets and files matching exactly is what actually gates a migration phase.
 

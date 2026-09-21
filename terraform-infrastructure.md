@@ -23,7 +23,7 @@ exercises: 10
 
 ## What Terraform manages
 
-Terraform is responsible for the AWS resources that exist -- the "what" of the infrastructure.
+Terraform is responsible for the AWS resources that exist: the "what" of the infrastructure.
 For this project, those resources are:
 
 - **EC2 instance**: the virtual machine where Dataverse and its supporting services run
@@ -49,7 +49,7 @@ terraform-dataverse/
 ```
 
 Each environment directory has its own `main.tf`, `variables.tf`, and `terraform.tfvars`.
-The environments are mostly identical -- they share modules -- but use different resource names
+The environments are mostly identical (they share modules) but use different resource names
 and sizes so Tim and Jamie can work independently without affecting each other.
 
 ## Remote state
@@ -58,7 +58,7 @@ By default, Terraform stores its state in a local file called `terraform.tfstate
 This is a problem for a team: if two people run Terraform from different machines,
 their state files diverge and Terraform loses track of what actually exists in AWS.
 
-This project uses **remote state** -- but each operator has their own bucket and key,
+This project uses **remote state**, but each operator has their own bucket and key,
 not a shared one:
 
 ```
@@ -66,16 +66,18 @@ Tim:   s3://ucla-tim-terraform-state/terraform-dataverse/tim/terraform.tfstate
 Jamie: s3://ucla-library-terraform-state/terraform-dataverse/jamie/terraform.tfstate
 ```
 
-Tim's `apply` and Jamie's `apply` cannot see or affect each other's state at all --
+Tim's `apply` and Jamie's `apply` cannot see or affect each other's state at all:
 they are backed by different buckets. This is deliberate: it means destroying or
 rebuilding one operator's environment can't touch the other's, which matters a lot
 given how often `make rebuild` tears an environment down and recreates it (Episode 6).
 Both backends still use a shared DynamoDB table (`terraform-locks`) for locking, which
-prevents two `terraform apply` runs against the *same* state from racing each other --
-but that only protects an operator against themselves (e.g. two terminal tabs), not
+prevents two `terraform apply` runs against the *same* state from racing each other.
+That only protects an operator against themselves (e.g. two terminal tabs), not
 against each other.
 
-`s3://ucla-dataverse-migration-assets/` is a different bucket entirely -- it holds
+![Tim and Jamie's operator environments each apply against their own S3 state bucket. Both share a DynamoDB lock table, so the shared table prevents same-operator races but not cross-operator conflicts.](fig/terraform-state-isolation.svg){alt="Diagram: Tim's environment applies to S3 bucket ucla-tim-terraform-state, and Jamie's environment applies to S3 bucket ucla-library-terraform-state. Both environments take a lock against a shared DynamoDB table called terraform-locks before applying."}
+
+`s3://ucla-dataverse-migration-assets/` is a different bucket entirely: it holds
 database dumps and migration assets, not Terraform state. Don't confuse the two.
 
 ::::::::::::::::::::::::::::::::::::: callout
@@ -93,8 +95,8 @@ state that is painful to recover from. If state gets out of sync, use
 
 An Elastic IP (EIP) is a static IP address you reserve in AWS and attach to an EC2 instance.
 
-Without an Elastic IP, every time you run `make rebuild` -- which destroys and recreates
-the EC2 instance -- the instance gets a new public IP address. That means:
+Without an Elastic IP, every time you run `make rebuild` (which destroys and recreates
+the EC2 instance), the instance gets a new public IP address. That means:
 
 - The Ansible inventory file needs to be updated before Ansible can run
 - Any DNS records pointing at the old IP are wrong
@@ -106,13 +108,13 @@ whatever instance exists, and the address survives even when the instance doesn'
 **That's not what happens today, though.** The `aws_eip.dataverse` resource in
 `modules/dataverse_ec2/main.tf` is defined in the *same module* as the EC2 instance,
 associated directly to `aws_instance.dataverse.id`. When `make rebuild` runs
-`terraform destroy`, it tears down the whole module -- instance and EIP together --
+`terraform destroy`, it tears down the whole module, instance and EIP together,
 so the address does *not* survive a rebuild yet. Roadmap item `02-01` ("Elastic IP
 resource... for both environments") is still unchecked for exactly this reason: having
 an `aws_eip` resource isn't the same as having a *persistent* one. The real
 `make rebuild` output today prints a new IP and pauses for you to update the DNS A
-record by hand (`Makefile`, the `rebuild` target) -- which is the friction this feature
-is meant to remove, and hasn't yet.
+record by hand (`Makefile`, the `rebuild` target). That's the friction this feature
+is meant to remove and hasn't yet.
 
 ## Variables and tfvars
 
@@ -121,13 +123,13 @@ Terraform configurations use variables to avoid hardcoding values that differ be
 - **`variables.tf`**: declares the variables and their types (like a function signature)
 - **`terraform.tfvars`**: provides values for those variables (like the function call)
 
-The `terraform.tfvars` file for each environment is **gitignored, not committed** --
-each operator creates their own from `terraform.tfvars.example` during setup (Episode 2).
+The `terraform.tfvars` file for each environment is **gitignored, not committed**.
+Each operator creates their own from `terraform.tfvars.example` during setup (Episode 2).
 That's intentional, because in practice it's not secret-free: Tim's real `tfvars` includes
 a plaintext `db_password`. This is a known, flagged gap (the security audit calls it out
-as finding F8) -- the intended design keeps secrets in Ansible Vault, not Terraform, but
+as finding F8): the intended design keeps secrets in Ansible Vault, not Terraform, but
 `db_password` currently lives in both places, and the Terraform copy isn't encrypted.
-Don't treat "it's gitignored" as equivalent to "it's safe" -- gitignore keeps a file out of
+Don't treat "it's gitignored" as equivalent to "it's safe": gitignore keeps a file out of
 version control, it doesn't encrypt what's on disk.
 
 ::::::::::::::::::::::::::::::::::::: challenge
@@ -168,7 +170,7 @@ Without checking the episode:
 
 :::::::::::::::::::::::::::::::::::: solution
 
-1. No -- each environment's `main.tf` points at a different S3 bucket/key for its backend
+1. No. Each environment's `main.tf` points at a different S3 bucket/key for its backend
    (`ucla-tim-terraform-state` vs. `ucla-library-terraform-state`, different keys). Terraform
    only knows about resources tracked in the state it's pointed at, so Tim's `destroy` has no
    way to reach anything in Jamie's state file.
@@ -183,9 +185,9 @@ Without checking the episode:
 ::::::::::::::::::::::::::::::::::::: keypoints
 
 - Terraform manages EC2, RDS, S3, security groups, an Elastic IP resource, and IAM for this project.
-- State is stored remotely in S3, but Tim and Jamie each have their own bucket/key -- state is isolated per operator, not shared.
+- State is stored remotely in S3, but Tim and Jamie each have their own bucket/key: state is isolated per operator, not shared.
 - Each operator has their own environment directory; both use shared modules.
-- An Elastic IP resource exists, but it's tied to the instance's lifecycle, so it does **not** yet survive `make rebuild` -- that's still open work (roadmap `02-01`).
-- `terraform.tfvars` is gitignored per environment, but is not currently secret-free in practice -- a known gap (audit F8).
+- An Elastic IP resource exists, but it's tied to the instance's lifecycle, so it does **not** yet survive `make rebuild`. That's still open work (roadmap `02-01`).
+- `terraform.tfvars` is gitignored per environment, but is not currently secret-free in practice: a known gap (audit F8).
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

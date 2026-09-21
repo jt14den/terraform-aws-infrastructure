@@ -13,7 +13,7 @@ By the end of this lesson you will be able to:
 - Explain the division of responsibility between Terraform (infrastructure) and Ansible (configuration)
 - Run the key Makefile targets for daily operations: `rebuild`, `baseline`, `reindex`
 - Read test output and baseline comparisons to verify the system is in a known-good state
-- Understand the 7-phase migration plan and what each phase accomplishes
+- Explain the 7-phase migration plan and what each phase accomplishes
 
 ## Who this is for
 
