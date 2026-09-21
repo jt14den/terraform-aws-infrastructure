@@ -72,11 +72,11 @@ before running any `make` target is the safest approach for both operators.
 
 ## Cloning the repositories
 
-`dataverse-infrastructure` is the orchestration repo -- clone it first, then let it clone
+`dataverse-infrastructure` is the orchestration repo: clone it first, then let it clone
 the other two as children of itself. It has a bootstrap target for exactly this:
 
 ```bash
-git clone https://github.com/ucla-data-science-center/dataverse-infrastructure
+git clone https://github.com/your-org/dataverse-infrastructure
 cd dataverse-infrastructure
 make bootstrap
 ```
@@ -85,7 +85,7 @@ make bootstrap
 `dataverse-infrastructure` directory (not as siblings next to it) and wires up an
 `upstream` remote on `dataverse-ansible` pointing at the generic [gdcc/dataverse-ansible](https://github.com/gdcc/dataverse-ansible)
 role this one is forked from. The Makefile's paths (`terraform-dataverse/environments/$(ENV)`,
-`dataverse-ansible`) all assume this nested layout -- if you clone the child repos
+`dataverse-ansible`) all assume this nested layout. If you clone the child repos
 somewhere else, nothing in the Makefile will find them.
 
 ::::::::::::::::::::::::::::::::::::: callout
@@ -99,10 +99,10 @@ branch. Run it without thinking and you'll file a PR against `gdcc/dataverse-ans
 work that has nothing to do with the generic upstream role. Always pass both flags explicitly:
 
 ```bash
-gh pr create --repo ucla-data-science-center/dataverse-ansible --base develop
+gh pr create --repo your-org/dataverse-ansible --base develop
 ```
 
-This has bitten real work before -- it's easy to not notice until someone asks why a
+This has bitten real work before: it's easy to not notice until someone asks why a
 UCLA-specific branding fix shows up on the upstream project.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
@@ -128,7 +128,7 @@ After init, run:
 terraform plan
 ```
 
-This shows what Terraform would create, change, or destroy -- without making any changes.
+This shows what Terraform would create, change, or destroy, without making any changes.
 Read the plan output before running `terraform apply`. A plan that shows unexpected
 deletions is worth pausing on.
 
@@ -142,7 +142,7 @@ cd dataverse-ansible
 openssl rand -base64 24 > .vault-password
 ```
 
-`.vault-password` is gitignored -- it never gets committed, and if you lose it the
+`.vault-password` is gitignored: it never gets committed. If you lose it, the
 vault-encrypted secrets in `group_vars` are unrecoverable. Save its contents somewhere
 durable (a password manager, not just your laptop) before doing anything else. Without
 this file, `ansible-playbook` fails the moment it hits a vaulted variable.
@@ -177,11 +177,11 @@ outside the Makefile,
 ansible-playbook -i "dataverse ansible_host=localhost ansible_connection=local," dataverse/dataverse.pb -e "@dataverse/defaults/main.yml"
 ```
 
-fails with `[WARNING]: Could not match supplied host pattern, ignoring: dataverse` --
-the inline inventory string and the play's `hosts:` target didn't agree, and the playbook
+fails with `[WARNING]: Could not match supplied host pattern, ignoring: dataverse`.
+The inline inventory string and the play's `hosts:` target didn't agree, and the playbook
 path itself was wrong too (it's `site.yml` at the repo root, not `dataverse/dataverse.pb`).
 `make ansible ENV=<env>` builds this command correctly every time by generating the
-inventory from Terraform output and pointing at the real entry point -- typing the
+inventory from Terraform output and pointing at the real entry point. Typing the
 equivalent by hand, especially mid-troubleshooting, is exactly where small mismatches
 like this creep in. If you're debugging live and reach for a hand-typed
 `ansible-playbook` command instead of the Makefile, double-check the inventory path and
@@ -215,12 +215,12 @@ Without checking the episode, answer from memory:
 
 :::::::::::::::::::::::::::::::::::: solution
 
-1. The Makefile can't find `terraform-dataverse` or `dataverse-ansible` -- it expects
+1. The Makefile can't find `terraform-dataverse` or `dataverse-ansible`: it expects
    them cloned *inside* `dataverse-infrastructure` (via `make bootstrap`), not as
    sibling directories next to it. Targets fail with missing-path errors.
 2. `dataverse-ansible/.vault-password` is missing. Create it with
    `openssl rand -base64 24 > .vault-password` from inside `dataverse-ansible`, and save
-   a copy somewhere durable -- if it's lost, the vaulted secrets can't be recovered.
+   a copy somewhere durable. If it's lost, the vaulted secrets can't be recovered.
 
 ::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -229,12 +229,12 @@ Without checking the episode, answer from memory:
 ::::::::::::::::::::::::::::::::::::: keypoints
 
 - Five tools required: Terraform, Ansible, AWS CLI, Make, uv.
-- AWS profile is `ucla-library-dsc` -- set `AWS_PROFILE` in your shell before running anything.
-- Clone `dataverse-infrastructure` first, then run `make bootstrap` -- it nests the other
+- AWS profile is `ucla-library-dsc`: set `AWS_PROFILE` in your shell before running anything.
+- Clone `dataverse-infrastructure` first, then run `make bootstrap`: it nests the other
   two repos inside it. They are not siblings.
 - Ansible Vault needs a local `.vault-password` file (`openssl rand -base64 24 > .vault-password`
   in `dataverse-ansible`) before any vaulted `group_vars` can be decrypted.
 - `terraform init` must succeed before any other Terraform command will work.
-- `terraform plan` is always safe -- it shows changes without making them.
+- `terraform plan` is always safe: it shows changes without making them.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

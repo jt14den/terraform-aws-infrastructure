@@ -1,0 +1,8 @@
+flowchart TD
+    S1["1. Destroy<br/>terraform destroy"] --> S2["2. Provision<br/>terraform apply"]
+    S2 --> S3["3. DNS propagation<br/>manual A record update"]
+    S3 --> S4["4. Ansible<br/>site.yml"]
+    S4 --> S5["5. Restore DB from S3<br/>restore-db.sh"]
+    S5 --> S6["6. Start Payara<br/>over SSH"]
+    S6 --> S7["7. Wait, then reindex<br/>make reindex"]
+    S7 -.-> Test["make test<br/>separate, manual step"]

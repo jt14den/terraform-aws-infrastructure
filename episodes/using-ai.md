@@ -23,7 +23,7 @@ exercises: 5
 
 ## What this episode is about
 
-AI tools are useful in infrastructure work. They are also easy to misuse -- not through
+AI tools are useful in infrastructure work. They are also easy to misuse, not through
 dramatic failures, but through subtle ones: plausible-looking config that is slightly
 wrong, outdated API syntax, or confident answers to questions the tool cannot actually know.
 
@@ -36,15 +36,15 @@ and what you can do about it.
 
 Before using any AI tool for work, check what your institution has approved.
 Institutional licenses typically include data handling agreements that consumer-grade
-tools do not. Using an unlicensed tool for work-related content -- especially anything
-involving infrastructure, access credentials, or user data -- may violate your institution's
+tools do not. Using an unlicensed tool for work-related content (especially anything
+involving infrastructure, access credentials, or user data) may violate your institution's
 acceptable use policy.
 
 At UCLA, the institution licenses **Gemini** for work use via Google Workspace.
 This is the appropriate tool for UCLA Library staff working on infrastructure tasks.
 When in doubt, check with your IT or information security team about what is approved.
 
-Using a licensed tool does not mean anything goes -- it means the data handling terms
+Using a licensed tool does not mean anything goes: it means the data handling terms
 are known and accepted. The practices in this episode still apply.
 
 ## What not to share
@@ -104,15 +104,15 @@ and likely fixes faster than searching.
 
 **Drafting documentation and runbooks**
 
-AI is useful for turning rough notes into structured documentation -- filling in a
+AI is useful for turning rough notes into structured documentation: filling in a
 runbook outline, writing a glossary entry, turning a list of steps into a coherent
 procedure. This lesson was partly developed that way.
 
 **Talking through a problem**
 
 Describing a problem before asking a specific question often helps clarify your own
-thinking. "I ran make rebuild and Payara is up but Dataverse search returns no results --
-what are the possible causes?" returns a structured list you can work through.
+thinking. "I ran make rebuild and Payara is up but Dataverse search returns no results.
+What are the possible causes?" returns a structured list you can work through.
 
 ## Where AI misleads
 
@@ -147,14 +147,14 @@ the test suite.
 ### This happened while writing this lesson's own migration plan
 
 In September 2026, an AI-assisted research pass surveying open GitHub issues reported
-that `dataverse-ansible` #41 (the backup pointer bug) was "still open -- not formally
+that `dataverse-ansible` #41 (the backup pointer bug) was "still open, not formally
 closed despite the fix being confirmed working." That claim was specific, plausible, and
 wrong: `gh issue view 41` showed it had been closed weeks earlier. The error surfaced
 only because a later step happened to re-check the same issue directly for an unrelated
-reason -- not because anything about the original claim looked suspicious. It read like
+reason, not because anything about the original claim looked suspicious. It read like
 every other correct finding in the same report.
 
-Nothing about that claim was a wild hallucination -- it was a plausible-sounding status
+Nothing about that claim was a wild hallucination: it was a plausible-sounding status
 report, exactly the kind of output this section warns about, produced by a tool doing
 research rather than writing code. The verification habit this episode asks for
 (`terraform plan`, `--check` mode, the test suite) applies just as much to a status claim
@@ -174,7 +174,7 @@ understands the actual threat model and has access to the full context.
 
 ## The deeper risk: losing contact
 
-Because AI is particularly good at config systems -- Terraform, Ansible, CI pipelines --
+Because AI is particularly good at config systems (Terraform, Ansible, CI pipelines),
 it is possible to move very fast without fully understanding what was built.
 The acceleration is real. So is the risk.
 
@@ -183,7 +183,7 @@ When a system handles the hard parts reliably, people stop building the mental m
 that lets them catch when it is wrong. In aviation and medicine, this is called
 **automation bias**: over-trusting automated output because it is usually right,
 even when evidence of an error is present. The cognitive load of staying engaged is high,
-and the tool usually gets it right -- until it doesn't.
+and the tool usually gets it right, until it doesn't.
 
 For infrastructure work, the specific version looks like this:
 
@@ -196,7 +196,7 @@ The output was correct. The understanding was not transferred.
 A useful framing here comes from chess: after computers became stronger than humans,
 the best human-computer teams were not grandmasters who let the engine decide everything,
 but players who kept their own judgment engaged and used the engine to check it.
-The technical term in HCI research is **cognitive offloading** -- and the question is not
+The technical term in HCI research is **cognitive offloading**, and the question is not
 whether to do it, but which parts you can safely offload and which you must own.
 
 For this work, the parts you need to own:
@@ -214,7 +214,7 @@ chat window, you do not have them yet.
 **Write it down in your own words (this lesson)**
 
 Writing this lesson is itself a strategy. Turning what was built into structured
-explanation -- not AI-generated, but your own reconstruction -- forces contact with
+explanation (not AI-generated, but your own reconstruction) forces contact with
 the material. If you cannot explain the Solr reindex requirement in a callout block,
 you do not understand it yet.
 
@@ -238,7 +238,7 @@ AWS provider 5.x, Ansible 2.16, Dataverse 6.3." This reduces outdated syntax.
 Then read the generated output line by line, the same way you would read a code review.
 If you cannot explain what a line does, look it up before using it.
 
-**Validate before applying -- always**
+**Validate before applying, always**
 
 Every piece of AI-generated configuration should go through the same path as everything
 else: `terraform plan`, `--check` mode, the test suite.
@@ -248,13 +248,13 @@ Make this non-negotiable. AI output is a draft, not a finished product.
 **Practice without the tool periodically**
 
 Work through a piece of configuration or a debugging problem without AI assistance,
-even if it takes longer. This is not about refusing help -- it is about checking that
+even if it takes longer. This is not about refusing help: it is about checking that
 the skill is still there when you need it. Pilots practice manual landings even though
 automation is usually better. The same logic applies.
 
 **Pair with another person**
 
-When another person is present -- Jamie, a student, a colleague -- explain what you
+When another person is present (Jamie, a student, a colleague), explain what you
 are doing and why. This is not about the other person checking your work; it is about
 the act of explaining. If you cannot explain it, you do not understand it.
 Onboarding Leigh or a new DataSquad student is actually useful for this: teaching
@@ -262,9 +262,9 @@ someone who does not have the context forces you to articulate things you have i
 
 This project in particular has two people with different working styles: Tim works
 automation-first, through Terraform and Ansible; Jamie's default mode is direct,
-hands-on-the-box troubleshooting -- fixing what's in front of her with whatever tool
+hands-on-the-box troubleshooting: fixing what's in front of her with whatever tool
 gets there fastest (see the static-key example in Episode 6). Neither style is wrong on
-its own, but they can silently diverge from each other -- a manual fix that works doesn't
+its own, but they can silently diverge from each other: a manual fix that works doesn't
 automatically make it back into the role that's supposed to be the source of truth. That
 makes explaining *why* the automated path matters, not just what it does, actually part
 of the technical work here, not a soft add-on to it.
@@ -273,7 +273,7 @@ of the technical work here, not a soft add-on to it.
 
 ### A question worth asking periodically
 
-Could you rebuild this environment -- Terraform, Ansible, Dataverse configuration --
+Could you rebuild this environment (Terraform, Ansible, Dataverse configuration)
 from scratch without AI assistance if you had to?
 
 Not immediately, and not perfectly. But could you trace the steps, know what to look for,
@@ -309,7 +309,7 @@ dataverse_s3_bucket: <s3-bucket-name>
 dataverse_doi_authority: "10.25346"
 ```
 
-The DOI authority (`10.25346`) is a public value -- safe to share.
+The DOI authority (`10.25346`) is a public value: safe to share.
 The RDS endpoint, password, and bucket name should be replaced.
 The bucket name is not a credential, but it identifies your institution's storage;
 use a placeholder when the real name is not needed to answer the question.
@@ -332,11 +332,11 @@ in a new context and you can't figure out why.
 
 1. **Automation bias** (over-trusting output that's usually correct, so you stop building
    the mental model needed to catch it when it's wrong) is the underlying pattern; the
-   proximate cause here is that the *understanding was never transferred* -- the task
+   proximate cause here is that the *understanding was never transferred*: the task
    worked, so you moved on without owning why it worked.
 2. Any of: asking for an explanation before accepting the output, reading the generated
    config line by line, or writing your own explanation of what the task does (retrieval
-   practice) at the time it was added -- not six months later when it breaks.
+   practice) at the time it was added, not six months later when it breaks.
 
 ::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -353,7 +353,7 @@ hostnames, bucket names, or infrastructure details?
 :::::::::::::::::::::::::::::::::::: solution
 
 Gemini via Google Workspace. It matters beyond compliance because a licensed institutional
-tool comes with data-handling terms your institution has actually reviewed -- an
+tool comes with data-handling terms your institution has actually reviewed. An
 unlicensed consumer tool may retain or train on what you paste in, which matters even
 after redacting credentials, since hostnames, bucket-naming patterns, and architecture
 details are still information about UCLA's infrastructure.
@@ -366,7 +366,7 @@ details are still information about UCLA's infrastructure.
 
 - Use your institution's licensed AI tools for work; at UCLA, that is Gemini via Google Workspace.
 - Never share credentials, private hostnames, database connection strings, or SSH keys with any AI tool.
-- AI is particularly strong with config systems like Terraform and Ansible -- and that is exactly where the risk of losing contact is highest.
+- AI is particularly strong with config systems like Terraform and Ansible, and that is exactly where the risk of losing contact is highest.
 - Automation bias is real: over-trusting AI output because it is usually right, until it isn't.
 - Strategies for staying grounded: write it down in your own words, ask for explanation before output, validate everything, practice without the tool periodically, teach it to someone else.
 - Writing this lesson is itself one of those strategies.

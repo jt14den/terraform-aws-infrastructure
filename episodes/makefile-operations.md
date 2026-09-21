@@ -17,7 +17,7 @@ exercises: 10
 - List the main Makefile targets and what each does.
 - Trace the steps of `make rebuild` in order.
 - Run `make baseline` and inspect the snapshot it produces.
-- Know when each operational target should be used.
+- Identify when each operational target should be used.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -44,30 +44,32 @@ that specifies which operator environment to work with.
 
 ### `make rebuild`
 
-Destroys and recreates **the entire environment** -- EC2, RDS, and S3 together -- then
+Destroys and recreates **the entire environment** (EC2, RDS, and S3 together), then
 configures it and restores data. It requires `DB_PASS` and prints a real warning before
 it runs, because of exactly the misconception this section used to encode: this is not
 an EC2-only operation.
 
 The real 7 steps, from the Makefile itself:
 
-1. **Destroy** -- `terraform destroy` tears down the whole per-environment module: EC2,
+1. **Destroy**: `terraform destroy` tears down the whole per-environment module: EC2,
    RDS, and the S3 bucket all go together. Nothing about this step is EC2-scoped.
-2. **Provision** -- `terraform init -upgrade` then `terraform apply` builds all of it
+2. **Provision**: `terraform init -upgrade` then `terraform apply` builds all of it
    back from scratch: new EC2 instance, new empty RDS database, new empty S3 bucket.
-3. **DNS propagation** -- prints the new EC2 IP and pauses for you to manually update
-   the DNS A record (this is the Elastic IP gap from Episode 3 in practice -- the IP
+3. **DNS propagation**: prints the new EC2 IP and pauses for you to manually update
+   the DNS A record (this is the Elastic IP gap from Episode 3 in practice: the IP
    really did change, and nothing updates DNS automatically yet).
-4. **Ansible** -- runs `site.yml` to install and configure Payara, Solr, Apache, and Dataverse.
-5. **Restore the database from S3** -- `scripts/restore-db.sh` pulls the latest dump and
+4. **Ansible**: runs `site.yml` to install and configure Payara, Solr, Apache, and Dataverse.
+5. **Restore the database from S3**: `scripts/restore-db.sh` pulls the latest dump and
    loads it into the just-created, currently-empty RDS instance. This step exists
-   *because* step 1 wiped the database -- without it, rebuild would hand you an empty Dataverse.
-6. **Start Payara** -- over SSH (`ssh rocky@$IP 'sudo systemctl start payara'`).
-7. **Wait, then reindex** -- polls the app until it responds, then runs `make reindex`
+   *because* step 1 wiped the database. Without it, rebuild would hand you an empty Dataverse.
+6. **Start Payara**: over SSH (`ssh rocky@$IP 'sudo systemctl start payara'`).
+7. **Wait, then reindex**: polls the app until it responds, then runs `make reindex`
    to rebuild Solr from the just-restored database.
 
-There is no test-suite step at the end -- rebuild ends at reindex and tells you to
+There is no test-suite step at the end: rebuild ends at reindex and tells you to
 `make logs` to monitor. Running `make test` afterward is a separate, manual step.
+
+![The seven make rebuild steps run in sequence, ending at reindex. make test is a separate step run manually afterward, not part of the rebuild pipeline.](fig/rebuild-steps.svg){alt="Pipeline diagram of the 7 make rebuild steps in order: 1 Destroy (terraform destroy), 2 Provision (terraform apply), 3 DNS propagation (manual A record update), 4 Ansible (site.yml), 5 Restore DB from S3 (restore-db.sh), 6 Start Payara (over SSH), 7 Wait then reindex (make reindex). A dashed line points from step 7 to make test, labeled as a separate, manual step not included in the rebuild pipeline."}
 
 Use `make rebuild` when:
 
@@ -81,13 +83,13 @@ make rebuild ENV=tim DB_PASS=<dataverse_postgresql_password>
 
 ::::::::::::::::::::::::::::::::::::: callout
 
-### Nothing survives a rebuild by default -- the restore step is what saves you
+### Nothing survives a rebuild by default: the restore step is what saves you
 
 The single most consequential fact about `make rebuild`: it destroys RDS and S3 along
 with EC2, and the reason the environment isn't empty afterward is step 5, restoring from
-a database dump in S3 (`ucla-dataverse-migration-assets`) -- a *separate* bucket from the
+a database dump in S3 (`ucla-dataverse-migration-assets`), a *separate* bucket from the
 one `terraform destroy` just deleted. The security/reliability audit of this repo calls
-this restore-every-rebuild pattern "the single most valuable reliability practice here" --
+this restore-every-rebuild pattern "the single most valuable reliability practice here":
 it means every rebuild is implicitly a disaster-recovery drill, proving the backup
 actually works. But it also means a stale or missing dump turns rebuild into "spin up an
 empty Dataverse," not "restore my environment." There's no confirmation step that checks
@@ -128,7 +130,7 @@ Compares two baseline snapshots and reports differences:
 make baseline-compare BEFORE=baseline-snapshots/before.json AFTER=baseline-snapshots/after.json
 ```
 
-A passing comparison shows matching counts across all fields -- with one deliberate
+A passing comparison shows matching counts across all fields, with one deliberate
 exception: `downloads`/guestbook-history drift is treated as informational only, not a
 failure, since download counts can legitimately keep changing between the two snapshots.
 Any discrepancy in dataset or file counts, though, is a problem to investigate before
@@ -151,8 +153,8 @@ Run this after:
 Reindexing triggers Dataverse to read all dataset metadata from RDS and send it to Solr.
 The time it takes depends on how many datasets exist.
 
-Under the hood this is a `curl -X DELETE` to Dataverse's admin API over public HTTPS --
-which only works today because that API is currently open to the internet, a Critical
+Under the hood this is a `curl -X DELETE` to Dataverse's admin API over public HTTPS.
+That only works today because that API is currently open to the internet, a Critical
 security finding covered in depth in Episode 5. `make baseline` and `make test` share the
 same dependency.
 
@@ -180,7 +182,7 @@ Running `make rebuild` without `ENV` will error. Always specify it.
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-### Trace a rebuild -- for real this time
+### Trace a rebuild, for real this time
 
 Open `dataverse-infrastructure/Makefile` and find the `rebuild` target. Without relying
 on memory of this episode, answer from the actual Makefile:
@@ -191,7 +193,7 @@ on memory of this episode, answer from the actual Makefile:
 
 :::::::::::::::::::::::::::::::::::: solution
 
-1. `terraform destroy` in step 1 deletes the RDS instance along with EC2 and S3 -- the
+1. `terraform destroy` in step 1 deletes the RDS instance along with EC2 and S3. The
    whole module goes together. Step 5, `scripts/restore-db.sh`, restores it from a dump
    pulled from the `ucla-dataverse-migration-assets` S3 bucket (a separate bucket from
    the one that just got destroyed).
@@ -199,7 +201,7 @@ on memory of this episode, answer from the actual Makefile:
    you to `make logs` to monitor. `make test` is a separate command you run yourself afterward.
 3. Step 3 pauses and prints the new EC2 IP, asking you to update the DNS A record by hand
    before continuing. That's only necessary because the Elastic IP doesn't yet survive a
-   rebuild (Episode 3) -- if it did, this manual step wouldn't exist.
+   rebuild (Episode 3). If it did, this manual step wouldn't exist.
 
 ::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -207,10 +209,10 @@ on memory of this episode, answer from the actual Makefile:
 
 ::::::::::::::::::::::::::::::::::::: keypoints
 
-- The Makefile is the daily operations interface -- rarely run Terraform or Ansible directly.
-- `make rebuild ENV=<env> DB_PASS=<pass>` destroys and recreates EC2, RDS, **and** S3 together, then restores the database from an S3 dump. It does not preserve data by default -- the restore step is what puts data back.
+- The Makefile is the daily operations interface: rarely run Terraform or Ansible directly.
+- `make rebuild ENV=<env> DB_PASS=<pass>` destroys and recreates EC2, RDS, **and** S3 together, then restores the database from an S3 dump. It does not preserve data by default: the restore step is what puts data back.
 - `make baseline ENV=<env>` captures a timestamped snapshot to `baseline-snapshots/`, with dataset, file, and S3 counts.
-- `make reindex ENV=<env>` rebuilds the Solr index after any database restore -- and depends on the admin API being open over public HTTPS (a known security gap, Episode 5).
-- Always specify `ENV=` -- the Makefile will error without it.
+- `make reindex ENV=<env>` rebuilds the Solr index after any database restore, and depends on the admin API being open over public HTTPS (a known security gap, Episode 5).
+- Always specify `ENV=`: the Makefile will error without it.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

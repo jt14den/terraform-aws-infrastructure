@@ -22,10 +22,10 @@ inside Payara. Most Dataverse configuration is applied via Payara JVM options. S
 **GlassFish**
 The original Jakarta EE application server from which Payara was forked. Some Dataverse
 documentation and older issues reference GlassFish commands. They are mostly
-interchangeable with Payara -- the `asadmin` CLI and domain structure are the same.
+interchangeable with Payara: the `asadmin` CLI and domain structure are the same.
 
 **WAR file**
-Web Application Archive. A packaged Java web application -- a JAR file with a specific
+Web Application Archive. A packaged Java web application, a JAR file with a specific
 structure that application servers like Payara know how to deploy. Dataverse is distributed
 as a WAR file. Ansible downloads and deploys it during installation.
 
@@ -127,7 +127,7 @@ key (path) is derived from the storage identifier stored in the database.
 A static IP address reserved in AWS that can be reassociated with a different EC2 instance,
 so the address itself doesn't have to change when the instance does. In this project,
 `aws_eip.dataverse` is defined in the same Terraform module as the EC2 instance and
-associated directly to it -- so today it's destroyed and recreated along with the instance
+associated directly to it, so today it's destroyed and recreated along with the instance
 on every `terraform destroy`/`apply` cycle, and does *not* yet survive a rebuild. Making it
 persistent is open work (roadmap `02-01`). See: [make rebuild].
 
@@ -185,7 +185,7 @@ multiple operators to share the same state. Prevents two people from making conf
 changes. Used in this project; state is in `s3://ucla-dataverse-migration-assets/terraform/state/`.
 
 **terraform plan**
-A Terraform command that shows what would change if you ran `terraform apply` -- without
+A Terraform command that shows what would change if you ran `terraform apply`, without
 making any changes. Always run `terraform plan` before `terraform apply` to review the diff.
 
 **terraform apply**
@@ -203,8 +203,8 @@ to share resource definitions between Tim's and Jamie's environments.
 **tfvars**
 A Terraform variable values file (`terraform.tfvars`), one per environment, gitignored
 (never committed). Intended to hold environment-specific non-secret values (instance
-size, region, bucket names), but in practice Tim's copy also has a plaintext `db_password`
--- a known gap (audit finding F8), not the intended design.
+size, region, bucket names), but in practice Tim's copy also has a plaintext `db_password`:
+a known gap (audit finding F8), not the intended design.
 
 ---
 
@@ -221,7 +221,7 @@ The main playbook for this project runs the `dataverse-ansible` role against the
 
 **Role**
 A structured, reusable unit of Ansible configuration. The entire `dataverse-ansible` repo
-is treated as one role, entered via `site.yml` at the repo root -- not a `tasks/main.yml`
+is treated as one role, entered via `site.yml` at the repo root, not a `tasks/main.yml`
 dispatcher. Its directories: `tasks/` (~90 flat per-service files), `handlers/`, `templates/`,
 `defaults/`, `group_vars/`. There's no top-level `vars/` directory in this role.
 
@@ -241,7 +241,7 @@ Handlers only run once per play even if notified multiple times.
 
 **Idempotency**
 The property of an operation that produces the same result whether run once or many times.
-Individual Ansible modules (like `dnf`) are generally idempotent -- they check state before
+Individual Ansible modules (like `dnf`) are generally idempotent: they check state before
 acting and report `ok` when no change is needed. This is a per-task property, not a
 guarantee about a whole playbook: `dataverse-ansible` as a whole is explicitly **not**
 safe to re-run against a live instance (see `CONTEXT.md`'s "NOT idempotent" rule) because
@@ -249,13 +249,13 @@ some `shell`/`command` tasks aren't guarded. See: [Ansible].
 
 **group_vars**
 A directory of YAML variable files that apply to specific environments. For this project
-the files are flat -- `all.yml`, `dev.yml`, `test.yml`, `staging.yml`, `TEMPLATE.yml` --
+the files are flat (`all.yml`, `dev.yml`, `test.yml`, `staging.yml`, `TEMPLATE.yml`),
 not a nested `group_vars/all/` directory. `all.yml` applies to every environment unless a
 more specific file overrides a given key.
 
 **Ansible Vault**
 A tool for encrypting sensitive values in Ansible files. Vaulted files can be stored in the
-repository -- they are decrypted at runtime using the vault password. Used for database
+repository: they are decrypted at runtime using the vault password. Used for database
 passwords, API tokens, and EZID credentials.
 
 **Inventory**
@@ -275,7 +275,7 @@ The primary Makefile target for recreating an environment from scratch. Requires
 Runs `terraform destroy` (tears down EC2, RDS, **and** S3 together, not just EC2),
 `terraform apply`, a manual DNS-update pause, the Ansible playbook, a database restore
 from an S3 dump, starting Payara over SSH, and finally a Solr reindex. Data survives a
-rebuild only because of the restore step -- not by default. See: [Makefile].
+rebuild only because of the restore step, not by default. See: [Makefile].
 
 **make baseline**
 Captures a timestamped JSON snapshot (`baseline-snapshots/baseline_<timestamp>.json`) of
@@ -338,7 +338,7 @@ Released 2023. Uses Java 11, an older Solr schema, and a different PID provider 
 **6.8**
 The version this lesson was originally written against, and what `group_vars` is still
 pinned to as of this writing. Requires Java 17, a new Solr schema, and updated S3/DOI
-configuration. **No longer the actual target** -- CVE-2026-1879 affects 6.0 through 6.8,
+configuration. **No longer the actual target**: CVE-2026-1879 affects 6.0 through 6.8,
 so the real target moved to 6.10.1 or 6.11 (patched, and bundles a Payara 6-to-7 / Java
 17-to-21 upgrade upstream already made). The version bump itself hadn't happened yet as
 of September 2026. See the callout in Episode 9 (Migration Arc).

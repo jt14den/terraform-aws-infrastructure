@@ -17,13 +17,13 @@ exercises: 10
 - Describe Payara's role as a Jakarta EE application server.
 - Explain how Dataverse configuration is applied via JVM options and the API.
 - Describe how RDS, S3, and Solr each serve different data needs.
-- Know when and why a Solr reindex is required.
+- Identify when and why a Solr reindex is required.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Payara: the application server
 
-Payara is a Jakarta EE application server -- a runtime environment for Java web applications.
+Payara is a Jakarta EE application server, a runtime environment for Java web applications.
 It is a community fork of GlassFish, maintained specifically for Jakarta EE compatibility.
 Dataverse chose it because Dataverse is a Jakarta EE application and Payara has continued
 to receive active maintenance after GlassFish development slowed.
@@ -32,7 +32,7 @@ Think of Payara the way you might think of a Python WSGI server or a Node.js pro
 it is the process that loads the application, handles incoming requests, manages database
 connections, and keeps the application running.
 
-Dataverse is distributed as a WAR file -- a Web Application Archive. Ansible deploys this
+Dataverse is distributed as a WAR file, a Web Application Archive. Ansible deploys this
 WAR file into Payara during installation. Payara unpacks it and starts serving requests.
 
 ### Payara ports
@@ -47,7 +47,7 @@ Payara listens on several ports by default:
 | 9009 | Debug |
 
 Apache sits in front of ports 80 and 443. Requests come in through Apache and are
-proxied to Payara on port 8080 or 8181. Port 4848 is the Payara admin console --
+proxied to Payara on port 8080 or 8181. Port 4848 is the Payara admin console:
 it should not be publicly accessible and is locked down in the security group.
 
 ### Configuring Dataverse through Payara JVM options
@@ -64,7 +64,7 @@ that Dataverse reads at startup:
 
 Ansible sets these JVM options through the Payara admin API during the configure step.
 You can also inspect or change them manually through the Payara admin console on port 4848,
-but Ansible is the source of truth -- any manual changes will be overwritten on the next
+but Ansible is the source of truth: any manual changes will be overwritten on the next
 playbook run.
 
 ### First boot and the Dataverse API
@@ -77,17 +77,17 @@ Ansible calls the Dataverse API to:
 - Set storage credentials
 - Apply any site-level settings
 
-This is why `make rebuild` takes several minutes even after Payara is up -- the playbook
+This is why `make rebuild` takes several minutes even after Payara is up: the playbook
 is waiting for Dataverse to finish its own initialization before it can call the API.
 
 ### Common Payara problems
 
 - **Payara not responding after deploy**: Dataverse startup takes 2-5 minutes on first boot.
   Check the Payara log at `/usr/local/payara6/glassfish/domains/domain1/logs/server.log`
-  (Payara 6, since the move to Dataverse 6.8 -- older docs and issues may still say `payara5`).
+  (Payara 6, since the move to Dataverse 6.8; older docs and issues may still say `payara5`).
   Look for `Dataverse started` or exception stack traces.
 - **Out of memory**: Payara JVM heap settings are configured in Ansible group_vars.
-  Default is 2GB -- increase if you see `OutOfMemoryError` in the Payara log.
+  Default is 2GB; increase if you see `OutOfMemoryError` in the Payara log.
 - **WAR deploy failure**: The WAR file checksum or version may not match what Payara expects.
   Check the Ansible `payara.yml` task output for errors during the deploy step.
 
@@ -96,7 +96,7 @@ is waiting for Dataverse to finish its own initialization before it can call the
 ### Swap and disk pressure are usually one problem wearing two costumes
 
 `modules/dataverse_ec2/main.tf` provisions a fixed 2GB swapfile on the *same root volume*
-as everything else, regardless of instance size -- and this project's real production
+as everything else, regardless of instance size, and this project's real production
 instance has had recurring swap and disk-space pressure that nobody had sized against
 actual usage. It's tempting to treat "swap full" and "disk full" as two problems to fix
 separately (bigger swapfile, bigger EBS volume), but on a small instance type they're
@@ -110,29 +110,29 @@ grade" hint in `terraform.tfvars.example` both are) means separating three quest
 instead of reaching for one bigger number:
 
 1. **Is swap chronically engaged**, not just during a reindex or restore spike? Chronic
-   swap under normal load means the instance type is undersized for memory -- check with
+   swap under normal load means the instance type is undersized for memory: check with
    `free -h` and `vmstat 1` under idle vs. load, not a single point-in-time reading.
 2. **What's actually on the root disk that won't move to S3?** If production's files
-   currently live on local disk rather than S3 (an open question in this project -- see
+   currently live on local disk rather than S3 (an open question in this project; see
    `MIGRATION_DECISIONS.md` Q1), that entire category of usage disappears once the new
    environment is S3-backed. Solr's index and Payara's logs are what's left, and `du -sh`
    on those specific directories tells you far more than a total `df -h` percentage.
 3. **What's the growth trend, not the current reading?** A disk at 70% today could be flat
-   or climbing fast -- `make baseline` snapshots over time (dataset/file counts) are a
+   or climbing fast: `make baseline` snapshots over time (dataset/file counts) are a
    usable proxy for growth rate even without dedicated host-metric history.
 
-The architecture change (local storage to S3) is doing real sizing work here for free --
-don't undercut it by copying the old box's total disk usage into the new one's spec.
+The architecture change (local storage to S3) is doing real sizing work here for free.
+Don't undercut it by copying the old box's total disk usage into the new one's spec.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: callout
 
-### An unsupported version isn't "safe" -- it's just unmonitored
+### An unsupported version isn't "safe": it's just unmonitored
 
 CVE-2026-1879 (an unrestricted file upload via `uploadLogo`) affects Dataverse 6.0
 through 6.8, and was patched starting at 6.10. Production here still runs 5.14, which
-sounds like it should be a separate question -- except IQSS doesn't issue CVEs against
+sounds like it should be a separate question, except IQSS doesn't issue CVEs against
 the unsupported 5.x line at all. That's not the same as 5.x being unaffected; it means
 nobody is tracking it either way. "No CVE filed" and "confirmed not vulnerable" are
 different claims, and it's easy to read the first as the second.
@@ -149,7 +149,7 @@ what isn't being tracked.
 ### Payara vs. GlassFish
 
 Dataverse documentation and older issues sometimes reference GlassFish commands and
-paths. Payara is API-compatible -- the `asadmin` command and most paths are the same.
+paths. Payara is API-compatible: the `asadmin` command and most paths are the same.
 If you find a GlassFish-specific workaround in an older issue, it will almost always
 apply to Payara as well.
 
@@ -174,12 +174,12 @@ When you restore a database backup, you are restoring this metadata.
 
 ### S3
 
-S3 stores the actual file content -- the bytes of every data file users have uploaded.
+S3 stores the actual file content: the bytes of every data file users have uploaded.
 The connection between a file record in RDS and its content in S3 is a storage identifier
 stored in the database.
 
 After a database restore, Dataverse uses the storage identifiers to serve files from S3.
-The files in S3 do not change when you restore the database -- only the metadata does.
+The files in S3 do not change when you restore the database; only the metadata does.
 
 This also means that if a file is deleted from S3 but its record remains in RDS, Dataverse
 will show the file as available but fail when users try to download it.
@@ -197,7 +197,7 @@ verifies that both the database and the storage bucket survived the migration in
 ### Solr
 
 Solr is a full-text search engine. Dataverse uses it to power all search and browse
-functionality -- when you type a query in Dataverse or browse a collection, the results
+functionality. When you type a query in Dataverse or browse a collection, the results
 come from Solr, not directly from the database.
 
 Solr maintains its own index: a data structure optimized for fast search that is built
@@ -211,7 +211,7 @@ datasets that were added. After any database restore, you must reindex:
 make reindex ENV=tim
 ```
 
-A Dataverse instance with a stale Solr index will appear to have no datasets -- or the
+A Dataverse instance with a stale Solr index will appear to have no datasets, or the
 wrong datasets. This is one of the most common sources of confusion after a rebuild.
 
 The reindex process reads all dataset metadata from the database and sends it to Solr.
@@ -219,11 +219,11 @@ Depending on how many datasets you have, this can take from seconds to hours.
 
 ::::::::::::::::::::::::::::::::::::: callout
 
-### `make reindex` only works because the admin API is open -- and that's a problem
+### `make reindex` only works because the admin API is open, and that's a problem
 
 Look at the real target: it's `curl -X DELETE https://$HOST/api/admin/index` over public
 HTTPS. That works *only* because Dataverse's admin API is currently unauthenticated and
-reachable from the internet on this instance -- which the infrastructure security audit
+reachable from the internet on this instance, which the infrastructure security audit
 flags as a Critical finding (F1): the same open admin API also allows dataset destroy on
 an instance that will eventually hold production research data. `make baseline` and
 `make test` have the identical dependency (F5).
@@ -251,7 +251,7 @@ Given what you know about the data layer, answer these questions:
 
 1. RDS gets a new file record (name, checksum, storage identifier, dataset reference). S3 gets the file bytes at the storage identifier path.
 2. Solr answers the search query. The database is not involved in search.
-3. S3 is unchanged -- it still has all files ever uploaded, including those added in the past week. Solr still has the current index built from the current database before the restore.
+3. S3 is unchanged: it still has all files ever uploaded, including those added in the past week. Solr still has the current index built from the current database before the restore.
 4. Run `make reindex ENV=<env>` to rebuild the Solr index from the restored database state.
 
 ::::::::::::::::::::::::::::::::::::::::::
@@ -267,10 +267,10 @@ Given what you know about the data layer, answer these questions:
 
 :::::::::::::::::::::::::::::::::::: solution
 
-1. `curl -X DELETE https://$HOST/api/admin/index` -- a public-HTTPS call to Dataverse's
+1. `curl -X DELETE https://$HOST/api/admin/index`: a public-HTTPS call to Dataverse's
    admin API. It depends on that API being unauthenticated and reachable from outside
    the instance, which it currently is (audit finding F1, Critical).
-2. `make reindex`, `make baseline`, and `make test` would all start failing (F5) --
+2. `make reindex`, `make baseline`, and `make test` would all start failing (F5):
    they all hit admin/metrics endpoints the same way. The planned fix is rewriting those
    calls to go over SSH to `localhost:8080` on the instance instead of public HTTPS.
 
@@ -284,7 +284,7 @@ Given what you know about the data layer, answer these questions:
 - Most Dataverse configuration is set as Payara JVM options, managed by Ansible.
 - The Payara log at `payara6/glassfish/domains/domain1/logs/server.log` is the first place to look when things go wrong.
 - RDS holds metadata; S3 holds file content; Solr holds the search index.
-- Always run `make reindex` after a database restore -- Solr does not update itself.
-- `make reindex`/`baseline`/`test` currently depend on the admin API being open over public HTTPS -- a known Critical security exposure (F1/F5), not a stable design choice.
+- Always run `make reindex` after a database restore: Solr does not update itself.
+- `make reindex`/`baseline`/`test` currently depend on the admin API being open over public HTTPS: a known Critical security exposure (F1/F5), not a stable design choice.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

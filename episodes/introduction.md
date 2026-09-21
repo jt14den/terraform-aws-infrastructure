@@ -17,14 +17,14 @@ exercises: 5
 - Describe the UCLA Dataverse infrastructure stack and what each component does.
 - Explain the division of responsibility between Terraform and Ansible.
 - Navigate the three repositories that make up this infrastructure.
-- Understand what the 5.14 to 6.8 migration involves and why it shaped these decisions.
+- Explain what the 5.14 to 6.8 migration involved and why it shaped these decisions.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## What this lesson is
 
 This lesson traces the infrastructure that runs the UCLA Library Dataverse instance.
-It was written during the migration from Dataverse 5.14 to 6.8 -- not as abstract documentation,
+It was written during the migration from Dataverse 5.14 to 6.8, not as abstract documentation
 but as a way to make explicit what was built, why each decision was made, and how the pieces fit together.
 
 The audience is people doing the work or being onboarded to it: DSC staff, DataSquad students,
@@ -35,29 +35,7 @@ and some exposure to cloud services or configuration management, but not infrast
 
 Running Dataverse requires several components working together:
 
-```
-+------------------------------------------------------------+
-|                           AWS                              |
-|                                                            |
-|  +------------------------------------------------------+  |
-|  |                    EC2 instance                      |  |
-|  |                                                      |  |
-|  |  +----------------+    +--------------------------+  |  |
-|  |  |  Apache httpd  |    |  Payara (app server)     |  |  |
-|  |  |  reverse proxy +---->                          |  |  |
-|  |  |  + SSL         |    |  Dataverse (WAR file)    |  |  |
-|  |  +----------------+    +-------------+------------+  |  |
-|  |                                      |               |  |
-|  |                        +-------------v------------+  |  |
-|  |                        |  Solr (search index)     |  |  |
-|  |                        +--------------------------+  |  |
-|  +------------------------------------------------------+  |
-|                                                            |
-|  +---------------------+   +----------------------------+ |
-|  |  RDS (PostgreSQL)   |   |  S3 (file storage)         | |
-|  +---------------------+   +----------------------------+ |
-+------------------------------------------------------------+
-```
+![The Dataverse stack](fig/stack-architecture.svg){alt='Architecture diagram: a browser/user on the internet sends a request into an AWS box containing an EC2 instance running Apache httpd (reverse proxy and SSL termination), which forwards to Payara running the Dataverse WAR file, which talks to Solr for search. Payara also connects out to RDS PostgreSQL for metadata and S3 for file storage, both outside the EC2 instance.'}
 
 **EC2** is a virtual machine running Rocky Linux 9. Payara, Solr, and Apache all run here.
 
@@ -66,7 +44,7 @@ datasets, files, users, permissions, version histories. The database is the sour
 for everything except the actual file content.
 
 **S3** is object storage for the data files that users upload. Dataverse stores file metadata in RDS
-and file content in S3. The two must stay in sync -- a file record in the database pointing to a
+and file content in S3. The two must stay in sync: a file record in the database pointing to a
 missing S3 object is a broken dataset.
 
 **Payara** is a Jakarta EE application server. Dataverse runs as a WAR (Web Application Archive)
@@ -76,7 +54,7 @@ or through the Dataverse API at first boot.
 
 **Solr** is a search engine that powers Dataverse's dataset and file search. It maintains its own
 index independently of the database. After any database restore, the Solr index must be explicitly
-rebuilt -- it will not update itself. A running Dataverse with a stale or empty Solr index will
+rebuilt; it will not update itself. A running Dataverse with a stale or empty Solr index will
 appear to have no datasets.
 
 **Apache httpd** acts as a reverse proxy in front of Payara and handles SSL termination. Requests
@@ -99,8 +77,8 @@ These map onto two concerns:
 - **Configuration** (Ansible): what software is installed on those resources and how it is configured
 
 You run Terraform first to provision the resources, then Ansible to configure them. The
-`dataverse-infrastructure` repo is where you do both -- its Makefile calls out to Terraform
-and Ansible so you rarely interact with either tool directly.
+`dataverse-infrastructure` repo is where you do both: its Makefile calls out to Terraform
+and Ansible, so you rarely interact with either tool directly.
 
 ## Why infrastructure as code
 
@@ -113,28 +91,29 @@ AWS console or running commands directly on the server by hand. That works until
 
 Infrastructure as code puts the desired state of the system in version-controlled files.
 Terraform describes what AWS resources should exist. Ansible describes what should be installed
-and how it should be configured. Running them again should produce the same result -- this property
+and how it should be configured. Running them again should produce the same result. This property
 is called **idempotency**, and it is one of the central ideas in Episode 4.
 
 ## The migration context
 
 This lesson was developed during the migration of the UCLA Library Dataverse instance from
-version 5.14 to 6.8. Several decisions in the codebase -- the Makefile targets, the baseline
-scripts, the FAKE DOI provider configuration, the 7-phase migration plan -- exist because of
+version 5.14 to 6.8. Several decisions in the codebase (the Makefile targets, the baseline
+scripts, the FAKE DOI provider configuration, the 7-phase migration plan) exist because of
 constraints the migration imposed.
 
-Where those decisions appear in later episodes, we explain why they were made.
+Later episodes explain why those decisions were made where they come up.
 The migration itself is the subject of the final episode.
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
 ### Take stock
 
-Before moving on, open the three repositories in your browser:
+Before moving on, open the three repositories in your browser (these are private to the
+team; if you don't have access yet, read through the solution below instead):
 
-- https://github.com/ucla-data-science-center/terraform-dataverse
-- https://github.com/ucla-data-science-center/dataverse-ansible
-- https://github.com/ucla-data-science-center/dataverse-infrastructure
+- `your-org/terraform-dataverse`
+- `your-org/dataverse-ansible`
+- `your-org/dataverse-infrastructure`
 
 In each one, find:
 
@@ -164,8 +143,8 @@ Without looking back at the table above, answer from memory:
 
 :::::::::::::::::::::::::::::::::: solution
 
-1. `terraform-dataverse` -- bucket policy and IAM are AWS resources, which is Terraform's domain, not Ansible's.
-2. Neither repo does it automatically. Solr's index is built from what's in RDS, and Solr has no way to know the database changed underneath it. Rebuilding is a separate, explicit step (`make reindex` in `dataverse-infrastructure`) that must be run after any restore -- see Episode 5.
+1. `terraform-dataverse`: bucket policy and IAM are AWS resources, which is Terraform's domain, not Ansible's.
+2. Neither repo does it automatically. Solr's index is built from what's in RDS, and Solr has no way to know the database changed underneath it. Rebuilding is a separate, explicit step (`make reindex` in `dataverse-infrastructure`) that must be run after any restore. See Episode 5.
 
 ::::::::::::::::::::::::::::::::::::::::::
 
@@ -177,6 +156,6 @@ Without looking back at the table above, answer from memory:
 - Terraform provisions the AWS infrastructure; Ansible configures what runs on it.
 - The three repos are `terraform-dataverse`, `dataverse-ansible`, and `dataverse-infrastructure`.
 - Infrastructure as code makes the system reproducible, reviewable, and rebuildable.
-- Many decisions in this codebase were shaped by the 5.14 to 6.8 migration -- that context appears throughout the lesson.
+- Many decisions in this codebase were shaped by the 5.14 to 6.8 migration, and that context appears throughout the lesson.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

@@ -23,7 +23,7 @@ exercises: 10
 
 ## What Ansible does
 
-Ansible is responsible for configuration -- the "what is installed and how is it set up" layer.
+Ansible is responsible for configuration: the "what is installed and how is it set up" layer.
 After Terraform creates the EC2 instance, Ansible connects to it over SSH and:
 
 - Installs system packages (Java, Python, curl, and others)
@@ -34,7 +34,7 @@ After Terraform creates the EC2 instance, Ansible connects to it over SSH and:
 - Applies Dataverse configuration via the Dataverse API
 - Sets JVM options in Payara for Dataverse to use
 
-All of this is defined in the `dataverse-ansible` role -- a structured collection of tasks,
+All of this is defined in the `dataverse-ansible` role, a structured collection of tasks,
 templates, handlers, and variable files.
 
 ## Role structure
@@ -51,11 +51,11 @@ dataverse-ansible/
   group_vars/     <- environment-specific overrides
 ```
 
-`site.yml` at the repo root is the entry point -- the repo's own comment describes
+`site.yml` at the repo root is the entry point: the repo's own comment describes
 the whole thing as "this repository itself is the Dataverse ansible role." Instead of one
 `tasks/main.yml` dispatching to sub-files, `tasks/` holds a flat collection of per-service
 files (`payara.yml`, `solr.yml`, `dataverse-prereqs.yml`, and so on) that `site.yml` pulls
-in directly. There's no top-level `vars/` directory in this role -- just `defaults/` for
+in directly. There's no top-level `vars/` directory in this role, just `defaults/` for
 role defaults and `group_vars/` for environment overrides.
 
 ## Idempotency (the concept) vs. this role (the reality)
@@ -81,21 +81,48 @@ role does not have the second one.** The repo's own operating rule, stated plain
 `CONTEXT.md`: *"Ansible is NOT idempotent. You must fully destroy the environment before
 re-running. Do not re-run ansible-playbook against an existing instance."* In practice
 that means: after any `make rebuild`, if something fails partway through, the fix is
-`terraform destroy` and start over -- not "just run `make ansible` again and let idempotent
+`terraform destroy` and start over, not "run `make ansible` again and let idempotent
 modules sort it out."
+
+![A failed ansible-playbook run should end in terraform destroy and rebuild, not a second in-place run.](fig/ansible-rerun-decision.svg){alt="Decision flow: after make ansible ENV=x runs, if it did not fail, the environment is configured and module-level idempotency held. If it failed partway through, the wrong move is re-running ansible-playbook in place, which risks unguarded shell/command tasks failing again or corrupting state. The right move is terraform destroy followed by make rebuild, producing a clean environment rebuilt from scratch."}
 
 ::::::::::::::::::::::::::::::::::::: callout
 
 ### Why re-running isn't safe here
 
-`shell` and `command` tasks run every time unless guarded with `creates:` or `when:` --
+`shell` and `command` tasks run every time unless guarded with `creates:` or `when:`,
 and a role this size has a number of them: first-boot Dataverse API calls, database
 schema bootstrapping, Let's Encrypt certificate issuance. Any one of those re-running
 against an already-configured instance can fail outright or leave the system in a state
 none of the individual `ok`/`changed` reports would have predicted. The safe mental model
-for this specific role is **destroy-and-rebuild, not re-run-in-place** -- treat the
+for this specific role is **destroy-and-rebuild, not re-run-in-place**. Treat the
 per-module idempotency as a nice property of individual steps, not a guarantee about the
 playbook as a whole.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: callout
+
+### The harder shift: trusting automation over hand-fixing
+
+Knowing the destroy-and-rebuild rule and actually living by it are different things. You
+can be completely comfortable running `ansible-playbook` or testing roles with Molecule
+locally, and still fall back on old sysadmin habits under pressure: SSH into the box, find
+the broken service, patch it by hand, move on.
+
+That instinct is understandable. It's faster in the moment, and if you've spent years
+keeping servers alive by hand, it's the reflex that's kept things running. But it breaks
+the guarantee this whole stack depends on: that `terraform-dataverse` and `dataverse-ansible`
+together describe everything that's true about the server. The moment you hand-patch
+something outside that description, the code and the running instance disagree, and
+nobody, including future you, can tell just by reading the repo what state the box is
+actually in.
+
+The rule in `CONTEXT.md` (destroy and rebuild, don't patch in place) is really asking you
+to make that trade explicit: when something breaks, the fix goes into the role or the
+Terraform config, not onto the live host. It's slower the first time. It's also the only
+way the "read the repo, know the server" property this lesson keeps coming back to stays
+true.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -104,7 +131,7 @@ playbook as a whole.
 The `group_vars/` directory holds variable files that override defaults for specific
 environments. The real files are `all.yml` (non-secret defaults shared everywhere),
 `dev.yml`, `test.yml`, `staging.yml`, and `TEMPLATE.yml` (a starting point for a new
-environment) -- there is no `production.yml` yet.
+environment). There is no `production.yml` yet.
 
 Dev and test both point at the FAKE DOI provider, but the real variables are nested
 under `pid:` and `doi:` blocks, not a single flat `dataverse_doi_provider` key:
@@ -124,7 +151,7 @@ doi:
 ```
 
 The same playbook runs against every environment; the variables control which behavior
-each environment gets. This is how we keep dev, test, and staging separate without
+each environment gets. This keeps dev, test, and staging separate without
 maintaining separate copies of the role.
 
 ## The inventory
@@ -140,13 +167,13 @@ ec2-12-34-56-78.us-west-2.compute.amazonaws.com ansible_user=rocky ansible_ssh_p
 
 The Makefile generates and uses this inventory automatically when you run `make rebuild`.
 `CONTEXT.md` flags this file specifically: it's gitignored and regenerated by Terraform
-on every `apply` -- never edit it by hand, your edits will just be overwritten.
+on every `apply`. Never edit it by hand: your edits will be overwritten.
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
 ### Run the real playbook and read the output
 
-There is no `--check`-mode wrapper for this role today -- `make ansible ENV=tim` runs the
+There is no `--check`-mode wrapper for this role today: `make ansible ENV=tim` runs the
 real thing:
 
 ```bash
@@ -167,9 +194,9 @@ Read through the output and identify:
 `ok` means the module checked state and found nothing to do. `changed` means it modified
 something. A freshly-provisioned instance should show mostly `changed` on first run;
 re-running against the *same still-fresh* instance would show more `ok`s for the guarded
-tasks -- but that's not a scenario this role is meant to be run in twice.
+tasks. But that's not a scenario this role is meant to be run in twice.
 
-Some `shell`/`command` tasks are guarded, some aren't -- that inconsistency is exactly
+Some `shell`/`command` tasks are guarded, some aren't. That inconsistency is exactly
 why the repo-wide rule exists.
 
 Per `CONTEXT.md`: destroy and rebuild (`make rebuild`), not re-run in place. There is no
@@ -192,8 +219,8 @@ while the second is false?
 Module idempotency is a per-task property: a well-written module checks current state
 before acting, so running it twice in a row causes no harm. Playbook-level re-run safety
 depends on *every* task in the run having that property, including `shell`/`command`
-tasks that don't check anything by default. One unguarded task -- a schema bootstrap, a
-cert request, a first-boot API call -- is enough to make the whole playbook unsafe to
+tasks that don't check anything by default. One unguarded task (a schema bootstrap, a
+cert request, a first-boot API call) is enough to make the whole playbook unsafe to
 re-run, even though most of its individual tasks are perfectly idempotent on their own.
 
 ::::::::::::::::::::::::::::::::::::::::::::::
@@ -203,9 +230,9 @@ re-run, even though most of its individual tasks are perfectly idempotent on the
 ::::::::::::::::::::::::::::::::::::: keypoints
 
 - `dataverse-ansible` installs and configures Payara, Solr, Apache, and Dataverse; `site.yml` is the entry point, and the whole repo is treated as one role.
-- Individual modules (like `dnf`) are idempotent -- but this role, as a whole, is **not** safe to re-run against a live instance. The operating rule is destroy-and-rebuild, not re-run-in-place.
+- Individual modules (like `dnf`) are idempotent, but this role, as a whole, is **not** safe to re-run against a live instance. The operating rule is destroy-and-rebuild, not re-run-in-place.
 - `group_vars` (`all.yml`, `dev.yml`, `test.yml`, `staging.yml`) provides environment-specific values without duplicating the role; DOI config lives under nested `pid:`/`doi:` blocks, not flat keys.
-- The Ansible inventory is generated from Terraform output (`ansible_user: rocky`) -- gitignored, regenerated on every `apply`, never hand-edited.
-- Unguarded `shell`/`command` tasks are the reason re-running isn't safe -- prefer modules, and guard shell tasks with `creates:`/`when:` when you can't avoid them.
+- The Ansible inventory is generated from Terraform output (`ansible_user: rocky`): gitignored, regenerated on every `apply`, never hand-edited.
+- Unguarded `shell`/`command` tasks are the reason re-running isn't safe. Prefer modules, and guard shell tasks with `creates:`/`when:` when you can't avoid them.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

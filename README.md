@@ -9,7 +9,7 @@ Carpentries Workbench format.
 **Rendered lesson:**  
 https://jt14den.github.io/terraform-aws-infrastructure/
 
-## Who This Lesson Is For
+## Who this lesson is for
 
 Learners who want a practical introduction to:
 
@@ -20,7 +20,7 @@ Learners who want a practical introduction to:
 
 No prior Terraform experience is required.
 
-## Learning Goals
+## Learning goals
 
 By the end of the lesson, learners will be able to:
 
@@ -53,7 +53,7 @@ For questions about this lesson:
   tdennis@library.ucla.edu  
   Director, Data Science Center, UCLA Library
 
-## Credits and Acknowledgments
+## Credits and acknowledgments
 
 This lesson was created using:
 

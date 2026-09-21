@@ -34,7 +34,7 @@ Common secrets stored in the vault for this project:
 
 Notably absent: **AWS credentials for S3 writes are not a vaulted secret at all.** The
 EC2 instance authenticates to S3 through an IAM instance profile (`s3.use_iam_role: true`
-in `group_vars`) -- there's no access key to leak in the first place, which is the safer
+in `group_vars`): there's no access key to leak in the first place, which is the safer
 design and worth naming as deliberate, not an oversight.
 
 ::::::::::::::::::::::::::::::::::::: callout
@@ -45,7 +45,7 @@ The IAM-role design above is the intended pattern, but it only holds if everyone
 uses it. In August 2026, a manual troubleshooting session against a real S3-permissions
 error (`ansible-infrastructure` #56, "Dataverse files not found") worked around the problem
 with `asadmin create-jvm-options` setting a static `dataverse.files.s3.access-key` and
-`secret-key` directly -- which works, and also reintroduces exactly the access key this
+`secret-key` directly. That works, and also reintroduces exactly the access key this
 design exists to avoid.
 
 This is not a story about someone doing it wrong. It's what manual, hands-on-the-box
@@ -53,13 +53,13 @@ troubleshooting produces under time pressure: a fix that resolves the symptom in
 you, using whatever tool is fastest, without necessarily routing back through the Ansible
 role that's supposed to be the source of truth. If you rebuild that instance from scratch
 with `make rebuild`, the static key disappears and the IAM-role config is what actually
-ships -- so the two modes of operating (rebuild-from-role vs. patch-the-live-box) can
+ships, so the two modes of operating (rebuild-from-role vs. patch-the-live-box) can
 silently diverge without anyone deciding they should. Worth checking group_vars against
 the live instance's actual JVM options after any manual intervention like this one.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-There's no separate `group_vars/all/vault.yml` file -- secrets are inline, encrypted
+There's no separate `group_vars/all/vault.yml` file: secrets are inline, encrypted
 in place inside the same flat `group_vars/<env>.yml` files as everything else, using
 `!vault |` blocks:
 
@@ -84,13 +84,15 @@ ansible-vault edit group_vars/dev.yml
 Both commands prompt for the vault password (the `.vault-password` file from Episode 2).
 That file itself is never committed to the repository.
 
+![A secret moves from an encrypted group_vars block, through ansible-vault decryption at runtime, into a Payara JVM option, and is finally read by Dataverse at startup.](fig/secret-flow.svg){alt="Flow diagram: a secret starts as an encrypted vault block in group_vars/<env>.yml, is decrypted by Ansible at playbook runtime, is set as a Payara JVM option in domain.xml, and is read by Dataverse at startup."}
+
 ::::::::::::::::::::::::::::::::::::: callout
 
 ### Never commit unencrypted secrets
 
 If you accidentally add a plaintext secret to the repo, treat it as compromised and rotate it.
 Remove it from git history using `git filter-branch` or `git filter-repo`, then notify the team.
-The vault exists to prevent this -- if in doubt, vault it.
+The vault exists to prevent this: if in doubt, vault it.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -116,7 +118,7 @@ letsencrypt:
 ```
 
 When `test_cert: true`, Ansible generates a self-signed certificate locally and skips
-Certbot entirely. Browsers will show a security warning for self-signed certs -- that is expected.
+Certbot entirely. Browsers will show a security warning for self-signed certs. That is expected.
 
 ## FAKE PID provider
 
@@ -133,7 +135,7 @@ you do not want to:
 Dataverse has a built-in FAKE PID provider for exactly this purpose. It generates DOI-like
 identifiers (they look like DOIs but do not resolve) without contacting any external service.
 
-In `group_vars`, this isn't one variable but two nested blocks -- `pid:` (the identifier
+In `group_vars`, this isn't one variable but two nested blocks: `pid:` (the identifier
 format) and `doi:` (the registration service):
 
 ```yaml
@@ -148,7 +150,7 @@ doi:
 ```
 
 The FAKE provider is used in all non-production environments throughout the migration.
-The switch to real EZID happens only at Phase 7 (DNS cutover) -- and since there's no
+The switch to real EZID happens only at Phase 7 (DNS cutover), and since there's no
 `production.yml` yet, that switch requires writing production config, not just flipping
 a value in an existing file.
 
@@ -156,13 +158,13 @@ a value in an existing file.
 
 ### A dev-environment convenience got mistaken for a decision
 
-For a while in mid-2026, this project's own planning documents disagreed with each other
-about whether production DOIs come from EZID or DataCite -- the roadmap and workplan said
-EZID, but `dev.yml`/`staging.yml`'s DataCite-shaped test config (real sandbox URLs, a real
-test prefix) looked like evidence someone had decided to switch. Tim confirmed directly in
-September 2026: production has always been EZID. The DataCite stub in dev/test config
-existed because DataCite's public sandbox needs no campus credentials and EZID's does --
-it was the path of least resistance for testing, not a provider decision.
+For a while, this project's own planning documents disagreed with each other about
+whether production DOIs come from EZID or DataCite: the roadmap and workplan said EZID,
+but `dev.yml`/`staging.yml`'s DataCite-shaped test config (real sandbox URLs, a real test
+prefix) looked like evidence someone had decided to switch. A direct check with the team
+confirmed production has always been EZID. The DataCite stub in dev/test config existed
+because DataCite's public sandbox needs no campus credentials and EZID's does. It was the
+path of least resistance for testing, not a provider decision.
 
 The lesson: what's easiest to configure in a test environment is not evidence of what
 production actually uses. If you find yourself inferring a real-world fact from a dev
@@ -185,7 +187,7 @@ config default, that's a question to ask a person, not a conclusion to write dow
 
 Don't assume every environment's secrets are actually encrypted right now. `test.yml`
 currently has `dataverse_adminpass: "CHANGE_ME_USE_VAULT"` and
-`dataverse_postgresql_password: "CHANGE_ME_USE_VAULT"` in plaintext -- literal placeholder
+`dataverse_postgresql_password: "CHANGE_ME_USE_VAULT"` in plaintext: literal placeholder
 strings, not real secrets, but also not vaulted. `all.yml` (the shared defaults every
 environment inherits unless it overrides them) has real plaintext defaults too, like
 `adminpass: admin`. Treat "is this value vaulted in `dev.yml`" and "is this value vaulted
@@ -207,8 +209,8 @@ Open `group_vars/dev.yml` and `group_vars/test.yml` in the `dataverse-ansible` r
 
 ::::::::::::::::::::::::::::::::::::: keypoints
 
-- Secrets are vaulted inline inside `group_vars/<env>.yml` (`!vault |` blocks) -- there is no separate `group_vars/all/vault.yml` file.
-- S3 access uses an IAM instance profile, not vaulted AWS credentials -- there's no access key to leak.
+- Secrets are vaulted inline inside `group_vars/<env>.yml` (`!vault |` blocks): there is no separate `group_vars/all/vault.yml` file.
+- S3 access uses an IAM instance profile, not vaulted AWS credentials: there's no access key to leak.
 - Test environments use self-signed certificates (`letsencrypt.certbot.test_cert: true`); production would use Let's Encrypt.
 - DOI config is two nested blocks, `pid:` and `doi:`, not one flat provider variable. FAKE is used everywhere non-production; EZID is planned for Phase 7 and has no group_vars file yet.
 - Vaulting is incomplete today: `test.yml` has real unvaulted `CHANGE_ME_USE_VAULT` placeholders. Don't assume every environment is equally secret-safe.
