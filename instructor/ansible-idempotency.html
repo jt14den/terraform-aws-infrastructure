@@ -359,7 +359,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Ansible: Configuration and Idempotency</h1>
-        <p>Last updated on 2026-07-30 |
+        <p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/ansible-idempotency.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -406,7 +406,7 @@ playbook-level re-run safety, and why this role only has the first.</li>
 </div>
 </div>
 <section><h2 class="section-heading" id="what-ansible-does">What Ansible does<a class="anchor" aria-label="anchor" href="#what-ansible-does"></a></h2>
-<hr class="half-width"><p>Ansible is responsible for configuration – the “what is installed and
+<hr class="half-width"><p>Ansible is responsible for configuration: the “what is installed and
 how is it set up” layer. After Terraform creates the EC2 instance,
 Ansible connects to it over SSH and:</p>
 <ul><li>Installs system packages (Java, Python, curl, and others)</li>
@@ -416,7 +416,7 @@ Ansible connects to it over SSH and:</p>
 <li>Deploys the Dataverse WAR file into Payara</li>
 <li>Applies Dataverse configuration via the Dataverse API</li>
 <li>Sets JVM options in Payara for Dataverse to use</li>
-</ul><p>All of this is defined in the <code>dataverse-ansible</code> role – a
+</ul><p>All of this is defined in the <code>dataverse-ansible</code> role, a
 structured collection of tasks, templates, handlers, and variable
 files.</p>
 </section><section><h2 class="section-heading" id="role-structure">Role structure<a class="anchor" aria-label="anchor" href="#role-structure"></a></h2>
@@ -429,15 +429,14 @@ directories are:</p>
   templates/      &lt;- config file templates with variable substitution
   defaults/       &lt;- default variable values
   group_vars/     &lt;- environment-specific overrides</code></pre>
-<p><code>site.yml</code> at the repo root is the entry point – the
-repo’s own comment describes the whole thing as “this repository itself
-is the Dataverse ansible role.” Instead of one
-<code>tasks/main.yml</code> dispatching to sub-files,
-<code>tasks/</code> holds a flat collection of per-service files
-(<code>payara.yml</code>, <code>solr.yml</code>,
+<p><code>site.yml</code> at the repo root is the entry point: the repo’s
+own comment describes the whole thing as “this repository itself is the
+Dataverse ansible role.” Instead of one <code>tasks/main.yml</code>
+dispatching to sub-files, <code>tasks/</code> holds a flat collection of
+per-service files (<code>payara.yml</code>, <code>solr.yml</code>,
 <code>dataverse-prereqs.yml</code>, and so on) that
 <code>site.yml</code> pulls in directly. There’s no top-level
-<code>vars/</code> directory in this role – just <code>defaults/</code>
+<code>vars/</code> directory in this role, just <code>defaults/</code>
 for role defaults and <code>group_vars/</code> for environment
 overrides.</p>
 </section><section><h2 class="section-heading" id="idempotency-the-concept-vs--this-role-the-reality">Idempotency (the concept) vs. this role (the reality)<a class="anchor" aria-label="anchor" href="#idempotency-the-concept-vs--this-role-the-reality"></a></h2>
@@ -466,10 +465,12 @@ one.</strong> The repo’s own operating rule, stated plainly in
 destroy the environment before re-running. Do not re-run
 ansible-playbook against an existing instance.”</em> In practice that
 means: after any <code>make rebuild</code>, if something fails partway
-through, the fix is <code>terraform destroy</code> and start over – not
-“just run <code>make ansible</code> again and let idempotent modules
-sort it out.”</p>
-<div id="why-re-running-isnt-safe-here" class="callout">
+through, the fix is <code>terraform destroy</code> and start over, not
+“run <code>make ansible</code> again and let idempotent modules sort it
+out.”</p>
+<figure><img src="../fig/ansible-rerun-decision.svg" alt="Decision flow: after make ansible ENV=x runs, if it did not fail, the environment is configured and module-level idempotency held. If it failed partway through, the wrong move is re-running ansible-playbook in place, which risks unguarded shell/command tasks failing again or corrupting state. The right move is terraform destroy followed by make rebuild, producing a clean environment rebuilt from scratch." class="figure mx-auto d-block"><div class="figcaption">A failed ansible-playbook run should end in
+terraform destroy and rebuild, not a second in-place run.</div>
+</figure><div id="why-re-running-isnt-safe-here" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
@@ -478,16 +479,48 @@ sort it out.”</p>
 <h3 class="callout-title">Why re-running isn’t safe here</h3>
 <div class="callout-content">
 <p><code>shell</code> and <code>command</code> tasks run every time
-unless guarded with <code>creates:</code> or <code>when:</code> – and a
+unless guarded with <code>creates:</code> or <code>when:</code>, and a
 role this size has a number of them: first-boot Dataverse API calls,
 database schema bootstrapping, Let’s Encrypt certificate issuance. Any
 one of those re-running against an already-configured instance can fail
 outright or leave the system in a state none of the individual
 <code>ok</code>/<code>changed</code> reports would have predicted. The
 safe mental model for this specific role is <strong>destroy-and-rebuild,
-not re-run-in-place</strong> – treat the per-module idempotency as a
-nice property of individual steps, not a guarantee about the playbook as
-a whole.</p>
+not re-run-in-place</strong>. Treat the per-module idempotency as a nice
+property of individual steps, not a guarantee about the playbook as a
+whole.</p>
+</div>
+</div>
+</div>
+<div id="the-harder-shift-trusting-automation-over-hand-fixing" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="the-harder-shift-trusting-automation-over-hand-fixing" class="callout-inner">
+<h3 class="callout-title">The harder shift: trusting automation over
+hand-fixing</h3>
+<div class="callout-content">
+<p>Knowing the destroy-and-rebuild rule and actually living by it are
+different things. You can be completely comfortable running
+<code>ansible-playbook</code> or testing roles with Molecule locally,
+and still fall back on old sysadmin habits under pressure: SSH into the
+box, find the broken service, patch it by hand, move on.</p>
+<p>That instinct is understandable. It’s faster in the moment, and if
+you’ve spent years keeping servers alive by hand, it’s the reflex that’s
+kept things running. But it breaks the guarantee this whole stack
+depends on: that <code>terraform-dataverse</code> and
+<code>dataverse-ansible</code> together describe everything that’s true
+about the server. The moment you hand-patch something outside that
+description, the code and the running instance disagree, and nobody,
+including future you, can tell just by reading the repo what state the
+box is actually in.</p>
+<p>The rule in <code>CONTEXT.md</code> (destroy and rebuild, don’t patch
+in place) is really asking you to make that trade explicit: when
+something breaks, the fix goes into the role or the Terraform config,
+not onto the live host. It’s slower the first time. It’s also the only
+way the “read the repo, know the server” property this lesson keeps
+coming back to stays true.</p>
 </div>
 </div>
 </div>
@@ -496,8 +529,8 @@ a whole.</p>
 override defaults for specific environments. The real files are
 <code>all.yml</code> (non-secret defaults shared everywhere),
 <code>dev.yml</code>, <code>test.yml</code>, <code>staging.yml</code>,
-and <code>TEMPLATE.yml</code> (a starting point for a new environment) –
-there is no <code>production.yml</code> yet.</p>
+and <code>TEMPLATE.yml</code> (a starting point for a new environment).
+There is no <code>production.yml</code> yet.</p>
 <p>Dev and test both point at the FAKE DOI provider, but the real
 variables are nested under <code>pid:</code> and <code>doi:</code>
 blocks, not a single flat <code>dataverse_doi_provider</code> key:</p>
@@ -517,9 +550,8 @@ blocks, not a single flat <code>dataverse_doi_provider</code> key:</p>
 <span id="cb3-11"><a href="#cb3-11" tabindex="-1" aria-label="code-block-3-11"></a><span class="at">  </span><span class="fu">password</span><span class="kw">:</span><span class="at"> </span><span class="st">"notmypassword"</span><span class="co">   # not vaulted in dev -- see Episode 6</span></span></code></pre>
 </div>
 <p>The same playbook runs against every environment; the variables
-control which behavior each environment gets. This is how we keep dev,
-test, and staging separate without maintaining separate copies of the
-role.</p>
+control which behavior each environment gets. This keeps dev, test, and
+staging separate without maintaining separate copies of the role.</p>
 </section><section><h2 class="section-heading" id="the-inventory">The inventory<a class="anchor" aria-label="anchor" href="#the-inventory"></a></h2>
 <hr class="half-width"><p>Ansible needs to know which host to connect to. The inventory file
 lists hosts and their connection details. For this project, the
@@ -530,7 +562,7 @@ ec2-12-34-56-78.us-west-2.compute.amazonaws.com ansible_user=rocky ansible_ssh_p
 <p>The Makefile generates and uses this inventory automatically when you
 run <code>make rebuild</code>. <code>CONTEXT.md</code> flags this file
 specifically: it’s gitignored and regenerated by Terraform on every
-<code>apply</code> – never edit it by hand, your edits will just be
+<code>apply</code>. Never edit it by hand: your edits will be
 overwritten.</p>
 <div id="run-the-real-playbook-and-read-the-output" class="callout challenge">
 <div class="callout-square">
@@ -540,7 +572,7 @@ overwritten.</p>
 <div id="run-the-real-playbook-and-read-the-output" class="callout-inner">
 <h3 class="callout-title">Run the real playbook and read the output</h3>
 <div class="callout-content">
-<p>There is no <code>--check</code>-mode wrapper for this role today –
+<p>There is no <code>--check</code>-mode wrapper for this role today:
 <code>make ansible ENV=tim</code> runs the real thing:</p>
 <div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -572,11 +604,10 @@ is the supported way to recover?</li>
 do. <code>changed</code> means it modified something. A
 freshly-provisioned instance should show mostly <code>changed</code> on
 first run; re-running against the <em>same still-fresh</em> instance
-would show more <code>ok</code>s for the guarded tasks – but that’s not
-a scenario this role is meant to be run in twice.</p>
+would show more <code>ok</code>s for the guarded tasks. But that’s not a
+scenario this role is meant to be run in twice.</p>
 <p>Some <code>shell</code>/<code>command</code> tasks are guarded, some
-aren’t – that inconsistency is exactly why the repo-wide rule
-exists.</p>
+aren’t. That inconsistency is exactly why the repo-wide rule exists.</p>
 <p>Per <code>CONTEXT.md</code>: destroy and rebuild
 (<code>make rebuild</code>), not re-run in place. There is no supported
 partial-recovery path.</p>
@@ -611,8 +642,8 @@ checks current state before acting, so running it twice in a row causes
 no harm. Playbook-level re-run safety depends on <em>every</em> task in
 the run having that property, including
 <code>shell</code>/<code>command</code> tasks that don’t check anything
-by default. One unguarded task – a schema bootstrap, a cert request, a
-first-boot API call – is enough to make the whole playbook unsafe to
+by default. One unguarded task (a schema bootstrap, a cert request, a
+first-boot API call) is enough to make the whole playbook unsafe to
 re-run, even though most of its individual tasks are perfectly
 idempotent on their own.</p>
 </div>
@@ -630,7 +661,7 @@ idempotent on their own.</p>
 <code>dataverse-ansible</code> installs and configures Payara, Solr,
 Apache, and Dataverse; <code>site.yml</code> is the entry point, and the
 whole repo is treated as one role.</li>
-<li>Individual modules (like <code>dnf</code>) are idempotent – but this
+<li>Individual modules (like <code>dnf</code>) are idempotent, but this
 role, as a whole, is <strong>not</strong> safe to re-run against a live
 instance. The operating rule is destroy-and-rebuild, not
 re-run-in-place.</li>
@@ -641,12 +672,11 @@ environment-specific values without duplicating the role; DOI config
 lives under nested <code>pid:</code>/<code>doi:</code> blocks, not flat
 keys.</li>
 <li>The Ansible inventory is generated from Terraform output
-(<code>ansible_user: rocky</code>) – gitignored, regenerated on every
+(<code>ansible_user: rocky</code>): gitignored, regenerated on every
 <code>apply</code>, never hand-edited.</li>
 <li>Unguarded <code>shell</code>/<code>command</code> tasks are the
-reason re-running isn’t safe – prefer modules, and guard shell tasks
-with <code>creates:</code>/<code>when:</code> when you can’t avoid
-them.</li>
+reason re-running isn’t safe. Prefer modules, and guard shell tasks with
+<code>creates:</code>/<code>when:</code> when you can’t avoid them.</li>
 </ul></div>
 </div>
 </div>
@@ -714,7 +744,7 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/ansible-idempotency.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/ansible-idempotency.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-07-30",
+  "dateModified": "2026-09-21",
   "datePublished": "2026-09-21"
 }
 

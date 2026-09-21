@@ -1,0 +1,19 @@
+flowchart TB
+    User(["Browser / user<br/>on the internet"])
+
+    subgraph AWS["AWS"]
+        subgraph EC2["EC2 instance (Rocky Linux 9)"]
+            Apache["Apache httpd<br/>reverse proxy + SSL"]
+            Payara["Payara (app server)<br/>Dataverse (WAR file)"]
+            Solr["Solr<br/>search index"]
+            Apache --> Payara
+            Payara --> Solr
+        end
+        RDS[("RDS<br/>PostgreSQL")]
+        S3[("S3<br/>file storage")]
+    end
+
+    Payara --> RDS
+    Payara --> S3
+
+    User --> Apache

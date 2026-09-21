@@ -368,7 +368,7 @@ infrastructure</li>
 </li>
 <li>Read test output and baseline comparisons to verify the system is in
 a known-good state</li>
-<li>Understand the 7-phase migration plan and what each phase
+<li>Explain the 7-phase migration plan and what each phase
 accomplishes</li>
 </ul><section><h2 class="section-heading" id="who-this-is-for">Who this is for<a class="anchor" aria-label="anchor" href="#who-this-is-for"></a></h2>
 <hr class="half-width"><ul><li>
@@ -487,7 +487,7 @@ vs. <code>make reindex</code>?
  8. <a href="testing-validation.html">Testing and Validation</a>
 </td>
 <td>
-How do we know the migration worked?<br>What does the test suite
+How do I know the migration worked?<br>What does the test suite
 check?<br>How do baseline comparisons verify data integrity?
 </td>
 </tr><tr><td>
@@ -557,7 +557,7 @@ credentials.</p>
 </button>
 </div>
 </nav><div id="nav-tabContent-1" class="tab-content">
-<div id="nav-tabpanel-1-macOS" class="tab-pane show active" aria-labelledby="nav-tab-1-macOS" role="tabpanel">
+<div id="nav-tabpanel-1-macOS" class="tab-pane show active" role="tabpanel" aria-labelledby="nav-tab-1-macOS">
 <p>Install using Homebrew:</p>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -571,7 +571,7 @@ credentials.</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="ex">aws</span> <span class="at">--version</span></span></code></pre>
 </div>
 </div>
-<div id="nav-tabpanel-1-Windows" class="tab-pane" aria-labelledby="nav-tab-1-Windows" role="tabpanel">
+<div id="nav-tabpanel-1-Windows" class="tab-pane" role="tabpanel" aria-labelledby="nav-tab-1-Windows">
 <p>Use the official MSI installer:</p>
 <ol style="list-style-type: decimal"><li>Download: <a href="https://awscli.amazonaws.com/AWSCLIV2.msi" class="external-link">https://awscli.amazonaws.com/AWSCLIV2.msi</a>
 </li>
@@ -583,7 +583,7 @@ credentials.</p>
 <pre class="sourceCode powershell" tabindex="0"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a>aws <span class="op">--</span>version</span></code></pre>
 </div>
 </div>
-<div id="nav-tabpanel-1-Linux" class="tab-pane" aria-labelledby="nav-tab-1-Linux" role="tabpanel">
+<div id="nav-tabpanel-1-Linux" class="tab-pane" role="tabpanel" aria-labelledby="nav-tab-1-Linux">
 <p>On Ubuntu/Debian:</p>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -631,7 +631,7 @@ administrator.</p>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="configure-aws-credentials-iam-identity-center-sso">3. Configure AWS Credentials (IAM Identity Center / SSO)<a class="anchor" aria-label="anchor" href="#configure-aws-credentials-iam-identity-center-sso"></a></h2>
+</section><section><h2 class="section-heading" id="configure-aws-credentials-iam-identity-center-sso">3. Configure AWS credentials (IAM Identity Center / SSO)<a class="anchor" aria-label="anchor" href="#configure-aws-credentials-iam-identity-center-sso"></a></h2>
 <hr class="half-width"><div id="aws-authentication-is-changing-and-thats-normal" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -661,7 +661,7 @@ expected.</p>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
 <div class="accordion-body">
 <p>Learners with prior AWS experience may expect access keys instead of
 SSO. Reassure them that Identity Center is now standard in many
@@ -732,7 +732,7 @@ instructed you to use custom scopes.</p>
 </button>
 </div>
 </nav><div id="nav-tabContent-2" class="tab-content">
-<div id="nav-tabpanel-2-macOS" class="tab-pane show active" aria-labelledby="nav-tab-2-macOS" role="tabpanel">
+<div id="nav-tabpanel-2-macOS" class="tab-pane show active" role="tabpanel" aria-labelledby="nav-tab-2-macOS">
 <div class="codewrapper sourceCode" id="cb10">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -740,7 +740,7 @@ instructed you to use custom scopes.</p>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1" aria-label="code-block-10-2"></a><span class="ex">brew</span> install hashicorp/tap/terraform</span></code></pre>
 </div>
 </div>
-<div id="nav-tabpanel-2-Windows" class="tab-pane" aria-labelledby="nav-tab-2-Windows" role="tabpanel">
+<div id="nav-tabpanel-2-Windows" class="tab-pane" role="tabpanel" aria-labelledby="nav-tab-2-Windows">
 <p>Using Chocolatey:</p>
 <div class="codewrapper sourceCode" id="cb11">
 <h3 class="code-label">POWERSHELL<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -754,7 +754,7 @@ instructed you to use custom scopes.</p>
 <pre class="sourceCode powershell" tabindex="0"><code class="sourceCode powershell"><span id="cb12-1"><a href="#cb12-1" tabindex="-1" aria-label="code-block-12-1"></a>scoop install terraform</span></code></pre>
 </div>
 </div>
-<div id="nav-tabpanel-2-Linux" class="tab-pane" aria-labelledby="nav-tab-2-Linux" role="tabpanel">
+<div id="nav-tabpanel-2-Linux" class="tab-pane" role="tabpanel" aria-labelledby="nav-tab-2-Linux">
 <p>On Ubuntu/Debian:</p>
 <div class="codewrapper sourceCode" id="cb13">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -785,7 +785,7 @@ instructed you to use custom scopes.</p>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1" aria-label="code-block-15-1"></a><span class="ex">terraform</span> version</span></code></pre>
 </div>
-</section><section><h2 class="section-heading" id="create-a-working-directory">5. Create a Working Directory<a class="anchor" aria-label="anchor" href="#create-a-working-directory"></a></h2>
+</section><section><h2 class="section-heading" id="create-a-working-directory">5. Create a working directory<a class="anchor" aria-label="anchor" href="#create-a-working-directory"></a></h2>
 <hr class="half-width"><p>Create a folder where your Terraform configuration files will
 live:</p>
 <div class="codewrapper sourceCode" id="cb16">
@@ -794,7 +794,7 @@ live:</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1" aria-label="code-block-16-1"></a><span class="fu">mkdir</span> terraform-dataverse</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1" aria-label="code-block-16-2"></a><span class="bu">cd</span> terraform-dataverse</span></code></pre>
 </div>
-</section><section><h2 class="section-heading" id="optional-clone-the-lesson-repository">6. (Optional) Clone the Lesson Repository<a class="anchor" aria-label="anchor" href="#optional-clone-the-lesson-repository"></a></h2>
+</section><section><h2 class="section-heading" id="optional-clone-the-lesson-repository">6. (Optional) Clone the lesson repository<a class="anchor" aria-label="anchor" href="#optional-clone-the-lesson-repository"></a></h2>
 <hr class="half-width"><p>If you want the example files from this lesson:</p>
 <div class="codewrapper sourceCode" id="cb17">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>

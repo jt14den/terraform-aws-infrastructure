@@ -365,10 +365,10 @@ Payara JVM options. See: [GlassFish], [WAR file], [JVM options].</p>
 <p><strong>GlassFish</strong> The original Jakarta EE application server
 from which Payara was forked. Some Dataverse documentation and older
 issues reference GlassFish commands. They are mostly interchangeable
-with Payara – the <code>asadmin</code> CLI and domain structure are the
+with Payara: the <code>asadmin</code> CLI and domain structure are the
 same.</p>
 <p><strong>WAR file</strong> Web Application Archive. A packaged Java
-web application – a JAR file with a specific structure that application
+web application, a JAR file with a specific structure that application
 servers like Payara know how to deploy. Dataverse is distributed as a
 WAR file. Ansible downloads and deploys it during installation.</p>
 <p><strong>Solr</strong> An open-source full-text search engine (from
@@ -455,7 +455,7 @@ derived from the storage identifier stored in the database.</p>
 that can be reassociated with a different EC2 instance, so the address
 itself doesn’t have to change when the instance does. In this project,
 <code>aws_eip.dataverse</code> is defined in the same Terraform module
-as the EC2 instance and associated directly to it – so today it’s
+as the EC2 instance and associated directly to it, so today it’s
 destroyed and recreated along with the instance on every
 <code>terraform destroy</code>/<code>apply</code> cycle, and does
 <em>not</em> yet survive a rebuild. Making it persistent is open work
@@ -506,8 +506,8 @@ share the same state. Prevents two people from making conflicting
 changes. Used in this project; state is in
 <code>s3://ucla-dataverse-migration-assets/terraform/state/</code>.</p>
 <p><strong>terraform plan</strong> A Terraform command that shows what
-would change if you ran <code>terraform apply</code> – without making
-any changes. Always run <code>terraform plan</code> before
+would change if you ran <code>terraform apply</code>, without making any
+changes. Always run <code>terraform plan</code> before
 <code>terraform apply</code> to review the diff.</p>
 <p><strong>terraform apply</strong> A Terraform command that creates,
 updates, or destroys resources to match the configuration. Always review
@@ -523,7 +523,7 @@ definitions between Tim’s and Jamie’s environments.</p>
 (<code>terraform.tfvars</code>), one per environment, gitignored (never
 committed). Intended to hold environment-specific non-secret values
 (instance size, region, bucket names), but in practice Tim’s copy also
-has a plaintext <code>db_password</code> – a known gap (audit finding
+has a plaintext <code>db_password</code>: a known gap (audit finding
 F8), not the intended design.</p>
 <hr></section><section><h2 class="section-heading" id="ansible">Ansible<a class="anchor" aria-label="anchor" href="#ansible"></a></h2>
 <hr class="half-width"><p><strong>Ansible</strong> An agentless configuration management tool.
@@ -537,7 +537,7 @@ project runs the <code>dataverse-ansible</code> role against the target
 host.</p>
 <p><strong>Role</strong> A structured, reusable unit of Ansible
 configuration. The entire <code>dataverse-ansible</code> repo is treated
-as one role, entered via <code>site.yml</code> at the repo root – not a
+as one role, entered via <code>site.yml</code> at the repo root, not a
 <code>tasks/main.yml</code> dispatcher. Its directories:
 <code>tasks/</code> (~90 flat per-service files),
 <code>handlers/</code>, <code>templates/</code>, <code>defaults/</code>,
@@ -557,7 +557,7 @@ notifies the handler, which restarts the service at the end of the play.
 Handlers only run once per play even if notified multiple times.</p>
 <p><strong>Idempotency</strong> The property of an operation that
 produces the same result whether run once or many times. Individual
-Ansible modules (like <code>dnf</code>) are generally idempotent – they
+Ansible modules (like <code>dnf</code>) are generally idempotent: they
 check state before acting and report <code>ok</code> when no change is
 needed. This is a per-task property, not a guarantee about a whole
 playbook: <code>dataverse-ansible</code> as a whole is explicitly
@@ -565,13 +565,13 @@ playbook: <code>dataverse-ansible</code> as a whole is explicitly
 <code>CONTEXT.md</code>’s “NOT idempotent” rule) because some
 <code>shell</code>/<code>command</code> tasks aren’t guarded. See: <a href="#ansible">Ansible</a>.</p>
 <p><strong>group_vars</strong> A directory of YAML variable files that
-apply to specific environments. For this project the files are flat –
-<code>all.yml</code>, <code>dev.yml</code>, <code>test.yml</code>,
-<code>staging.yml</code>, <code>TEMPLATE.yml</code> – not a nested
+apply to specific environments. For this project the files are flat
+(<code>all.yml</code>, <code>dev.yml</code>, <code>test.yml</code>,
+<code>staging.yml</code>, <code>TEMPLATE.yml</code>), not a nested
 <code>group_vars/all/</code> directory. <code>all.yml</code> applies to
 every environment unless a more specific file overrides a given key.</p>
 <p><strong>Ansible Vault</strong> A tool for encrypting sensitive values
-in Ansible files. Vaulted files can be stored in the repository – they
+in Ansible files. Vaulted files can be stored in the repository: they
 are decrypted at runtime using the vault password. Used for database
 passwords, API tokens, and EZID credentials.</p>
 <p><strong>Inventory</strong> A file or directory that tells Ansible
@@ -589,7 +589,7 @@ Runs <code>terraform destroy</code> (tears down EC2, RDS,
 <code>terraform apply</code>, a manual DNS-update pause, the Ansible
 playbook, a database restore from an S3 dump, starting Payara over SSH,
 and finally a Solr reindex. Data survives a rebuild only because of the
-restore step – not by default. See: [Makefile].</p>
+restore step, not by default. See: [Makefile].</p>
 <p><strong>make baseline</strong> Captures a timestamped JSON snapshot
 (<code>baseline-snapshots/baseline_&lt;timestamp&gt;.json</code>) of
 dataset, file, user, and S3 counts from a running Dataverse instance.
@@ -642,7 +642,7 @@ configuration.</p>
 <p><strong>6.8</strong> The version this lesson was originally written
 against, and what <code>group_vars</code> is still pinned to as of this
 writing. Requires Java 17, a new Solr schema, and updated S3/DOI
-configuration. <strong>No longer the actual target</strong> –
+configuration. <strong>No longer the actual target</strong>:
 CVE-2026-1879 affects 6.0 through 6.8, so the real target moved to
 6.10.1 or 6.11 (patched, and bundles a Payara 6-to-7 / Java 17-to-21
 upgrade upstream already made). The version bump itself hadn’t happened

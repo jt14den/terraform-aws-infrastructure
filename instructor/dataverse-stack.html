@@ -392,14 +392,14 @@ Solr?</li>
 <li>Explain how Dataverse configuration is applied via JVM options and
 the API.</li>
 <li>Describe how RDS, S3, and Solr each serve different data needs.</li>
-<li>Know when and why a Solr reindex is required.</li>
+<li>Identify when and why a Solr reindex is required.</li>
 </ul></div>
 </div>
 </div>
 </div>
 </div>
 <section><h2 class="section-heading" id="payara-the-application-server">Payara: the application server<a class="anchor" aria-label="anchor" href="#payara-the-application-server"></a></h2>
-<hr class="half-width"><p>Payara is a Jakarta EE application server – a runtime environment for
+<hr class="half-width"><p>Payara is a Jakarta EE application server, a runtime environment for
 Java web applications. It is a community fork of GlassFish, maintained
 specifically for Jakarta EE compatibility. Dataverse chose it because
 Dataverse is a Jakarta EE application and Payara has continued to
@@ -408,7 +408,7 @@ receive active maintenance after GlassFish development slowed.</p>
 Node.js process: it is the process that loads the application, handles
 incoming requests, manages database connections, and keeps the
 application running.</p>
-<p>Dataverse is distributed as a WAR file – a Web Application Archive.
+<p>Dataverse is distributed as a WAR file, a Web Application Archive.
 Ansible deploys this WAR file into Payara during installation. Payara
 unpacks it and starts serving requests.</p>
 <div class="section level3">
@@ -426,8 +426,8 @@ unpacks it and starts serving requests.</p>
 <td>Debug</td>
 </tr></tbody></table><p>Apache sits in front of ports 80 and 443. Requests come in through
 Apache and are proxied to Payara on port 8080 or 8181. Port 4848 is the
-Payara admin console – it should not be publicly accessible and is
-locked down in the security group.</p>
+Payara admin console: it should not be publicly accessible and is locked
+down in the security group.</p>
 </div>
 <div class="section level3">
 <h3 id="configuring-dataverse-through-payara-jvm-options">Configuring Dataverse through Payara JVM options<a class="anchor" aria-label="anchor" href="#configuring-dataverse-through-payara-jvm-options"></a></h3>
@@ -441,7 +441,7 @@ reads at startup:</p>
 <p>Ansible sets these JVM options through the Payara admin API during
 the configure step. You can also inspect or change them manually through
 the Payara admin console on port 4848, but Ansible is the source of
-truth – any manual changes will be overwritten on the next playbook
+truth: any manual changes will be overwritten on the next playbook
 run.</p>
 </div>
 <div class="section level3">
@@ -454,7 +454,7 @@ for production)</li>
 <li>Set storage credentials</li>
 <li>Apply any site-level settings</li>
 </ul><p>This is why <code>make rebuild</code> takes several minutes even
-after Payara is up – the playbook is waiting for Dataverse to finish its
+after Payara is up: the playbook is waiting for Dataverse to finish its
 own initialization before it can call the API.</p>
 </div>
 <div class="section level3">
@@ -463,12 +463,12 @@ own initialization before it can call the API.</p>
 <strong>Payara not responding after deploy</strong>: Dataverse
 startup takes 2-5 minutes on first boot. Check the Payara log at
 <code>/usr/local/payara6/glassfish/domains/domain1/logs/server.log</code>
-(Payara 6, since the move to Dataverse 6.8 – older docs and issues may
+(Payara 6, since the move to Dataverse 6.8; older docs and issues may
 still say <code>payara5</code>). Look for <code>Dataverse started</code>
 or exception stack traces.</li>
 <li>
 <strong>Out of memory</strong>: Payara JVM heap settings are
-configured in Ansible group_vars. Default is 2GB – increase if you see
+configured in Ansible group_vars. Default is 2GB; increase if you see
 <code>OutOfMemoryError</code> in the Payara log.</li>
 <li>
 <strong>WAR deploy failure</strong>: The WAR file checksum or
@@ -486,7 +486,7 @@ wearing two costumes</h3>
 <div class="callout-content">
 <p><code>modules/dataverse_ec2/main.tf</code> provisions a fixed 2GB
 swapfile on the <em>same root volume</em> as everything else, regardless
-of instance size – and this project’s real production instance has had
+of instance size, and this project’s real production instance has had
 recurring swap and disk-space pressure that nobody had sized against
 actual usage. It’s tempting to treat “swap full” and “disk full” as two
 problems to fix separately (bigger swapfile, bigger EBS volume), but on
@@ -503,13 +503,13 @@ questions instead of reaching for one bigger number:</p>
 <ol style="list-style-type: decimal"><li>
 <strong>Is swap chronically engaged</strong>, not just during a
 reindex or restore spike? Chronic swap under normal load means the
-instance type is undersized for memory – check with <code>free -h</code>
+instance type is undersized for memory: check with <code>free -h</code>
 and <code>vmstat 1</code> under idle vs. load, not a single
 point-in-time reading.</li>
 <li>
 <strong>What’s actually on the root disk that won’t move to
 S3?</strong> If production’s files currently live on local disk rather
-than S3 (an open question in this project – see
+than S3 (an open question in this project; see
 <code>MIGRATION_DECISIONS.md</code> Q1), that entire category of usage
 disappears once the new environment is S3-backed. Solr’s index and
 Payara’s logs are what’s left, and <code>du -sh</code> on those specific
@@ -517,12 +517,12 @@ directories tells you far more than a total <code>df -h</code>
 percentage.</li>
 <li>
 <strong>What’s the growth trend, not the current reading?</strong> A
-disk at 70% today could be flat or climbing fast –
+disk at 70% today could be flat or climbing fast:
 <code>make baseline</code> snapshots over time (dataset/file counts) are
 a usable proxy for growth rate even without dedicated host-metric
 history.</li>
 </ol><p>The architecture change (local storage to S3) is doing real sizing
-work here for free – don’t undercut it by copying the old box’s total
+work here for free. Don’t undercut it by copying the old box’s total
 disk usage into the new one’s spec.</p>
 </div>
 </div>
@@ -533,13 +533,13 @@ disk usage into the new one’s spec.</p>
 </div>
 <span class="callout-header">Callout</span>
 <div id="an-unsupported-version-isnt-safe-its-just-unmonitored" class="callout-inner">
-<h3 class="callout-title">An unsupported version isn’t “safe” – it’s
-just unmonitored</h3>
+<h3 class="callout-title">An unsupported version isn’t “safe”: it’s just
+unmonitored</h3>
 <div class="callout-content">
 <p>CVE-2026-1879 (an unrestricted file upload via
 <code>uploadLogo</code>) affects Dataverse 6.0 through 6.8, and was
 patched starting at 6.10. Production here still runs 5.14, which sounds
-like it should be a separate question – except IQSS doesn’t issue CVEs
+like it should be a separate question, except IQSS doesn’t issue CVEs
 against the unsupported 5.x line at all. That’s not the same as 5.x
 being unaffected; it means nobody is tracking it either way. “No CVE
 filed” and “confirmed not vulnerable” are different claims, and it’s
@@ -561,7 +561,7 @@ tracked.</p>
 <h3 class="callout-title">Payara vs. GlassFish</h3>
 <div class="callout-content">
 <p>Dataverse documentation and older issues sometimes reference
-GlassFish commands and paths. Payara is API-compatible – the
+GlassFish commands and paths. Payara is API-compatible: the
 <code>asadmin</code> command and most paths are the same. If you find a
 GlassFish-specific workaround in an older issue, it will almost always
 apply to Payara as well.</p>
@@ -587,12 +587,12 @@ When you restore a database backup, you are restoring this metadata.</p>
 </div>
 <div class="section level3">
 <h3 id="s3">S3<a class="anchor" aria-label="anchor" href="#s3"></a></h3>
-<p>S3 stores the actual file content – the bytes of every data file
-users have uploaded. The connection between a file record in RDS and its
+<p>S3 stores the actual file content: the bytes of every data file users
+have uploaded. The connection between a file record in RDS and its
 content in S3 is a storage identifier stored in the database.</p>
 <p>After a database restore, Dataverse uses the storage identifiers to
 serve files from S3. The files in S3 do not change when you restore the
-database – only the metadata does.</p>
+database; only the metadata does.</p>
 <p>This also means that if a file is deleted from S3 but its record
 remains in RDS, Dataverse will show the file as available but fail when
 users try to download it.</p>
@@ -616,7 +616,7 @@ migration intact.</p>
 <div class="section level3">
 <h3 id="solr">Solr<a class="anchor" aria-label="anchor" href="#solr"></a></h3>
 <p>Solr is a full-text search engine. Dataverse uses it to power all
-search and browse functionality – when you type a query in Dataverse or
+search and browse functionality. When you type a query in Dataverse or
 browse a collection, the results come from Solr, not directly from the
 database.</p>
 <p>Solr maintains its own index: a data structure optimized for fast
@@ -632,7 +632,7 @@ were added. After any database restore, you must reindex:</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="fu">make</span> reindex ENV=tim</span></code></pre>
 </div>
 <p>A Dataverse instance with a stale Solr index will appear to have no
-datasets – or the wrong datasets. This is one of the most common sources
+datasets, or the wrong datasets. This is one of the most common sources
 of confusion after a rebuild.</p>
 <p>The reindex process reads all dataset metadata from the database and
 sends it to Solr. Depending on how many datasets you have, this can take
@@ -645,13 +645,13 @@ from seconds to hours.</p>
 <div id="make-reindex-only-works-because-the-admin-api-is-open-and-thats-a-problem" class="callout-inner">
 <h3 class="callout-title">
 <code>make reindex</code> only works because
-the admin API is open – and that’s a problem</h3>
+the admin API is open, and that’s a problem</h3>
 <div class="callout-content">
 <p>Look at the real target: it’s
 <code>curl -X DELETE https://$HOST/api/admin/index</code> over public
 HTTPS. That works <em>only</em> because Dataverse’s admin API is
 currently unauthenticated and reachable from the internet on this
-instance – which the infrastructure security audit flags as a Critical
+instance, which the infrastructure security audit flags as a Critical
 finding (F1): the same open admin API also allows dataset destroy on an
 instance that will eventually hold production research data.
 <code>make baseline</code> and <code>make test</code> have the identical
@@ -698,7 +698,7 @@ dataset reference). S3 gets the file bytes at the storage identifier
 path.</li>
 <li>Solr answers the search query. The database is not involved in
 search.</li>
-<li>S3 is unchanged – it still has all files ever uploaded, including
+<li>S3 is unchanged: it still has all files ever uploaded, including
 those added in the past week. Solr still has the current index built
 from the current database before the restore.</li>
 <li>Run <code>make reindex ENV=&lt;env&gt;</code> to rebuild the Solr
@@ -731,13 +731,13 @@ proxy), what would break, and what’s the planned fix?</li>
 <div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>
-<code>curl -X DELETE https://$HOST/api/admin/index</code> – a
+<code>curl -X DELETE https://$HOST/api/admin/index</code>: a
 public-HTTPS call to Dataverse’s admin API. It depends on that API being
 unauthenticated and reachable from outside the instance, which it
 currently is (audit finding F1, Critical).</li>
 <li>
 <code>make reindex</code>, <code>make baseline</code>, and
-<code>make test</code> would all start failing (F5) – they all hit
+<code>make test</code> would all start failing (F5): they all hit
 admin/metrics endpoints the same way. The planned fix is rewriting those
 calls to go over SSH to <code>localhost:8080</code> on the instance
 instead of public HTTPS.</li>
@@ -761,11 +761,11 @@ by Ansible.</li>
 first place to look when things go wrong.</li>
 <li>RDS holds metadata; S3 holds file content; Solr holds the search
 index.</li>
-<li>Always run <code>make reindex</code> after a database restore – Solr
+<li>Always run <code>make reindex</code> after a database restore: Solr
 does not update itself.</li>
 <li>
 <code>make reindex</code>/<code>baseline</code>/<code>test</code>
-currently depend on the admin API being open over public HTTPS – a known
+currently depend on the admin API being open over public HTTPS: a known
 Critical security exposure (F1/F5), not a stable design choice.</li>
 </ul></div>
 </div>

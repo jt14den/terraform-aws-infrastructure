@@ -420,10 +420,10 @@ Java 17 (up from Java 11 in 5.x)</li>
 <li>
 <strong>API changes</strong>: Some API endpoints changed or were
 deprecated; any integrations need to be verified</li>
-</ul><p>These changes mean a 5.x database cannot simply be imported into a
+</ul><p>These changes mean a 5.x database cannot be imported directly into a
 6.x instance without migration steps. The migration process handles
-database schema updates automatically – Dataverse runs schema migrations
-on startup – but the Solr index must be rebuilt manually.</p>
+database schema updates automatically (Dataverse runs schema migrations
+on startup), but the Solr index must be rebuilt manually.</p>
 <div id="the-target-version-moved-after-this-lessons-title-was-set" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -435,14 +435,14 @@ title was set</h3>
 <div class="callout-content">
 <p>This lesson (and its episode titles) were written targeting 6.8,
 which is what <code>group_vars</code> is actually pinned to as of this
-writing – the version bump below hasn’t happened yet. It needs to:
+writing. The version bump below hasn’t happened yet. It needs to:
 CVE-2026-1879 affects 6.0 through 6.8 and is patched starting at 6.10,
 so the real target is now 6.10.1 or 6.11 (not the newest release, 6.12
-as of September 2026 – letting a release season for a few weeks before
+as of September 2026; letting a release season for a few weeks before
 adopting it is a reasonable default for a two-person team). That version
 bump also carries a Payara 6-to-7 and Java 17-to-21 runtime upgrade,
-which upstream <code>gdcc/dataverse-ansible</code> already made –
-reusing their migration commit as a template beats re-deriving it from
+which upstream <code>gdcc/dataverse-ansible</code> already made. Reusing
+their migration commit as a template beats re-deriving it from
 scratch.</p>
 <p>Treat “6.8” throughout this lesson as “the version this was written
 against,” not “the current target.” Once the group_vars pins actually
@@ -455,7 +455,10 @@ updated.</p>
 <hr class="half-width"><p>The migration is structured in seven phases. Each phase ends with a
 gate: the test suite and (where applicable) baseline comparisons must
 pass before the next phase begins.</p>
-<div class="section level3">
+<figure><img src="../fig/migration-phases.svg" alt="Pipeline diagram of the 7 migration phases in order: Phase 1 Production baseline (complete), Phase 2 Rebuild and hardening (1 of 3 done), Phase 3 Expanded test coverage, Phase 4 Jamie onboarding, Phase 5 Shibboleth/SSO, Phase 6 Maintenance window plan, Phase 7 DNS cutover." class="figure mx-auto d-block"><div class="figcaption">The seven migration phases run in sequence, each
+gated by test/baseline passage before the next begins. Phase 2 is only
+one-third complete as of this writing.</div>
+</figure><div class="section level3">
 <h3 id="phase-1-production-baseline-capture-complete">Phase 1: Production Baseline Capture (complete)<a class="anchor" aria-label="anchor" href="#phase-1-production-baseline-capture-complete"></a></h3>
 <p>Capture a timestamped snapshot of the production 5.14 instance before
 any migration work begins. This snapshot is the anchor for the final
@@ -472,18 +475,18 @@ DNS wait on each rebuild), FAKE DOI provider,
 <code>test_cert: true</code> enforced, and Solr reindex as an explicit
 post-restore gate. Three plans, and they’re not all done:</p>
 <ul><li>
-<code>02-01</code> Elastic IP resource in Terraform – <strong>not
+<code>02-01</code> Elastic IP resource in Terraform: <strong>not
 started</strong>. This is the item covered in Episode 3: an
 <code>aws_eip</code> resource exists, but it’s tied to the instance’s
 lifecycle and doesn’t survive <code>terraform destroy</code>, so
 rebuilds still require a manual DNS update.</li>
 <li>
 <code>02-02</code> FAKE DOI provider config +
-<code>test_cert: true</code> + Solr reindex make target –
+<code>test_cert: true</code> + Solr reindex make target:
 <strong>done</strong>.</li>
 <li>
 <code>02-03</code> Full <code>make rebuild ENV=tim</code> cycle
-validation (clean rebuild, reindex, smoke tests pass) – <strong>not
+validation (clean rebuild, reindex, smoke tests pass): <strong>not
 started</strong>.</li>
 </ul><p>So “Phase 2 complete” would mean all three; right now it’s one of
 three. Don’t treat this phase as finished just because the rebuild
@@ -512,7 +515,7 @@ production cutover.</p>
 <p>Configure Shibboleth authentication via Ansible, register the SP
 metadata with the UCLA campus IdP, deploy to Jamie’s environment, and
 validate the full login flow.</p>
-<p>This phase has a long lead time – campus IT needs to register the SP
+<p>This phase has a long lead time: campus IT needs to register the SP
 metadata. Coordination starts in Phase 2 to avoid blocking the cutover
 schedule.</p>
 </div>
@@ -544,6 +547,32 @@ document that the team follows on cutover day.</p>
 </ol><p>Rollback is possible until step 9 (EZID switch). If anything fails
 before that point, switch DNS back to the old instance and the 5.14
 instance is back up within the TTL window.</p>
+<div id="cutover-pressure-and-the-pull-toward-hand-fixing" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="cutover-pressure-and-the-pull-toward-hand-fixing" class="callout-inner">
+<h3 class="callout-title">Cutover pressure and the pull toward
+hand-fixing</h3>
+<div class="callout-content">
+<p>Step 7 is the moment automation trust gets tested hardest: something
+in the test suite or baseline comparison fails, users are waiting, and
+SSHing into the new instance to patch whatever’s wrong feels like the
+responsible thing to do. It’s the same instinct Episode 4 (Ansible:
+Configuration and Idempotency) warns about, just under more
+pressure.</p>
+<p>Resist it here more than anywhere else. A hand-patch made during
+cutover is exactly the kind of undocumented change that breaks the “read
+the repo, know the server” property this stack depends on, and it
+happens at the one moment when there’s the least time to notice it
+happened. The rollback table below and the phase gates before it exist
+so the answer to “something broke during cutover” is “roll back, or
+re-run the documented sequence,” not “fix it live and write it down
+later.”</p>
+</div>
+</div>
+</div>
 <div id="a-gap-this-sequence-doesnt-cover-the-actual-file-bytes" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -553,21 +582,21 @@ instance is back up within the TTL window.</p>
 <h3 class="callout-title">A gap this sequence doesn’t cover: the actual
 file bytes</h3>
 <div class="callout-content">
-<p>Steps 3-6 move the <em>database</em> – dump, restore, rebuild,
+<p>Steps 3-6 move the <em>database</em>: dump, restore, rebuild,
 reindex. None of them move the files themselves from the old instance’s
 storage to the new one’s S3 bucket. The infrastructure
 security/reliability audit flags this as a High-severity gap (F6):
 today, file-bytes migration exists only as manual prose in the ansible
 repo’s migration guide (an <code>aws s3 sync</code> command a human is
 expected to run and remember), and the integrity checks in step 7
-(baseline comparison) count database rows and S3 object counts – they
+(baseline comparison) count database rows and S3 object counts; they
 don’t verify that a given file is actually downloadable. A cutover that
 follows only the 11 steps above could produce a production Dataverse
 where datasets exist, search works, and downloads 404. A round-trip
 file-retrievability test is planned (roadmap <code>03-02</code>) but
-isn’t itself a migration step – something still has to actually move the
-bytes, and that’s not automated yet. Resolve this before Phase 7, not
-during it.</p>
+isn’t itself a migration step. Something still has to move the bytes,
+and that’s not automated yet. Resolve this before Phase 7, not during
+it.</p>
 </div>
 </div>
 </div>
@@ -595,7 +624,7 @@ seconds.</p>
 <p>The plan is for an Elastic IP to give the new 6.x instance a known,
 stable address before cutover day, so the DNS change is a single A
 record update. That depends on <code>02-01</code> landing first, though
-(see Phase 2 above) – as of today the EIP doesn’t survive a rebuild, so
+(see Phase 2 above). As of today the EIP doesn’t survive a rebuild, so
 “known, stable IP before cutover” isn’t true yet. If cutover happened
 this week, step 8 below would still need the same manual “read the new
 IP off the Terraform output” step every other rebuild requires.</p>
@@ -620,7 +649,7 @@ can start:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>Phase 3 requires Phase 2 complete: Tim’s env must rebuild cleanly
 with Elastic IP, FAKE DOI, and test_cert enforced.</li>
@@ -644,7 +673,7 @@ runbook is written and reviewed.</li>
 <ol style="list-style-type: decimal"><li>Is Phase 2 done? Name the one item of three that’s actually
 complete.</li>
 <li>Besides the 7 roadmap phases, what other body of work now also has
-to be resolved before Phase 7 can safely run – and why wasn’t it part of
+to be resolved before Phase 7 can safely run, and why wasn’t it part of
 the original roadmap?</li>
 </ol></div>
 </div>
@@ -654,7 +683,7 @@ the original roadmap?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>No. Only <code>02-02</code> (FAKE DOI + <code>test_cert</code> +
 reindex target) is done. The Elastic IP (<code>02-01</code>) and full
@@ -664,7 +693,7 @@ roadmap was written, found real gaps the 7 phases don’t cover: an open
 admin API on an internet-facing instance (Critical), unencrypted RDS
 storage, a stale/manual backup pipeline, and no automated file-bytes
 migration step (the gap covered above). None of these were anticipated
-when the roadmap’s phases were scoped – they surfaced from auditing what
+when the roadmap’s phases were scoped: they surfaced from auditing what
 was actually built, not from the migration plan itself. They now gate
 Phase 7 alongside the original 6 phases.</li>
 </ol></div>
@@ -681,16 +710,16 @@ Phase 7 alongside the original 6 phases.</li>
 <ul><li>Dataverse 6.x requires Java 17, a Solr schema rebuild, and updated
 DOI/S3 configuration.</li>
 <li>The 7-phase plan gates each phase with tests before proceeding to
-the next – but “current phase” doesn’t mean “current phase complete.”
+the next, but “current phase” doesn’t mean “current phase complete.”
 Phase 2 is one-third done as of this writing.</li>
 <li>Phases 1-3 establish the foundation; phases 4-6 harden for
 production; phase 7 is cutover.</li>
-<li>Rollback is straightforward until the DNS switch and EZID activation
-– that window is the target.</li>
+<li>Rollback is straightforward until the DNS switch and EZID
+activation. That window is the target.</li>
 <li>DNS TTL reduction and a <em>persistent</em> Elastic IP would
-together make the cutover switchover fast and predictable – but the EIP
+together make the cutover switchover fast and predictable, but the EIP
 isn’t persistent yet, and the automated cutover sequence has no step
-that moves file bytes, a gap found after the roadmap was written.</li>
+that moves file bytes: a gap found after the roadmap was written.</li>
 </ul></div>
 </div>
 </div>

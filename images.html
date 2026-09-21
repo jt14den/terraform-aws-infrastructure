@@ -408,16 +408,50 @@
         <h1>All Images</h1>
         
 <section id="introduction"><h2 class="section-heading"><a href="introduction.html">Introduction: Why We Built This Way</a></h2>
-<hr class="half-width"></section><section id="tooling-setup"><h2 class="section-heading"><a href="tooling-setup.html">Tooling Setup</a></h2>
+<hr class="half-width">
+<h3 id="introduction-figure-1">Figure 1</h3>
+<p aria-hidden="true">Image 1 of 1: ‘Architecture diagram: a browser/user on the internet sends a request into an AWS box containing an EC2 instance running Apache httpd (reverse proxy and SSL termination), which forwards to Payara running the Dataverse WAR file, which talks to Solr for search. Payara also connects out to RDS PostgreSQL for metadata and S3 for file storage, both outside the EC2 instance.’</p>
+<figure><img src="fig/stack-architecture.svg" alt="Architecture diagram: a browser/user on the internet sends a request into an AWS box containing an EC2 instance running Apache httpd (reverse proxy and SSL termination), which forwards to Payara running the Dataverse WAR file, which talks to Solr for search. Payara also connects out to RDS PostgreSQL for metadata and S3 for file storage, both outside the EC2 instance." class="figure mx-auto d-block"><div class="figcaption">The Dataverse stack</div>
+</figure><hr></section><section id="tooling-setup"><h2 class="section-heading"><a href="tooling-setup.html">Tooling Setup</a></h2>
 <hr class="half-width"></section><section id="terraform-infrastructure"><h2 class="section-heading"><a href="terraform-infrastructure.html">Terraform: The Infrastructure Layer</a></h2>
-<hr class="half-width"></section><section id="ansible-idempotency"><h2 class="section-heading"><a href="ansible-idempotency.html">Ansible: Configuration and Idempotency</a></h2>
-<hr class="half-width"></section><section id="dataverse-stack"><h2 class="section-heading"><a href="dataverse-stack.html">The Dataverse Stack: Payara, Solr, and the Data Layer</a></h2>
+<hr class="half-width">
+<h3 id="terraform-infrastructure-figure-1">Figure 1</h3>
+<p aria-hidden="true">Image 1 of 1: ‘Diagram: Tim's environment applies to S3 bucket ucla-tim-terraform-state, and Jamie's environment applies to S3 bucket ucla-library-terraform-state. Both environments take a lock against a shared DynamoDB table called terraform-locks before applying.’</p>
+<figure><img src="fig/terraform-state-isolation.svg" alt="Diagram: Tim's environment applies to S3 bucket ucla-tim-terraform-state, and Jamie's environment applies to S3 bucket ucla-library-terraform-state. Both environments take a lock against a shared DynamoDB table called terraform-locks before applying." class="figure mx-auto d-block"><div class="figcaption">Tim and Jamie’s operator environments each apply
+against their own S3 state bucket. Both share a DynamoDB lock table, so
+the shared table prevents same-operator races but not cross-operator
+conflicts.</div>
+</figure><hr></section><section id="ansible-idempotency"><h2 class="section-heading"><a href="ansible-idempotency.html">Ansible: Configuration and Idempotency</a></h2>
+<hr class="half-width">
+<h3 id="ansible-idempotency-figure-1">Figure 1</h3>
+<p aria-hidden="true">Image 1 of 1: ‘Decision flow: after make ansible ENV=x runs, if it did not fail, the environment is configured and module-level idempotency held. If it failed partway through, the wrong move is re-running ansible-playbook in place, which risks unguarded shell/command tasks failing again or corrupting state. The right move is terraform destroy followed by make rebuild, producing a clean environment rebuilt from scratch.’</p>
+<figure><img src="fig/ansible-rerun-decision.svg" alt="Decision flow: after make ansible ENV=x runs, if it did not fail, the environment is configured and module-level idempotency held. If it failed partway through, the wrong move is re-running ansible-playbook in place, which risks unguarded shell/command tasks failing again or corrupting state. The right move is terraform destroy followed by make rebuild, producing a clean environment rebuilt from scratch." class="figure mx-auto d-block"><div class="figcaption">A failed ansible-playbook run should end in
+terraform destroy and rebuild, not a second in-place run.</div>
+</figure><hr></section><section id="dataverse-stack"><h2 class="section-heading"><a href="dataverse-stack.html">The Dataverse Stack: Payara, Solr, and the Data Layer</a></h2>
 <hr class="half-width"></section><section id="secrets-config"><h2 class="section-heading"><a href="secrets-config.html">Secrets and Environment Configuration</a></h2>
-<hr class="half-width"></section><section id="makefile-operations"><h2 class="section-heading"><a href="makefile-operations.html">The Makefile: Daily Operations</a></h2>
-<hr class="half-width"></section><section id="testing-validation"><h2 class="section-heading"><a href="testing-validation.html">Testing and Validation</a></h2>
+<hr class="half-width">
+<h3 id="secrets-config-figure-1">Figure 1</h3>
+<p aria-hidden="true">Image 1 of 1: ‘Flow diagram: a secret starts as an encrypted vault block in group_vars/&lt;env&gt;.yml, is decrypted by Ansible at playbook runtime, is set as a Payara JVM option in domain.xml, and is read by Dataverse at startup.’</p>
+<figure><img src="fig/secret-flow.svg" alt="Flow diagram: a secret starts as an encrypted vault block in group_vars/&lt;env&gt;.yml, is decrypted by Ansible at playbook runtime, is set as a Payara JVM option in domain.xml, and is read by Dataverse at startup." class="figure mx-auto d-block"><div class="figcaption">A secret moves from an encrypted group_vars
+block, through ansible-vault decryption at runtime, into a Payara JVM
+option, and is finally read by Dataverse at startup.</div>
+</figure><hr></section><section id="makefile-operations"><h2 class="section-heading"><a href="makefile-operations.html">The Makefile: Daily Operations</a></h2>
+<hr class="half-width">
+<h3 id="makefile-operations-figure-1">Figure 1</h3>
+<p aria-hidden="true">Image 1 of 1: ‘Pipeline diagram of the 7 make rebuild steps in order: 1 Destroy (terraform destroy), 2 Provision (terraform apply), 3 DNS propagation (manual A record update), 4 Ansible (site.yml), 5 Restore DB from S3 (restore-db.sh), 6 Start Payara (over SSH), 7 Wait then reindex (make reindex). A dashed line points from step 7 to make test, labeled as a separate, manual step not included in the rebuild pipeline.’</p>
+<figure><img src="fig/rebuild-steps.svg" alt="Pipeline diagram of the 7 make rebuild steps in order: 1 Destroy (terraform destroy), 2 Provision (terraform apply), 3 DNS propagation (manual A record update), 4 Ansible (site.yml), 5 Restore DB from S3 (restore-db.sh), 6 Start Payara (over SSH), 7 Wait then reindex (make reindex). A dashed line points from step 7 to make test, labeled as a separate, manual step not included in the rebuild pipeline." class="figure mx-auto d-block"><div class="figcaption">The seven make rebuild steps run in sequence,
+ending at reindex. make test is a separate step run manually afterward,
+not part of the rebuild pipeline.</div>
+</figure><hr></section><section id="testing-validation"><h2 class="section-heading"><a href="testing-validation.html">Testing and Validation</a></h2>
 <hr class="half-width"></section><section id="using-ai"><h2 class="section-heading"><a href="using-ai.html">Using AI Tools in Infrastructure Work</a></h2>
 <hr class="half-width"></section><section id="migration-arc"><h2 class="section-heading"><a href="migration-arc.html">The Migration Arc: 5.14 to 6.8</a></h2>
-<hr class="half-width"></section>
+<hr class="half-width">
+<h3 id="migration-arc-figure-1">Figure 1</h3>
+<p aria-hidden="true">Image 1 of 1: ‘Pipeline diagram of the 7 migration phases in order: Phase 1 Production baseline (complete), Phase 2 Rebuild and hardening (1 of 3 done), Phase 3 Expanded test coverage, Phase 4 Jamie onboarding, Phase 5 Shibboleth/SSO, Phase 6 Maintenance window plan, Phase 7 DNS cutover.’</p>
+<figure><img src="fig/migration-phases.svg" alt="Pipeline diagram of the 7 migration phases in order: Phase 1 Production baseline (complete), Phase 2 Rebuild and hardening (1 of 3 done), Phase 3 Expanded test coverage, Phase 4 Jamie onboarding, Phase 5 Shibboleth/SSO, Phase 6 Maintenance window plan, Phase 7 DNS cutover." class="figure mx-auto d-block"><div class="figcaption">The seven migration phases run in sequence, each
+gated by test/baseline passage before the next begins. Phase 2 is only
+one-third complete as of this writing.</div>
+</figure><hr></section>
 </div>
     </main>
 </div>

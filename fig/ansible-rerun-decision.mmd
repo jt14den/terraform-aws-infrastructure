@@ -1,0 +1,8 @@
+flowchart TD
+    Start["make ansible ENV=x<br/>(ansible-playbook run)"]
+    Start --> Fail{"Did the run fail<br/>partway through?"}
+    Fail -- No --> Done["Environment configured.<br/>Module-level idempotency held."]
+    Fail -- Yes --> Wrong["Wrong: re-run<br/>ansible-playbook in place"]
+    Fail -- Yes --> Right["Right: terraform destroy,<br/>then make rebuild"]
+    Wrong --> Risk["Unguarded shell/command tasks<br/>can fail again or corrupt state"]
+    Right --> Clean["Clean environment,<br/>rebuilt from scratch"]

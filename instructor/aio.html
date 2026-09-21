@@ -411,7 +411,7 @@
         
 <section id="aio-introduction"><p>Content from <a href="introduction.html">Introduction: Why We Built This Way</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/introduction.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 20 minutes</p>
@@ -445,7 +445,7 @@ component does.</li>
 Ansible.</li>
 <li>Navigate the three repositories that make up this
 infrastructure.</li>
-<li>Understand what the 5.14 to 6.8 migration involves and why it shaped
+<li>Explain what the 5.14 to 6.8 migration involved and why it shaped
 these decisions.</li>
 </ul>
 </div>
@@ -458,9 +458,9 @@ these decisions.</li>
 <hr class="half-width">
 <p>This lesson traces the infrastructure that runs the UCLA Library
 Dataverse instance. It was written during the migration from Dataverse
-5.14 to 6.8 – not as abstract documentation, but as a way to make
-explicit what was built, why each decision was made, and how the pieces
-fit together.</p>
+5.14 to 6.8, not as abstract documentation but as a way to make explicit
+what was built, why each decision was made, and how the pieces fit
+together.</p>
 <p>The audience is people doing the work or being onboarded to it: DSC
 staff, DataSquad students, and anyone who will operate or hand off this
 system. It assumes comfort with the command line and some exposure to
@@ -470,28 +470,8 @@ expertise.</p>
 </h2>
 <hr class="half-width">
 <p>Running Dataverse requires several components working together:</p>
-<pre><code>+------------------------------------------------------------+
-|                           AWS                              |
-|                                                            |
-|  +------------------------------------------------------+  |
-|  |                    EC2 instance                      |  |
-|  |                                                      |  |
-|  |  +----------------+    +--------------------------+  |  |
-|  |  |  Apache httpd  |    |  Payara (app server)     |  |  |
-|  |  |  reverse proxy +----&gt;                          |  |  |
-|  |  |  + SSL         |    |  Dataverse (WAR file)    |  |  |
-|  |  +----------------+    +-------------+------------+  |  |
-|  |                                      |               |  |
-|  |                        +-------------v------------+  |  |
-|  |                        |  Solr (search index)     |  |  |
-|  |                        +--------------------------+  |  |
-|  +------------------------------------------------------+  |
-|                                                            |
-|  +---------------------+   +----------------------------+ |
-|  |  RDS (PostgreSQL)   |   |  S3 (file storage)         | |
-|  +---------------------+   +----------------------------+ |
-+------------------------------------------------------------+</code></pre>
-<p><strong>EC2</strong> is a virtual machine running Rocky Linux 9.
+<figure><img src="../fig/stack-architecture.svg" alt="Architecture diagram: a browser/user on the internet sends a request into an AWS box containing an EC2 instance running Apache httpd (reverse proxy and SSL termination), which forwards to Payara running the Dataverse WAR file, which talks to Solr for search. Payara also connects out to RDS PostgreSQL for metadata and S3 for file storage, both outside the EC2 instance." class="figure mx-auto d-block"><div class="figcaption">The Dataverse stack</div>
+</figure><p><strong>EC2</strong> is a virtual machine running Rocky Linux 9.
 Payara, Solr, and Apache all run here.</p>
 <p><strong>RDS</strong> is a managed PostgreSQL database hosted by AWS.
 Dataverse stores all its metadata here: datasets, files, users,
@@ -499,7 +479,7 @@ permissions, version histories. The database is the source of truth for
 everything except the actual file content.</p>
 <p><strong>S3</strong> is object storage for the data files that users
 upload. Dataverse stores file metadata in RDS and file content in S3.
-The two must stay in sync – a file record in the database pointing to a
+The two must stay in sync: a file record in the database pointing to a
 missing S3 object is a broken dataset.</p>
 <p><strong>Payara</strong> is a Jakarta EE application server. Dataverse
 runs as a WAR (Web Application Archive) file deployed inside Payara,
@@ -509,7 +489,7 @@ JVM options or through the Dataverse API at first boot.</p>
 <p><strong>Solr</strong> is a search engine that powers Dataverse’s
 dataset and file search. It maintains its own index independently of the
 database. After any database restore, the Solr index must be explicitly
-rebuilt – it will not update itself. A running Dataverse with a stale or
+rebuilt; it will not update itself. A running Dataverse with a stale or
 empty Solr index will appear to have no datasets.</p>
 <p><strong>Apache httpd</strong> acts as a reverse proxy in front of
 Payara and handles SSL termination. Requests from browsers hit Apache
@@ -557,7 +537,7 @@ on those resources and how it is configured</li>
 </ul>
 <p>You run Terraform first to provision the resources, then Ansible to
 configure them. The <code>dataverse-infrastructure</code> repo is where
-you do both – its Makefile calls out to Terraform and Ansible so you
+you do both: its Makefile calls out to Terraform and Ansible, so you
 rarely interact with either tool directly.</p>
 </section><section><h2 class="section-heading" id="why-infrastructure-as-code">Why infrastructure as code<a class="anchor" aria-label="anchor" href="#why-infrastructure-as-code"></a>
 </h2>
@@ -574,7 +554,7 @@ memory</li>
 <p>Infrastructure as code puts the desired state of the system in
 version-controlled files. Terraform describes what AWS resources should
 exist. Ansible describes what should be installed and how it should be
-configured. Running them again should produce the same result – this
+configured. Running them again should produce the same result. This
 property is called <strong>idempotency</strong>, and it is one of the
 central ideas in Episode 4.</p>
 </section><section><h2 class="section-heading" id="the-migration-context">The migration context<a class="anchor" aria-label="anchor" href="#the-migration-context"></a>
@@ -582,11 +562,11 @@ central ideas in Episode 4.</p>
 <hr class="half-width">
 <p>This lesson was developed during the migration of the UCLA Library
 Dataverse instance from version 5.14 to 6.8. Several decisions in the
-codebase – the Makefile targets, the baseline scripts, the FAKE DOI
-provider configuration, the 7-phase migration plan – exist because of
+codebase (the Makefile targets, the baseline scripts, the FAKE DOI
+provider configuration, the 7-phase migration plan) exist because of
 constraints the migration imposed.</p>
-<p>Where those decisions appear in later episodes, we explain why they
-were made. The migration itself is the subject of the final episode.</p>
+<p>Later episodes explain why those decisions were made where they come
+up. The migration itself is the subject of the final episode.</p>
 <div id="take-stock" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -595,11 +575,13 @@ were made. The migration itself is the subject of the final episode.</p>
 <div id="take-stock" class="callout-inner">
 <h3 class="callout-title">Take stock</h3>
 <div class="callout-content">
-<p>Before moving on, open the three repositories in your browser:</p>
+<p>Before moving on, open the three repositories in your browser (these
+are private to the team; if you don’t have access yet, read through the
+solution below instead):</p>
 <ul>
-<li><a href="https://github.com/ucla-data-science-center/terraform-dataverse" class="external-link uri">https://github.com/ucla-data-science-center/terraform-dataverse</a></li>
-<li><a href="https://github.com/ucla-data-science-center/dataverse-ansible" class="external-link uri">https://github.com/ucla-data-science-center/dataverse-ansible</a></li>
-<li><a href="https://github.com/ucla-data-science-center/dataverse-infrastructure" class="external-link uri">https://github.com/ucla-data-science-center/dataverse-infrastructure</a></li>
+<li><code>your-org/terraform-dataverse</code></li>
+<li><code>your-org/dataverse-ansible</code></li>
+<li><code>your-org/dataverse-infrastructure</code></li>
 </ul>
 <p>In each one, find:</p>
 <ol style="list-style-type: decimal">
@@ -665,13 +647,13 @@ it happen automatically?</li>
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
-<code>terraform-dataverse</code> – bucket policy and IAM are AWS
+<code>terraform-dataverse</code>: bucket policy and IAM are AWS
 resources, which is Terraform’s domain, not Ansible’s.</li>
 <li>Neither repo does it automatically. Solr’s index is built from
 what’s in RDS, and Solr has no way to know the database changed
 underneath it. Rebuilding is a separate, explicit step
 (<code>make reindex</code> in <code>dataverse-infrastructure</code>)
-that must be run after any restore – see Episode 5.</li>
+that must be run after any restore. See Episode 5.</li>
 </ol>
 </div>
 </div>
@@ -696,7 +678,7 @@ runs on it.</li>
 <li>Infrastructure as code makes the system reproducible, reviewable,
 and rebuildable.</li>
 <li>Many decisions in this codebase were shaped by the 5.14 to 6.8
-migration – that context appears throughout the lesson.</li>
+migration, and that context appears throughout the lesson.</li>
 </ul>
 </div>
 </div>
@@ -839,13 +821,13 @@ and user ID.</p>
 </section><section><h2 class="section-heading" id="cloning-the-repositories">Cloning the repositories<a class="anchor" aria-label="anchor" href="#cloning-the-repositories"></a>
 </h2>
 <hr class="half-width">
-<p><code>dataverse-infrastructure</code> is the orchestration repo –
+<p><code>dataverse-infrastructure</code> is the orchestration repo:
 clone it first, then let it clone the other two as children of itself.
 It has a bootstrap target for exactly this:</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/dataverse-infrastructure</span>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">git</span> clone https://github.com/your-org/dataverse-infrastructure</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="bu">cd</span> dataverse-infrastructure</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">make</span> bootstrap</span></code></pre>
 </div>
@@ -856,7 +838,7 @@ it) and wires up an <code>upstream</code> remote on
 <code>dataverse-ansible</code> pointing at the generic <a href="https://github.com/gdcc/dataverse-ansible" class="external-link">gdcc/dataverse-ansible</a>
 role this one is forked from. The Makefile’s paths
 (<code>terraform-dataverse/environments/$(ENV)</code>,
-<code>dataverse-ansible</code>) all assume this nested layout – if you
+<code>dataverse-ansible</code>) all assume this nested layout. If you
 clone the child repos somewhere else, nothing in the Makefile will find
 them.</p>
 <div id="gh-pr-create-picks-the-wrong-repo-here" class="callout">
@@ -880,9 +862,9 @@ the generic upstream role. Always pass both flags explicitly:</p>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">gh</span> pr create <span class="at">--repo</span> ucla-data-science-center/dataverse-ansible <span class="at">--base</span> develop</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">gh</span> pr create <span class="at">--repo</span> your-org/dataverse-ansible <span class="at">--base</span> develop</span></code></pre>
 </div>
-<p>This has bitten real work before – it’s easy to not notice until
+<p>This has bitten real work before: it’s easy to not notice until
 someone asks why a UCLA-specific branding fix shows up on the upstream
 project.</p>
 </div>
@@ -911,7 +893,7 @@ stores its state file)</li>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="ex">terraform</span> plan</span></code></pre>
 </div>
-<p>This shows what Terraform would create, change, or destroy – without
+<p>This shows what Terraform would create, change, or destroy, without
 making any changes. Read the plan output before running
 <code>terraform apply</code>. A plan that shows unexpected deletions is
 worth pausing on.</p>
@@ -927,12 +909,12 @@ can decrypt them, you need a local vault password file:</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="bu">cd</span> dataverse-ansible</span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1" aria-label="code-block-7-2"></a><span class="ex">openssl</span> rand <span class="at">-base64</span> 24 <span class="op">&gt;</span> .vault-password</span></code></pre>
 </div>
-<p><code>.vault-password</code> is gitignored – it never gets committed,
-and if you lose it the vault-encrypted secrets in
-<code>group_vars</code> are unrecoverable. Save its contents somewhere
-durable (a password manager, not just your laptop) before doing anything
-else. Without this file, <code>ansible-playbook</code> fails the moment
-it hits a vaulted variable.</p>
+<p><code>.vault-password</code> is gitignored: it never gets committed.
+If you lose it, the vault-encrypted secrets in <code>group_vars</code>
+are unrecoverable. Save its contents somewhere durable (a password
+manager, not just your laptop) before doing anything else. Without this
+file, <code>ansible-playbook</code> fails the moment it hits a vaulted
+variable.</p>
 </section><section><h2 class="section-heading" id="verifying-ansible">Verifying Ansible<a class="anchor" aria-label="anchor" href="#verifying-ansible"></a>
 </h2>
 <hr class="half-width">
@@ -971,14 +953,14 @@ usually means a hand-typed inventory</h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1" aria-label="code-block-9-1"></a><span class="ex">ansible-playbook</span> <span class="at">-i</span> <span class="st">"dataverse ansible_host=localhost ansible_connection=local,"</span> dataverse/dataverse.pb <span class="at">-e</span> <span class="st">"@dataverse/defaults/main.yml"</span></span></code></pre>
 </div>
 <p>fails with
-<code>[WARNING]: Could not match supplied host pattern, ignoring: dataverse</code>
-– the inline inventory string and the play’s <code>hosts:</code> target
+<code>[WARNING]: Could not match supplied host pattern, ignoring: dataverse</code>.
+The inline inventory string and the play’s <code>hosts:</code> target
 didn’t agree, and the playbook path itself was wrong too (it’s
 <code>site.yml</code> at the repo root, not
 <code>dataverse/dataverse.pb</code>).
 <code>make ansible ENV=&lt;env&gt;</code> builds this command correctly
 every time by generating the inventory from Terraform output and
-pointing at the real entry point – typing the equivalent by hand,
+pointing at the real entry point. Typing the equivalent by hand,
 especially mid-troubleshooting, is exactly where small mismatches like
 this creep in. If you’re debugging live and reach for a hand-typed
 <code>ansible-playbook</code> command instead of the Makefile,
@@ -1030,19 +1012,19 @@ What file is missing, and what command creates it?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>The Makefile can’t find <code>terraform-dataverse</code> or
-<code>dataverse-ansible</code> – it expects them cloned <em>inside</em>
+<code>dataverse-ansible</code>: it expects them cloned <em>inside</em>
 <code>dataverse-infrastructure</code> (via <code>make bootstrap</code>),
 not as sibling directories next to it. Targets fail with missing-path
 errors.</li>
 <li>
 <code>dataverse-ansible/.vault-password</code> is missing. Create it
 with <code>openssl rand -base64 24 &gt; .vault-password</code> from
-inside <code>dataverse-ansible</code>, and save a copy somewhere durable
-– if it’s lost, the vaulted secrets can’t be recovered.</li>
+inside <code>dataverse-ansible</code>, and save a copy somewhere
+durable. If it’s lost, the vaulted secrets can’t be recovered.</li>
 </ol>
 </div>
 </div>
@@ -1057,10 +1039,10 @@ inside <code>dataverse-ansible</code>, and save a copy somewhere durable
 <div class="callout-content">
 <ul>
 <li>Five tools required: Terraform, Ansible, AWS CLI, Make, uv.</li>
-<li>AWS profile is <code>ucla-library-dsc</code> – set
+<li>AWS profile is <code>ucla-library-dsc</code>: set
 <code>AWS_PROFILE</code> in your shell before running anything.</li>
 <li>Clone <code>dataverse-infrastructure</code> first, then run
-<code>make bootstrap</code> – it nests the other two repos inside it.
+<code>make bootstrap</code>: it nests the other two repos inside it.
 They are not siblings.</li>
 <li>Ansible Vault needs a local <code>.vault-password</code> file
 (<code>openssl rand -base64 24 &gt; .vault-password</code> in
@@ -1070,8 +1052,8 @@ They are not siblings.</li>
 <code>terraform init</code> must succeed before any other Terraform
 command will work.</li>
 <li>
-<code>terraform plan</code> is always safe – it shows changes
-without making them.</li>
+<code>terraform plan</code> is always safe: it shows changes without
+making them.</li>
 </ul>
 </div>
 </div>
@@ -1082,7 +1064,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-terraform-infrastructure"><p>Content from <a href="terraform-infrastructure.html">Terraform: The Infrastructure Layer</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/terraform-infrastructure.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 35 minutes</p>
@@ -1125,8 +1107,8 @@ yet simplify the rebuild cycle.</li>
 <section><h2 class="section-heading" id="what-terraform-manages">What Terraform manages<a class="anchor" aria-label="anchor" href="#what-terraform-manages"></a>
 </h2>
 <hr class="half-width">
-<p>Terraform is responsible for the AWS resources that exist – the
-“what” of the infrastructure. For this project, those resources are:</p>
+<p>Terraform is responsible for the AWS resources that exist: the “what”
+of the infrastructure. For this project, those resources are:</p>
 <ul>
 <li>
 <strong>EC2 instance</strong>: the virtual machine where Dataverse
@@ -1160,9 +1142,9 @@ environment:</p>
   modules/      &lt;- shared resource definitions used by both environments</code></pre>
 <p>Each environment directory has its own <code>main.tf</code>,
 <code>variables.tf</code>, and <code>terraform.tfvars</code>. The
-environments are mostly identical – they share modules – but use
-different resource names and sizes so Tim and Jamie can work
-independently without affecting each other.</p>
+environments are mostly identical (they share modules) but use different
+resource names and sizes so Tim and Jamie can work independently without
+affecting each other.</p>
 </section><section><h2 class="section-heading" id="remote-state">Remote state<a class="anchor" aria-label="anchor" href="#remote-state"></a>
 </h2>
 <hr class="half-width">
@@ -1170,22 +1152,26 @@ independently without affecting each other.</p>
 <code>terraform.tfstate</code>. This is a problem for a team: if two
 people run Terraform from different machines, their state files diverge
 and Terraform loses track of what actually exists in AWS.</p>
-<p>This project uses <strong>remote state</strong> – but each operator
+<p>This project uses <strong>remote state</strong>, but each operator
 has their own bucket and key, not a shared one:</p>
 <pre><code>Tim:   s3://ucla-tim-terraform-state/terraform-dataverse/tim/terraform.tfstate
 Jamie: s3://ucla-library-terraform-state/terraform-dataverse/jamie/terraform.tfstate</code></pre>
 <p>Tim’s <code>apply</code> and Jamie’s <code>apply</code> cannot see or
-affect each other’s state at all – they are backed by different buckets.
+affect each other’s state at all: they are backed by different buckets.
 This is deliberate: it means destroying or rebuilding one operator’s
 environment can’t touch the other’s, which matters a lot given how often
 <code>make rebuild</code> tears an environment down and recreates it
 (Episode 6). Both backends still use a shared DynamoDB table
 (<code>terraform-locks</code>) for locking, which prevents two
 <code>terraform apply</code> runs against the <em>same</em> state from
-racing each other – but that only protects an operator against
-themselves (e.g. two terminal tabs), not against each other.</p>
-<p><code>s3://ucla-dataverse-migration-assets/</code> is a different
-bucket entirely – it holds database dumps and migration assets, not
+racing each other. That only protects an operator against themselves
+(e.g. two terminal tabs), not against each other.</p>
+<figure><img src="../fig/terraform-state-isolation.svg" alt="Diagram: Tim's environment applies to S3 bucket ucla-tim-terraform-state, and Jamie's environment applies to S3 bucket ucla-library-terraform-state. Both environments take a lock against a shared DynamoDB table called terraform-locks before applying." class="figure mx-auto d-block"><div class="figcaption">Tim and Jamie’s operator environments each apply
+against their own S3 state bucket. Both share a DynamoDB lock table, so
+the shared table prevents same-operator races but not cross-operator
+conflicts.</div>
+</figure><p><code>s3://ucla-dataverse-migration-assets/</code> is a different
+bucket entirely: it holds database dumps and migration assets, not
 Terraform state. Don’t confuse the two.</p>
 <div id="never-edit-the-state-file-directly" class="callout">
 <div class="callout-square">
@@ -1208,8 +1194,8 @@ repair it.</p>
 <hr class="half-width">
 <p>An Elastic IP (EIP) is a static IP address you reserve in AWS and
 attach to an EC2 instance.</p>
-<p>Without an Elastic IP, every time you run <code>make rebuild</code> –
-which destroys and recreates the EC2 instance – the instance gets a new
+<p>Without an Elastic IP, every time you run <code>make rebuild</code>
+(which destroys and recreates the EC2 instance), the instance gets a new
 public IP address. That means:</p>
 <ul>
 <li>The Ansible inventory file needs to be updated before Ansible can
@@ -1226,15 +1212,15 @@ even when the instance doesn’t.</p>
 <code>modules/dataverse_ec2/main.tf</code> is defined in the <em>same
 module</em> as the EC2 instance, associated directly to
 <code>aws_instance.dataverse.id</code>. When <code>make rebuild</code>
-runs <code>terraform destroy</code>, it tears down the whole module –
-instance and EIP together – so the address does <em>not</em> survive a
+runs <code>terraform destroy</code>, it tears down the whole module,
+instance and EIP together, so the address does <em>not</em> survive a
 rebuild yet. Roadmap item <code>02-01</code> (“Elastic IP resource… for
 both environments”) is still unchecked for exactly this reason: having
 an <code>aws_eip</code> resource isn’t the same as having a
 <em>persistent</em> one. The real <code>make rebuild</code> output today
 prints a new IP and pauses for you to update the DNS A record by hand
-(<code>Makefile</code>, the <code>rebuild</code> target) – which is the
-friction this feature is meant to remove, and hasn’t yet.</p>
+(<code>Makefile</code>, the <code>rebuild</code> target). That’s the
+friction this feature is meant to remove and hasn’t yet.</p>
 </section><section><h2 class="section-heading" id="variables-and-tfvars">Variables and tfvars<a class="anchor" aria-label="anchor" href="#variables-and-tfvars"></a>
 </h2>
 <hr class="half-width">
@@ -1249,15 +1235,15 @@ and their types (like a function signature)</li>
 those variables (like the function call)</li>
 </ul>
 <p>The <code>terraform.tfvars</code> file for each environment is
-<strong>gitignored, not committed</strong> – each operator creates their
+<strong>gitignored, not committed</strong>. Each operator creates their
 own from <code>terraform.tfvars.example</code> during setup (Episode 2).
 That’s intentional, because in practice it’s not secret-free: Tim’s real
 <code>tfvars</code> includes a plaintext <code>db_password</code>. This
-is a known, flagged gap (the security audit calls it out as finding F8)
-– the intended design keeps secrets in Ansible Vault, not Terraform, but
+is a known, flagged gap (the security audit calls it out as finding F8):
+the intended design keeps secrets in Ansible Vault, not Terraform, but
 <code>db_password</code> currently lives in both places, and the
 Terraform copy isn’t encrypted. Don’t treat “it’s gitignored” as
-equivalent to “it’s safe” – gitignore keeps a file out of version
+equivalent to “it’s safe”: gitignore keeps a file out of version
 control, it doesn’t encrypt what’s on disk.</p>
 <div id="read-a-terraform-plan" class="callout challenge">
 <div class="callout-square">
@@ -1285,7 +1271,7 @@ what CIDR range?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>The exact output will depend on current state. Things to look
 for:</p>
@@ -1331,11 +1317,11 @@ to the specific piece of config that proves your answer.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
-<li>No – each environment’s <code>main.tf</code> points at a different
-S3 bucket/key for its backend (<code>ucla-tim-terraform-state</code>
+<li>No. Each environment’s <code>main.tf</code> points at a different S3
+bucket/key for its backend (<code>ucla-tim-terraform-state</code>
 vs. <code>ucla-library-terraform-state</code>, different keys).
 Terraform only knows about resources tracked in the state it’s pointed
 at, so Tim’s <code>destroy</code> has no way to reach anything in
@@ -1361,16 +1347,16 @@ EIP persistent.</li>
 <li>Terraform manages EC2, RDS, S3, security groups, an Elastic IP
 resource, and IAM for this project.</li>
 <li>State is stored remotely in S3, but Tim and Jamie each have their
-own bucket/key – state is isolated per operator, not shared.</li>
+own bucket/key: state is isolated per operator, not shared.</li>
 <li>Each operator has their own environment directory; both use shared
 modules.</li>
 <li>An Elastic IP resource exists, but it’s tied to the instance’s
 lifecycle, so it does <strong>not</strong> yet survive
-<code>make rebuild</code> – that’s still open work (roadmap
+<code>make rebuild</code>. That’s still open work (roadmap
 <code>02-01</code>).</li>
 <li>
 <code>terraform.tfvars</code> is gitignored per environment, but is
-not currently secret-free in practice – a known gap (audit F8).</li>
+not currently secret-free in practice: a known gap (audit F8).</li>
 </ul>
 </div>
 </div>
@@ -1381,7 +1367,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-ansible-idempotency"><p>Content from <a href="ansible-idempotency.html">Ansible: Configuration and Idempotency</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/ansible-idempotency.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 35 minutes</p>
@@ -1427,7 +1413,7 @@ playbook-level re-run safety, and why this role only has the first.</li>
 <section><h2 class="section-heading" id="what-ansible-does">What Ansible does<a class="anchor" aria-label="anchor" href="#what-ansible-does"></a>
 </h2>
 <hr class="half-width">
-<p>Ansible is responsible for configuration – the “what is installed and
+<p>Ansible is responsible for configuration: the “what is installed and
 how is it set up” layer. After Terraform creates the EC2 instance,
 Ansible connects to it over SSH and:</p>
 <ul>
@@ -1439,7 +1425,7 @@ Ansible connects to it over SSH and:</p>
 <li>Applies Dataverse configuration via the Dataverse API</li>
 <li>Sets JVM options in Payara for Dataverse to use</li>
 </ul>
-<p>All of this is defined in the <code>dataverse-ansible</code> role – a
+<p>All of this is defined in the <code>dataverse-ansible</code> role, a
 structured collection of tasks, templates, handlers, and variable
 files.</p>
 </section><section><h2 class="section-heading" id="role-structure">Role structure<a class="anchor" aria-label="anchor" href="#role-structure"></a>
@@ -1454,15 +1440,14 @@ directories are:</p>
   templates/      &lt;- config file templates with variable substitution
   defaults/       &lt;- default variable values
   group_vars/     &lt;- environment-specific overrides</code></pre>
-<p><code>site.yml</code> at the repo root is the entry point – the
-repo’s own comment describes the whole thing as “this repository itself
-is the Dataverse ansible role.” Instead of one
-<code>tasks/main.yml</code> dispatching to sub-files,
-<code>tasks/</code> holds a flat collection of per-service files
-(<code>payara.yml</code>, <code>solr.yml</code>,
+<p><code>site.yml</code> at the repo root is the entry point: the repo’s
+own comment describes the whole thing as “this repository itself is the
+Dataverse ansible role.” Instead of one <code>tasks/main.yml</code>
+dispatching to sub-files, <code>tasks/</code> holds a flat collection of
+per-service files (<code>payara.yml</code>, <code>solr.yml</code>,
 <code>dataverse-prereqs.yml</code>, and so on) that
 <code>site.yml</code> pulls in directly. There’s no top-level
-<code>vars/</code> directory in this role – just <code>defaults/</code>
+<code>vars/</code> directory in this role, just <code>defaults/</code>
 for role defaults and <code>group_vars/</code> for environment
 overrides.</p>
 </section><section><h2 class="section-heading" id="idempotency-the-concept-vs--this-role-the-reality">Idempotency (the concept) vs. this role (the reality)<a class="anchor" aria-label="anchor" href="#idempotency-the-concept-vs--this-role-the-reality"></a>
@@ -1493,10 +1478,12 @@ one.</strong> The repo’s own operating rule, stated plainly in
 destroy the environment before re-running. Do not re-run
 ansible-playbook against an existing instance.”</em> In practice that
 means: after any <code>make rebuild</code>, if something fails partway
-through, the fix is <code>terraform destroy</code> and start over – not
-“just run <code>make ansible</code> again and let idempotent modules
-sort it out.”</p>
-<div id="why-re-running-isnt-safe-here" class="callout">
+through, the fix is <code>terraform destroy</code> and start over, not
+“run <code>make ansible</code> again and let idempotent modules sort it
+out.”</p>
+<figure><img src="../fig/ansible-rerun-decision.svg" alt="Decision flow: after make ansible ENV=x runs, if it did not fail, the environment is configured and module-level idempotency held. If it failed partway through, the wrong move is re-running ansible-playbook in place, which risks unguarded shell/command tasks failing again or corrupting state. The right move is terraform destroy followed by make rebuild, producing a clean environment rebuilt from scratch." class="figure mx-auto d-block"><div class="figcaption">A failed ansible-playbook run should end in
+terraform destroy and rebuild, not a second in-place run.</div>
+</figure><div id="why-re-running-isnt-safe-here" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
@@ -1505,16 +1492,48 @@ sort it out.”</p>
 <h3 class="callout-title">Why re-running isn’t safe here</h3>
 <div class="callout-content">
 <p><code>shell</code> and <code>command</code> tasks run every time
-unless guarded with <code>creates:</code> or <code>when:</code> – and a
+unless guarded with <code>creates:</code> or <code>when:</code>, and a
 role this size has a number of them: first-boot Dataverse API calls,
 database schema bootstrapping, Let’s Encrypt certificate issuance. Any
 one of those re-running against an already-configured instance can fail
 outright or leave the system in a state none of the individual
 <code>ok</code>/<code>changed</code> reports would have predicted. The
 safe mental model for this specific role is <strong>destroy-and-rebuild,
-not re-run-in-place</strong> – treat the per-module idempotency as a
-nice property of individual steps, not a guarantee about the playbook as
-a whole.</p>
+not re-run-in-place</strong>. Treat the per-module idempotency as a nice
+property of individual steps, not a guarantee about the playbook as a
+whole.</p>
+</div>
+</div>
+</div>
+<div id="the-harder-shift-trusting-automation-over-hand-fixing" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="the-harder-shift-trusting-automation-over-hand-fixing" class="callout-inner">
+<h3 class="callout-title">The harder shift: trusting automation over
+hand-fixing</h3>
+<div class="callout-content">
+<p>Knowing the destroy-and-rebuild rule and actually living by it are
+different things. You can be completely comfortable running
+<code>ansible-playbook</code> or testing roles with Molecule locally,
+and still fall back on old sysadmin habits under pressure: SSH into the
+box, find the broken service, patch it by hand, move on.</p>
+<p>That instinct is understandable. It’s faster in the moment, and if
+you’ve spent years keeping servers alive by hand, it’s the reflex that’s
+kept things running. But it breaks the guarantee this whole stack
+depends on: that <code>terraform-dataverse</code> and
+<code>dataverse-ansible</code> together describe everything that’s true
+about the server. The moment you hand-patch something outside that
+description, the code and the running instance disagree, and nobody,
+including future you, can tell just by reading the repo what state the
+box is actually in.</p>
+<p>The rule in <code>CONTEXT.md</code> (destroy and rebuild, don’t patch
+in place) is really asking you to make that trade explicit: when
+something breaks, the fix goes into the role or the Terraform config,
+not onto the live host. It’s slower the first time. It’s also the only
+way the “read the repo, know the server” property this lesson keeps
+coming back to stays true.</p>
 </div>
 </div>
 </div>
@@ -1525,8 +1544,8 @@ a whole.</p>
 override defaults for specific environments. The real files are
 <code>all.yml</code> (non-secret defaults shared everywhere),
 <code>dev.yml</code>, <code>test.yml</code>, <code>staging.yml</code>,
-and <code>TEMPLATE.yml</code> (a starting point for a new environment) –
-there is no <code>production.yml</code> yet.</p>
+and <code>TEMPLATE.yml</code> (a starting point for a new environment).
+There is no <code>production.yml</code> yet.</p>
 <p>Dev and test both point at the FAKE DOI provider, but the real
 variables are nested under <code>pid:</code> and <code>doi:</code>
 blocks, not a single flat <code>dataverse_doi_provider</code> key:</p>
@@ -1546,9 +1565,8 @@ blocks, not a single flat <code>dataverse_doi_provider</code> key:</p>
 <span id="cb3-11"><a href="#cb3-11" tabindex="-1" aria-label="code-block-3-11"></a><span class="at">  </span><span class="fu">password</span><span class="kw">:</span><span class="at"> </span><span class="st">"notmypassword"</span><span class="co">   # not vaulted in dev -- see Episode 6</span></span></code></pre>
 </div>
 <p>The same playbook runs against every environment; the variables
-control which behavior each environment gets. This is how we keep dev,
-test, and staging separate without maintaining separate copies of the
-role.</p>
+control which behavior each environment gets. This keeps dev, test, and
+staging separate without maintaining separate copies of the role.</p>
 </section><section><h2 class="section-heading" id="the-inventory">The inventory<a class="anchor" aria-label="anchor" href="#the-inventory"></a>
 </h2>
 <hr class="half-width">
@@ -1561,7 +1579,7 @@ ec2-12-34-56-78.us-west-2.compute.amazonaws.com ansible_user=rocky ansible_ssh_p
 <p>The Makefile generates and uses this inventory automatically when you
 run <code>make rebuild</code>. <code>CONTEXT.md</code> flags this file
 specifically: it’s gitignored and regenerated by Terraform on every
-<code>apply</code> – never edit it by hand, your edits will just be
+<code>apply</code>. Never edit it by hand: your edits will be
 overwritten.</p>
 <div id="run-the-real-playbook-and-read-the-output" class="callout challenge">
 <div class="callout-square">
@@ -1571,7 +1589,7 @@ overwritten.</p>
 <div id="run-the-real-playbook-and-read-the-output" class="callout-inner">
 <h3 class="callout-title">Run the real playbook and read the output</h3>
 <div class="callout-content">
-<p>There is no <code>--check</code>-mode wrapper for this role today –
+<p>There is no <code>--check</code>-mode wrapper for this role today:
 <code>make ansible ENV=tim</code> runs the real thing:</p>
 <div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1605,11 +1623,10 @@ is the supported way to recover?</li>
 do. <code>changed</code> means it modified something. A
 freshly-provisioned instance should show mostly <code>changed</code> on
 first run; re-running against the <em>same still-fresh</em> instance
-would show more <code>ok</code>s for the guarded tasks – but that’s not
-a scenario this role is meant to be run in twice.</p>
+would show more <code>ok</code>s for the guarded tasks. But that’s not a
+scenario this role is meant to be run in twice.</p>
 <p>Some <code>shell</code>/<code>command</code> tasks are guarded, some
-aren’t – that inconsistency is exactly why the repo-wide rule
-exists.</p>
+aren’t. That inconsistency is exactly why the repo-wide rule exists.</p>
 <p>Per <code>CONTEXT.md</code>: destroy and rebuild
 (<code>make rebuild</code>), not re-run in place. There is no supported
 partial-recovery path.</p>
@@ -1644,8 +1661,8 @@ checks current state before acting, so running it twice in a row causes
 no harm. Playbook-level re-run safety depends on <em>every</em> task in
 the run having that property, including
 <code>shell</code>/<code>command</code> tasks that don’t check anything
-by default. One unguarded task – a schema bootstrap, a cert request, a
-first-boot API call – is enough to make the whole playbook unsafe to
+by default. One unguarded task (a schema bootstrap, a cert request, a
+first-boot API call) is enough to make the whole playbook unsafe to
 re-run, even though most of its individual tasks are perfectly
 idempotent on their own.</p>
 </div>
@@ -1664,7 +1681,7 @@ idempotent on their own.</p>
 <code>dataverse-ansible</code> installs and configures Payara, Solr,
 Apache, and Dataverse; <code>site.yml</code> is the entry point, and the
 whole repo is treated as one role.</li>
-<li>Individual modules (like <code>dnf</code>) are idempotent – but this
+<li>Individual modules (like <code>dnf</code>) are idempotent, but this
 role, as a whole, is <strong>not</strong> safe to re-run against a live
 instance. The operating rule is destroy-and-rebuild, not
 re-run-in-place.</li>
@@ -1675,12 +1692,11 @@ environment-specific values without duplicating the role; DOI config
 lives under nested <code>pid:</code>/<code>doi:</code> blocks, not flat
 keys.</li>
 <li>The Ansible inventory is generated from Terraform output
-(<code>ansible_user: rocky</code>) – gitignored, regenerated on every
+(<code>ansible_user: rocky</code>): gitignored, regenerated on every
 <code>apply</code>, never hand-edited.</li>
 <li>Unguarded <code>shell</code>/<code>command</code> tasks are the
-reason re-running isn’t safe – prefer modules, and guard shell tasks
-with <code>creates:</code>/<code>when:</code> when you can’t avoid
-them.</li>
+reason re-running isn’t safe. Prefer modules, and guard shell tasks with
+<code>creates:</code>/<code>when:</code> when you can’t avoid them.</li>
 </ul>
 </div>
 </div>
@@ -1723,7 +1739,7 @@ Solr?</li>
 <li>Explain how Dataverse configuration is applied via JVM options and
 the API.</li>
 <li>Describe how RDS, S3, and Solr each serve different data needs.</li>
-<li>Know when and why a Solr reindex is required.</li>
+<li>Identify when and why a Solr reindex is required.</li>
 </ul>
 </div>
 </div>
@@ -1733,7 +1749,7 @@ the API.</li>
 <section><h2 class="section-heading" id="payara-the-application-server">Payara: the application server<a class="anchor" aria-label="anchor" href="#payara-the-application-server"></a>
 </h2>
 <hr class="half-width">
-<p>Payara is a Jakarta EE application server – a runtime environment for
+<p>Payara is a Jakarta EE application server, a runtime environment for
 Java web applications. It is a community fork of GlassFish, maintained
 specifically for Jakarta EE compatibility. Dataverse chose it because
 Dataverse is a Jakarta EE application and Payara has continued to
@@ -1742,7 +1758,7 @@ receive active maintenance after GlassFish development slowed.</p>
 Node.js process: it is the process that loads the application, handles
 incoming requests, manages database connections, and keeps the
 application running.</p>
-<p>Dataverse is distributed as a WAR file – a Web Application Archive.
+<p>Dataverse is distributed as a WAR file, a Web Application Archive.
 Ansible deploys this WAR file into Payara during installation. Payara
 unpacks it and starts serving requests.</p>
 <div class="section level3">
@@ -1775,8 +1791,8 @@ unpacks it and starts serving requests.</p>
 </table>
 <p>Apache sits in front of ports 80 and 443. Requests come in through
 Apache and are proxied to Payara on port 8080 or 8181. Port 4848 is the
-Payara admin console – it should not be publicly accessible and is
-locked down in the security group.</p>
+Payara admin console: it should not be publicly accessible and is locked
+down in the security group.</p>
 </div>
 <div class="section level3">
 <h3 id="configuring-dataverse-through-payara-jvm-options">Configuring Dataverse through Payara JVM options<a class="anchor" aria-label="anchor" href="#configuring-dataverse-through-payara-jvm-options"></a>
@@ -1791,7 +1807,7 @@ reads at startup:</p>
 <p>Ansible sets these JVM options through the Payara admin API during
 the configure step. You can also inspect or change them manually through
 the Payara admin console on port 4848, but Ansible is the source of
-truth – any manual changes will be overwritten on the next playbook
+truth: any manual changes will be overwritten on the next playbook
 run.</p>
 </div>
 <div class="section level3">
@@ -1807,7 +1823,7 @@ for production)</li>
 <li>Apply any site-level settings</li>
 </ul>
 <p>This is why <code>make rebuild</code> takes several minutes even
-after Payara is up – the playbook is waiting for Dataverse to finish its
+after Payara is up: the playbook is waiting for Dataverse to finish its
 own initialization before it can call the API.</p>
 </div>
 <div class="section level3">
@@ -1818,12 +1834,12 @@ own initialization before it can call the API.</p>
 <strong>Payara not responding after deploy</strong>: Dataverse
 startup takes 2-5 minutes on first boot. Check the Payara log at
 <code>/usr/local/payara6/glassfish/domains/domain1/logs/server.log</code>
-(Payara 6, since the move to Dataverse 6.8 – older docs and issues may
+(Payara 6, since the move to Dataverse 6.8; older docs and issues may
 still say <code>payara5</code>). Look for <code>Dataverse started</code>
 or exception stack traces.</li>
 <li>
 <strong>Out of memory</strong>: Payara JVM heap settings are
-configured in Ansible group_vars. Default is 2GB – increase if you see
+configured in Ansible group_vars. Default is 2GB; increase if you see
 <code>OutOfMemoryError</code> in the Payara log.</li>
 <li>
 <strong>WAR deploy failure</strong>: The WAR file checksum or
@@ -1842,7 +1858,7 @@ wearing two costumes</h3>
 <div class="callout-content">
 <p><code>modules/dataverse_ec2/main.tf</code> provisions a fixed 2GB
 swapfile on the <em>same root volume</em> as everything else, regardless
-of instance size – and this project’s real production instance has had
+of instance size, and this project’s real production instance has had
 recurring swap and disk-space pressure that nobody had sized against
 actual usage. It’s tempting to treat “swap full” and “disk full” as two
 problems to fix separately (bigger swapfile, bigger EBS volume), but on
@@ -1860,13 +1876,13 @@ questions instead of reaching for one bigger number:</p>
 <li>
 <strong>Is swap chronically engaged</strong>, not just during a
 reindex or restore spike? Chronic swap under normal load means the
-instance type is undersized for memory – check with <code>free -h</code>
+instance type is undersized for memory: check with <code>free -h</code>
 and <code>vmstat 1</code> under idle vs. load, not a single
 point-in-time reading.</li>
 <li>
 <strong>What’s actually on the root disk that won’t move to
 S3?</strong> If production’s files currently live on local disk rather
-than S3 (an open question in this project – see
+than S3 (an open question in this project; see
 <code>MIGRATION_DECISIONS.md</code> Q1), that entire category of usage
 disappears once the new environment is S3-backed. Solr’s index and
 Payara’s logs are what’s left, and <code>du -sh</code> on those specific
@@ -1874,13 +1890,13 @@ directories tells you far more than a total <code>df -h</code>
 percentage.</li>
 <li>
 <strong>What’s the growth trend, not the current reading?</strong> A
-disk at 70% today could be flat or climbing fast –
+disk at 70% today could be flat or climbing fast:
 <code>make baseline</code> snapshots over time (dataset/file counts) are
 a usable proxy for growth rate even without dedicated host-metric
 history.</li>
 </ol>
 <p>The architecture change (local storage to S3) is doing real sizing
-work here for free – don’t undercut it by copying the old box’s total
+work here for free. Don’t undercut it by copying the old box’s total
 disk usage into the new one’s spec.</p>
 </div>
 </div>
@@ -1891,13 +1907,13 @@ disk usage into the new one’s spec.</p>
 </div>
 <span class="callout-header">Callout</span>
 <div id="an-unsupported-version-isnt-safe-its-just-unmonitored" class="callout-inner">
-<h3 class="callout-title">An unsupported version isn’t “safe” – it’s
-just unmonitored</h3>
+<h3 class="callout-title">An unsupported version isn’t “safe”: it’s just
+unmonitored</h3>
 <div class="callout-content">
 <p>CVE-2026-1879 (an unrestricted file upload via
 <code>uploadLogo</code>) affects Dataverse 6.0 through 6.8, and was
 patched starting at 6.10. Production here still runs 5.14, which sounds
-like it should be a separate question – except IQSS doesn’t issue CVEs
+like it should be a separate question, except IQSS doesn’t issue CVEs
 against the unsupported 5.x line at all. That’s not the same as 5.x
 being unaffected; it means nobody is tracking it either way. “No CVE
 filed” and “confirmed not vulnerable” are different claims, and it’s
@@ -1919,7 +1935,7 @@ tracked.</p>
 <h3 class="callout-title">Payara vs. GlassFish</h3>
 <div class="callout-content">
 <p>Dataverse documentation and older issues sometimes reference
-GlassFish commands and paths. Payara is API-compatible – the
+GlassFish commands and paths. Payara is API-compatible: the
 <code>asadmin</code> command and most paths are the same. If you find a
 GlassFish-specific workaround in an older issue, it will almost always
 apply to Payara as well.</p>
@@ -1951,12 +1967,12 @@ When you restore a database backup, you are restoring this metadata.</p>
 <div class="section level3">
 <h3 id="s3">S3<a class="anchor" aria-label="anchor" href="#s3"></a>
 </h3>
-<p>S3 stores the actual file content – the bytes of every data file
-users have uploaded. The connection between a file record in RDS and its
+<p>S3 stores the actual file content: the bytes of every data file users
+have uploaded. The connection between a file record in RDS and its
 content in S3 is a storage identifier stored in the database.</p>
 <p>After a database restore, Dataverse uses the storage identifiers to
 serve files from S3. The files in S3 do not change when you restore the
-database – only the metadata does.</p>
+database; only the metadata does.</p>
 <p>This also means that if a file is deleted from S3 but its record
 remains in RDS, Dataverse will show the file as available but fail when
 users try to download it.</p>
@@ -1981,7 +1997,7 @@ migration intact.</p>
 <h3 id="solr">Solr<a class="anchor" aria-label="anchor" href="#solr"></a>
 </h3>
 <p>Solr is a full-text search engine. Dataverse uses it to power all
-search and browse functionality – when you type a query in Dataverse or
+search and browse functionality. When you type a query in Dataverse or
 browse a collection, the results come from Solr, not directly from the
 database.</p>
 <p>Solr maintains its own index: a data structure optimized for fast
@@ -1997,7 +2013,7 @@ were added. After any database restore, you must reindex:</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="fu">make</span> reindex ENV=tim</span></code></pre>
 </div>
 <p>A Dataverse instance with a stale Solr index will appear to have no
-datasets – or the wrong datasets. This is one of the most common sources
+datasets, or the wrong datasets. This is one of the most common sources
 of confusion after a rebuild.</p>
 <p>The reindex process reads all dataset metadata from the database and
 sends it to Solr. Depending on how many datasets you have, this can take
@@ -2010,13 +2026,13 @@ from seconds to hours.</p>
 <div id="make-reindex-only-works-because-the-admin-api-is-open-and-thats-a-problem" class="callout-inner">
 <h3 class="callout-title">
 <code>make reindex</code> only works because
-the admin API is open – and that’s a problem</h3>
+the admin API is open, and that’s a problem</h3>
 <div class="callout-content">
 <p>Look at the real target: it’s
 <code>curl -X DELETE https://$HOST/api/admin/index</code> over public
 HTTPS. That works <em>only</em> because Dataverse’s admin API is
 currently unauthenticated and reachable from the internet on this
-instance – which the infrastructure security audit flags as a Critical
+instance, which the infrastructure security audit flags as a Critical
 finding (F1): the same open admin API also allows dataset destroy on an
 instance that will eventually hold production research data.
 <code>make baseline</code> and <code>make test</code> have the identical
@@ -2066,7 +2082,7 @@ dataset reference). S3 gets the file bytes at the storage identifier
 path.</li>
 <li>Solr answers the search query. The database is not involved in
 search.</li>
-<li>S3 is unchanged – it still has all files ever uploaded, including
+<li>S3 is unchanged: it still has all files ever uploaded, including
 those added in the past week. Solr still has the current index built
 from the current database before the restore.</li>
 <li>Run <code>make reindex ENV=&lt;env&gt;</code> to rebuild the Solr
@@ -2103,13 +2119,13 @@ proxy), what would break, and what’s the planned fix?</li>
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
-<code>curl -X DELETE https://$HOST/api/admin/index</code> – a
+<code>curl -X DELETE https://$HOST/api/admin/index</code>: a
 public-HTTPS call to Dataverse’s admin API. It depends on that API being
 unauthenticated and reachable from outside the instance, which it
 currently is (audit finding F1, Critical).</li>
 <li>
 <code>make reindex</code>, <code>make baseline</code>, and
-<code>make test</code> would all start failing (F5) – they all hit
+<code>make test</code> would all start failing (F5): they all hit
 admin/metrics endpoints the same way. The planned fix is rewriting those
 calls to go over SSH to <code>localhost:8080</code> on the instance
 instead of public HTTPS.</li>
@@ -2135,11 +2151,11 @@ by Ansible.</li>
 first place to look when things go wrong.</li>
 <li>RDS holds metadata; S3 holds file content; Solr holds the search
 index.</li>
-<li>Always run <code>make reindex</code> after a database restore – Solr
+<li>Always run <code>make reindex</code> after a database restore: Solr
 does not update itself.</li>
 <li>
 <code>make reindex</code>/<code>baseline</code>/<code>test</code>
-currently depend on the admin API being open over public HTTPS – a known
+currently depend on the admin API being open over public HTTPS: a known
 Critical security exposure (F1/F5), not a stable design choice.</li>
 </ul>
 </div>
@@ -2207,7 +2223,7 @@ decrypts them at playbook runtime.</p>
 <p>Notably absent: <strong>AWS credentials for S3 writes are not a
 vaulted secret at all.</strong> The EC2 instance authenticates to S3
 through an IAM instance profile (<code>s3.use_iam_role: true</code> in
-<code>group_vars</code>) – there’s no access key to leak in the first
+<code>group_vars</code>): there’s no access key to leak in the first
 place, which is the safer design and worth naming as deliberate, not an
 oversight.</p>
 <div id="when-the-design-and-the-workaround-disagree" class="callout">
@@ -2225,7 +2241,7 @@ session against a real S3-permissions error
 (<code>ansible-infrastructure</code> #56, “Dataverse files not found”)
 worked around the problem with <code>asadmin create-jvm-options</code>
 setting a static <code>dataverse.files.s3.access-key</code> and
-<code>secret-key</code> directly – which works, and also reintroduces
+<code>secret-key</code> directly. That works, and also reintroduces
 exactly the access key this design exists to avoid.</p>
 <p>This is not a story about someone doing it wrong. It’s what manual,
 hands-on-the-box troubleshooting produces under time pressure: a fix
@@ -2233,7 +2249,7 @@ that resolves the symptom in front of you, using whatever tool is
 fastest, without necessarily routing back through the Ansible role
 that’s supposed to be the source of truth. If you rebuild that instance
 from scratch with <code>make rebuild</code>, the static key disappears
-and the IAM-role config is what actually ships – so the two modes of
+and the IAM-role config is what actually ships, so the two modes of
 operating (rebuild-from-role vs. patch-the-live-box) can silently
 diverge without anyone deciding they should. Worth checking group_vars
 against the live instance’s actual JVM options after any manual
@@ -2241,7 +2257,7 @@ intervention like this one.</p>
 </div>
 </div>
 </div>
-<p>There’s no separate <code>group_vars/all/vault.yml</code> file –
+<p>There’s no separate <code>group_vars/all/vault.yml</code> file:
 secrets are inline, encrypted in place inside the same flat
 <code>group_vars/&lt;env&gt;.yml</code> files as everything else, using
 <code>!vault |</code> blocks:</p>
@@ -2267,7 +2283,10 @@ secrets are inline, encrypted in place inside the same flat
 <p>Both commands prompt for the vault password (the
 <code>.vault-password</code> file from Episode 2). That file itself is
 never committed to the repository.</p>
-<div id="never-commit-unencrypted-secrets" class="callout">
+<figure><img src="../fig/secret-flow.svg" alt="Flow diagram: a secret starts as an encrypted vault block in group_vars/&lt;env&gt;.yml, is decrypted by Ansible at playbook runtime, is set as a Payara JVM option in domain.xml, and is read by Dataverse at startup." class="figure mx-auto d-block"><div class="figcaption">A secret moves from an encrypted group_vars
+block, through ansible-vault decryption at runtime, into a Payara JVM
+option, and is finally read by Dataverse at startup.</div>
+</figure><div id="never-commit-unencrypted-secrets" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
@@ -2278,7 +2297,7 @@ never committed to the repository.</p>
 <p>If you accidentally add a plaintext secret to the repo, treat it as
 compromised and rotate it. Remove it from git history using
 <code>git filter-branch</code> or <code>git filter-repo</code>, then
-notify the team. The vault exists to prevent this – if in doubt, vault
+notify the team. The vault exists to prevent this: if in doubt, vault
 it.</p>
 </div>
 </div>
@@ -2309,7 +2328,7 @@ domain</li>
 </div>
 <p>When <code>test_cert: true</code>, Ansible generates a self-signed
 certificate locally and skips Certbot entirely. Browsers will show a
-security warning for self-signed certs – that is expected.</p>
+security warning for self-signed certs. That is expected.</p>
 </section><section><h2 class="section-heading" id="fake-pid-provider">FAKE PID provider<a class="anchor" aria-label="anchor" href="#fake-pid-provider"></a>
 </h2>
 <hr class="half-width">
@@ -2327,7 +2346,7 @@ test environments, you do not want to:</p>
 It generates DOI-like identifiers (they look like DOIs but do not
 resolve) without contacting any external service.</p>
 <p>In <code>group_vars</code>, this isn’t one variable but two nested
-blocks – <code>pid:</code> (the identifier format) and <code>doi:</code>
+blocks: <code>pid:</code> (the identifier format) and <code>doi:</code>
 (the registration service):</p>
 <div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2343,7 +2362,7 @@ blocks – <code>pid:</code> (the identifier format) and <code>doi:</code>
 </div>
 <p>The FAKE provider is used in all non-production environments
 throughout the migration. The switch to real EZID happens only at Phase
-7 (DNS cutover) – and since there’s no <code>production.yml</code> yet,
+7 (DNS cutover), and since there’s no <code>production.yml</code> yet,
 that switch requires writing production config, not just flipping a
 value in an existing file.</p>
 <div id="a-dev-environment-convenience-got-mistaken-for-a-decision" class="callout">
@@ -2355,15 +2374,15 @@ value in an existing file.</p>
 <h3 class="callout-title">A dev-environment convenience got mistaken for
 a decision</h3>
 <div class="callout-content">
-<p>For a while in mid-2026, this project’s own planning documents
-disagreed with each other about whether production DOIs come from EZID
-or DataCite – the roadmap and workplan said EZID, but
+<p>For a while, this project’s own planning documents disagreed with
+each other about whether production DOIs come from EZID or DataCite: the
+roadmap and workplan said EZID, but
 <code>dev.yml</code>/<code>staging.yml</code>’s DataCite-shaped test
 config (real sandbox URLs, a real test prefix) looked like evidence
-someone had decided to switch. Tim confirmed directly in September 2026:
+someone had decided to switch. A direct check with the team confirmed
 production has always been EZID. The DataCite stub in dev/test config
 existed because DataCite’s public sandbox needs no campus credentials
-and EZID’s does – it was the path of least resistance for testing, not a
+and EZID’s does. It was the path of least resistance for testing, not a
 provider decision.</p>
 <p>The lesson: what’s easiest to configure in a test environment is not
 evidence of what production actually uses. If you find yourself
@@ -2431,7 +2450,7 @@ state</h3>
 now. <code>test.yml</code> currently has
 <code>dataverse_adminpass: "CHANGE_ME_USE_VAULT"</code> and
 <code>dataverse_postgresql_password: "CHANGE_ME_USE_VAULT"</code> in
-plaintext – literal placeholder strings, not real secrets, but also not
+plaintext: literal placeholder strings, not real secrets, but also not
 vaulted. <code>all.yml</code> (the shared defaults every environment
 inherits unless it overrides them) has real plaintext defaults too, like
 <code>adminpass: admin</code>. Treat “is this value vaulted in
@@ -2473,10 +2492,10 @@ provider in each?</li>
 <div class="callout-content">
 <ul>
 <li>Secrets are vaulted inline inside
-<code>group_vars/&lt;env&gt;.yml</code> (<code>!vault |</code> blocks) –
+<code>group_vars/&lt;env&gt;.yml</code> (<code>!vault |</code> blocks):
 there is no separate <code>group_vars/all/vault.yml</code> file.</li>
-<li>S3 access uses an IAM instance profile, not vaulted AWS credentials
-– there’s no access key to leak.</li>
+<li>S3 access uses an IAM instance profile, not vaulted AWS credentials:
+there’s no access key to leak.</li>
 <li>Test environments use self-signed certificates
 (<code>letsencrypt.certbot.test_cert: true</code>); production would use
 Let’s Encrypt.</li>
@@ -2497,7 +2516,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-makefile-operations"><p>Content from <a href="makefile-operations.html">The Makefile: Daily Operations</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/makefile-operations.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 30 minutes</p>
@@ -2529,7 +2548,7 @@ vs. <code>make reindex</code>?</li>
 <li>Trace the steps of <code>make rebuild</code> in order.</li>
 <li>Run <code>make baseline</code> and inspect the snapshot it
 produces.</li>
-<li>Know when each operational target should be used.</li>
+<li>Identify when each operational target should be used.</li>
 </ul>
 </div>
 </div>
@@ -2563,47 +2582,50 @@ operator environment to work with.</p>
 <h3 id="make-rebuild">
 <code>make rebuild</code><a class="anchor" aria-label="anchor" href="#make-rebuild"></a>
 </h3>
-<p>Destroys and recreates <strong>the entire environment</strong> – EC2,
-RDS, and S3 together – then configures it and restores data. It requires
+<p>Destroys and recreates <strong>the entire environment</strong> (EC2,
+RDS, and S3 together), then configures it and restores data. It requires
 <code>DB_PASS</code> and prints a real warning before it runs, because
 of exactly the misconception this section used to encode: this is not an
 EC2-only operation.</p>
 <p>The real 7 steps, from the Makefile itself:</p>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Destroy</strong> – <code>terraform destroy</code> tears down
+<strong>Destroy</strong>: <code>terraform destroy</code> tears down
 the whole per-environment module: EC2, RDS, and the S3 bucket all go
 together. Nothing about this step is EC2-scoped.</li>
 <li>
-<strong>Provision</strong> – <code>terraform init -upgrade</code>
+<strong>Provision</strong>: <code>terraform init -upgrade</code>
 then <code>terraform apply</code> builds all of it back from scratch:
 new EC2 instance, new empty RDS database, new empty S3 bucket.</li>
 <li>
-<strong>DNS propagation</strong> – prints the new EC2 IP and pauses
+<strong>DNS propagation</strong>: prints the new EC2 IP and pauses
 for you to manually update the DNS A record (this is the Elastic IP gap
-from Episode 3 in practice – the IP really did change, and nothing
+from Episode 3 in practice: the IP really did change, and nothing
 updates DNS automatically yet).</li>
 <li>
-<strong>Ansible</strong> – runs <code>site.yml</code> to install and
+<strong>Ansible</strong>: runs <code>site.yml</code> to install and
 configure Payara, Solr, Apache, and Dataverse.</li>
 <li>
-<strong>Restore the database from S3</strong> –
+<strong>Restore the database from S3</strong>:
 <code>scripts/restore-db.sh</code> pulls the latest dump and loads it
 into the just-created, currently-empty RDS instance. This step exists
-<em>because</em> step 1 wiped the database – without it, rebuild would
+<em>because</em> step 1 wiped the database. Without it, rebuild would
 hand you an empty Dataverse.</li>
 <li>
-<strong>Start Payara</strong> – over SSH
+<strong>Start Payara</strong>: over SSH
 (<code>ssh rocky@$IP 'sudo systemctl start payara'</code>).</li>
 <li>
-<strong>Wait, then reindex</strong> – polls the app until it
+<strong>Wait, then reindex</strong>: polls the app until it
 responds, then runs <code>make reindex</code> to rebuild Solr from the
 just-restored database.</li>
 </ol>
-<p>There is no test-suite step at the end – rebuild ends at reindex and
+<p>There is no test-suite step at the end: rebuild ends at reindex and
 tells you to <code>make logs</code> to monitor. Running
 <code>make test</code> afterward is a separate, manual step.</p>
-<p>Use <code>make rebuild</code> when:</p>
+<figure><img src="../fig/rebuild-steps.svg" alt="Pipeline diagram of the 7 make rebuild steps in order: 1 Destroy (terraform destroy), 2 Provision (terraform apply), 3 DNS propagation (manual A record update), 4 Ansible (site.yml), 5 Restore DB from S3 (restore-db.sh), 6 Start Payara (over SSH), 7 Wait then reindex (make reindex). A dashed line points from step 7 to make test, labeled as a separate, manual step not included in the rebuild pipeline." class="figure mx-auto d-block"><div class="figcaption">The seven make rebuild steps run in sequence,
+ending at reindex. make test is a separate step run manually afterward,
+not part of the rebuild pipeline.</div>
+</figure><p>Use <code>make rebuild</code> when:</p>
 <ul>
 <li>Starting fresh after a failed or degraded environment</li>
 <li>Testing infrastructure changes that require a clean stack</li>
@@ -2620,16 +2642,16 @@ tells you to <code>make logs</code> to monitor. Running
 </div>
 <span class="callout-header">Callout</span>
 <div id="nothing-survives-a-rebuild-by-default-the-restore-step-is-what-saves-you" class="callout-inner">
-<h3 class="callout-title">Nothing survives a rebuild by default – the
+<h3 class="callout-title">Nothing survives a rebuild by default: the
 restore step is what saves you</h3>
 <div class="callout-content">
 <p>The single most consequential fact about <code>make rebuild</code>:
 it destroys RDS and S3 along with EC2, and the reason the environment
 isn’t empty afterward is step 5, restoring from a database dump in S3
-(<code>ucla-dataverse-migration-assets</code>) – a <em>separate</em>
+(<code>ucla-dataverse-migration-assets</code>), a <em>separate</em>
 bucket from the one <code>terraform destroy</code> just deleted. The
 security/reliability audit of this repo calls this restore-every-rebuild
-pattern “the single most valuable reliability practice here” – it means
+pattern “the single most valuable reliability practice here”: it means
 every rebuild is implicitly a disaster-recovery drill, proving the
 backup actually works. But it also means a stale or missing dump turns
 rebuild into “spin up an empty Dataverse,” not “restore my environment.”
@@ -2680,7 +2702,7 @@ durable and shared.</p>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="fu">make</span> baseline-compare BEFORE=baseline-snapshots/before.json AFTER=baseline-snapshots/after.json</span></code></pre>
 </div>
-<p>A passing comparison shows matching counts across all fields – with
+<p>A passing comparison shows matching counts across all fields, with
 one deliberate exception: <code>downloads</code>/guestbook-history drift
 is treated as informational only, not a failure, since download counts
 can legitimately keep changing between the two snapshots. Any
@@ -2708,7 +2730,7 @@ results</li>
 and send it to Solr. The time it takes depends on how many datasets
 exist.</p>
 <p>Under the hood this is a <code>curl -X DELETE</code> to Dataverse’s
-admin API over public HTTPS – which only works today because that API is
+admin API over public HTTPS. That only works today because that API is
 currently open to the internet, a Critical security finding covered in
 depth in Episode 5. <code>make baseline</code> and
 <code>make test</code> share the same dependency.</p>
@@ -2747,7 +2769,7 @@ error. Always specify it.</p>
 </div>
 <span class="callout-header">Challenge</span>
 <div id="trace-a-rebuild-for-real-this-time" class="callout-inner">
-<h3 class="callout-title">Trace a rebuild – for real this time</h3>
+<h3 class="callout-title">Trace a rebuild, for real this time</h3>
 <div class="callout-content">
 <p>Open <code>dataverse-infrastructure/Makefile</code> and find the
 <code>rebuild</code> target. Without relying on memory of this episode,
@@ -2769,12 +2791,12 @@ does that tell you about the Elastic IP’s current state (Episode
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
 <code>terraform destroy</code> in step 1 deletes the RDS instance
-along with EC2 and S3 – the whole module goes together. Step 5,
+along with EC2 and S3. The whole module goes together. Step 5,
 <code>scripts/restore-db.sh</code>, restores it from a dump pulled from
 the <code>ucla-dataverse-migration-assets</code> S3 bucket (a separate
 bucket from the one that just got destroyed).</li>
@@ -2784,7 +2806,7 @@ bucket from the one that just got destroyed).</li>
 command you run yourself afterward.</li>
 <li>Step 3 pauses and prints the new EC2 IP, asking you to update the
 DNS A record by hand before continuing. That’s only necessary because
-the Elastic IP doesn’t yet survive a rebuild (Episode 3) – if it did,
+the Elastic IP doesn’t yet survive a rebuild (Episode 3). If it did,
 this manual step wouldn’t exist.</li>
 </ol>
 </div>
@@ -2799,22 +2821,22 @@ this manual step wouldn’t exist.</li>
 <div class="callout-inner">
 <div class="callout-content">
 <ul>
-<li>The Makefile is the daily operations interface – rarely run
-Terraform or Ansible directly.</li>
+<li>The Makefile is the daily operations interface: rarely run Terraform
+or Ansible directly.</li>
 <li>
 <code>make rebuild ENV=&lt;env&gt; DB_PASS=&lt;pass&gt;</code>
 destroys and recreates EC2, RDS, <strong>and</strong> S3 together, then
 restores the database from an S3 dump. It does not preserve data by
-default – the restore step is what puts data back.</li>
+default: the restore step is what puts data back.</li>
 <li>
 <code>make baseline ENV=&lt;env&gt;</code> captures a timestamped
 snapshot to <code>baseline-snapshots/</code>, with dataset, file, and S3
 counts.</li>
 <li>
 <code>make reindex ENV=&lt;env&gt;</code> rebuilds the Solr index
-after any database restore – and depends on the admin API being open
-over public HTTPS (a known security gap, Episode 5).</li>
-<li>Always specify <code>ENV=</code> – the Makefile will error without
+after any database restore, and depends on the admin API being open over
+public HTTPS (a known security gap, Episode 5).</li>
+<li>Always specify <code>ENV=</code>: the Makefile will error without
 it.</li>
 </ul>
 </div>
@@ -2826,7 +2848,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-testing-validation"><p>Content from <a href="testing-validation.html">Testing and Validation</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/testing-validation.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 30 minutes</p>
@@ -2841,7 +2863,7 @@ any links that you are not going to use.
 <div class="inner">
 <h3 class="card-title">Questions</h3>
 <ul>
-<li>How do we know the migration worked?</li>
+<li>How do I know the migration worked?</li>
 <li>What does the test suite check?</li>
 <li>How do baseline comparisons verify data integrity?</li>
 </ul>
@@ -2856,7 +2878,8 @@ any links that you are not going to use.
 <li>Run the pytest suite and read its output.</li>
 <li>Explain what each test category checks.</li>
 <li>Compare two baseline snapshots and interpret the diff.</li>
-<li>Know what must pass before each migration phase can proceed.</li>
+<li>Identify what must pass before each migration phase can
+proceed.</li>
 </ul>
 </div>
 </div>
@@ -2883,7 +2906,7 @@ users</li>
 </section><section><h2 class="section-heading" id="the-pytest-suite">The pytest suite<a class="anchor" aria-label="anchor" href="#the-pytest-suite"></a>
 </h2>
 <hr class="half-width">
-<p>Tests live in <code>dataverse-ansible/tests/integration/</code> – the
+<p>Tests live in <code>dataverse-ansible/tests/integration/</code>: the
 child repo, not the orchestration repo. There’s no <code>tests/</code>
 directory in <code>dataverse-infrastructure</code> itself.</p>
 <p>Run the full suite:</p>
@@ -2898,7 +2921,7 @@ directory in <code>dataverse-infrastructure</code> itself.</p>
 </h3>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="bu">cd</span> dataverse-ansible <span class="kw">&amp;&amp;</span> <span class="ex">uv</span> run pytest tests/integration <span class="at">-v</span> <span class="at">--dataverse-url</span><span class="op">=</span>https://<span class="op">&lt;</span>hostname<span class="op">&gt;</span></span></code></pre>
 </div>
-<p>Note <code>uv</code>, not a bare <code>pytest</code> – and the
+<p>Note <code>uv</code>, not a bare <code>pytest</code>, and the
 <code>--dataverse-url</code> flag is required, since these tests hit a
 live instance over the network rather than running against
 localhost.</p>
@@ -2914,14 +2937,14 @@ API and then downloaded. If the IAM instance profile or bucket config is
 wrong, this fails.</p>
 <p><strong><code>TestSolrIndexing</code></strong>: Check that Solr is
 running and the index is not empty. An empty index does not cause
-Dataverse to error – it just silently returns no search results. This
-test catches that.</p>
+Dataverse to error: it silently returns no search results. This test
+catches that.</p>
 <p><strong><code>TestSearch</code>, <code>TestDataverse</code>,
 <code>TestDatasets</code>, <code>TestWebInterface</code>,
-<code>TestAuthentication</code></strong>: round out the smoke suite –
+<code>TestAuthentication</code></strong>: round out the smoke suite:
 basic CRUD, page rendering, and login checks.</p>
 <p><strong>Baseline count comparison</strong> is a separate step
-(<code>make baseline-compare</code>), not a pytest class – it compares
+(<code>make baseline-compare</code>), not a pytest class: it compares
 two JSON snapshots, not live API responses.</p>
 <p><strong>PID/DOI checks exist, but are narrower than they
 sound.</strong> <code>test_migration.py</code> has a
@@ -2929,9 +2952,9 @@ sound.</strong> <code>test_migration.py</code> has a
 <code>migration</code> pytest marker
 (<code>make ansible-migration</code>, not the default
 <code>make test</code>), and it mostly checks that PID <em>settings
-exist</em> in the database – it doesn’t distinguish FAKE from a real
-EZID connection. A dedicated DOI/FAKE-provider validation test is
-planned (roadmap <code>03-03</code>) but not yet built.</p>
+exist</em> in the database: it doesn’t distinguish FAKE from a real EZID
+connection. A dedicated DOI/FAKE-provider validation test is planned
+(roadmap <code>03-03</code>) but not yet built.</p>
 </div>
 <div class="section level3">
 <h3 id="reading-test-output">Reading test output<a class="anchor" aria-label="anchor" href="#reading-test-output"></a>
@@ -2964,7 +2987,7 @@ operation:</p>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1" aria-label="code-block-4-8"></a><span class="fu">make</span> baseline ENV=jamie</span>
 <span id="cb4-9"><a href="#cb4-9" tabindex="-1" aria-label="code-block-4-9"></a><span class="fu">mv</span> baseline-snapshots/baseline_<span class="op">&lt;</span>timestamp<span class="op">&gt;</span>.json baseline-snapshots/post-migration.json</span></code></pre>
 </div>
-<p>There’s no <code>latest.json</code> – every capture gets its own
+<p>There’s no <code>latest.json</code>: every capture gets its own
 timestamped filename, so renaming (or tracking the filename
 <code>make baseline</code> prints) is how you keep pre/post
 straight.</p>
@@ -2983,7 +3006,7 @@ files:      18,903  -&gt; 18,903  OK
 users:         142  -&gt;    142  OK
 s3_objects: 18,903  -&gt; 18,903  OK
 s3_bytes:   84.2GB  -&gt;  84.2GB OK</code></pre>
-<p>Any mismatch is a problem to investigate – <strong>except one
+<p>Any mismatch is a problem to investigate, <strong>except one
 field.</strong> <code>downloads</code>/guestbook history is deliberately
 treated as informational-only in <code>baseline-compare.sh</code>, not a
 failure: download counts legitimately keep incrementing as long as the
@@ -3042,22 +3065,22 @@ PASSED tests/test_solr.py::test_solr_index_not_empty</code></pre>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>The API and Solr are working, so Payara is up and Solr is indexed. S3
-connectivity is the problem – Dataverse cannot reach S3.</p>
+connectivity is the problem: Dataverse cannot reach S3.</p>
 <p>Two most likely causes:</p>
 <ol style="list-style-type: decimal">
 <li>The S3 bucket name is wrong in the JVM options, or the IAM instance
 profile attached to the EC2 instance doesn’t grant the right permissions
 on that bucket (check <code>group_vars</code> for the bucket name, and
-the Terraform IAM role/policy for permissions – there are no AWS access
+the Terraform IAM role/policy for permissions; there are no AWS access
 keys to check, since this uses an instance profile, not vaulted
 credentials)</li>
 <li>The security group does not allow outbound HTTPS to S3 (check the
 Terraform security group config)</li>
 </ol>
-<p>Start with the bucket name and IAM policy – they’re the most common
+<p>Start with the bucket name and IAM policy: they’re the most common
 source of S3 config problems. Check the Payara log for
 <code>AmazonS3Exception</code> or <code>AccessDenied</code>
 messages.</p>
@@ -3086,10 +3109,10 @@ not?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <p>Not a failure. <code>downloads</code>/guestbook history is treated as
-informational-only by <code>baseline-compare.sh</code> – download counts
+informational-only by <code>baseline-compare.sh</code>: download counts
 naturally keep incrementing while an instance is live and serving
 traffic, so a difference there reflects normal usage, not lost or
 corrupted data. Datasets and files matching exactly is what actually
@@ -3178,7 +3201,7 @@ accelerates your output.</li>
 </h2>
 <hr class="half-width">
 <p>AI tools are useful in infrastructure work. They are also easy to
-misuse – not through dramatic failures, but through subtle ones:
+misuse, not through dramatic failures, but through subtle ones:
 plausible-looking config that is slightly wrong, outdated API syntax, or
 confident answers to questions the tool cannot actually know.</p>
 <p>This episode covers two things. First, the practical mechanics: what
@@ -3192,14 +3215,14 @@ can do about it.</p>
 <p>Before using any AI tool for work, check what your institution has
 approved. Institutional licenses typically include data handling
 agreements that consumer-grade tools do not. Using an unlicensed tool
-for work-related content – especially anything involving infrastructure,
-access credentials, or user data – may violate your institution’s
+for work-related content (especially anything involving infrastructure,
+access credentials, or user data) may violate your institution’s
 acceptable use policy.</p>
 <p>At UCLA, the institution licenses <strong>Gemini</strong> for work
 use via Google Workspace. This is the appropriate tool for UCLA Library
 staff working on infrastructure tasks. When in doubt, check with your IT
 or information security team about what is approved.</p>
-<p>Using a licensed tool does not mean anything goes – it means the data
+<p>Using a licensed tool does not mean anything goes: it means the data
 handling terms are known and accepted. The practices in this episode
 still apply.</p>
 </section><section><h2 class="section-heading" id="what-not-to-share">What not to share<a class="anchor" aria-label="anchor" href="#what-not-to-share"></a>
@@ -3264,14 +3287,14 @@ errors from Terraform, Ansible, Payara, or AWS, AI tools often recognize
 the pattern and explain the root cause and likely fixes faster than
 searching.</p>
 <p><strong>Drafting documentation and runbooks</strong></p>
-<p>AI is useful for turning rough notes into structured documentation –
+<p>AI is useful for turning rough notes into structured documentation:
 filling in a runbook outline, writing a glossary entry, turning a list
 of steps into a coherent procedure. This lesson was partly developed
 that way.</p>
 <p><strong>Talking through a problem</strong></p>
 <p>Describing a problem before asking a specific question often helps
 clarify your own thinking. “I ran make rebuild and Payara is up but
-Dataverse search returns no results – what are the possible causes?”
+Dataverse search returns no results. What are the possible causes?”
 returns a structured list you can work through.</p>
 </section><section><h2 class="section-heading" id="where-ai-misleads">Where AI misleads<a class="anchor" aria-label="anchor" href="#where-ai-misleads"></a>
 </h2>
@@ -3310,14 +3333,14 @@ migration plan</h3>
 <div class="callout-content">
 <p>In September 2026, an AI-assisted research pass surveying open GitHub
 issues reported that <code>dataverse-ansible</code> #41 (the backup
-pointer bug) was “still open – not formally closed despite the fix being
+pointer bug) was “still open, not formally closed despite the fix being
 confirmed working.” That claim was specific, plausible, and wrong:
 <code>gh issue view 41</code> showed it had been closed weeks earlier.
 The error surfaced only because a later step happened to re-check the
-same issue directly for an unrelated reason – not because anything about
+same issue directly for an unrelated reason, not because anything about
 the original claim looked suspicious. It read like every other correct
 finding in the same report.</p>
-<p>Nothing about that claim was a wild hallucination – it was a
+<p>Nothing about that claim was a wild hallucination: it was a
 plausible-sounding status report, exactly the kind of output this
 section warns about, produced by a tool doing research rather than
 writing code. The verification habit this episode asks for
@@ -3337,8 +3360,8 @@ has access to the full context.</p>
 <hr></section><section><h2 class="section-heading" id="the-deeper-risk-losing-contact">The deeper risk: losing contact<a class="anchor" aria-label="anchor" href="#the-deeper-risk-losing-contact"></a>
 </h2>
 <hr class="half-width">
-<p>Because AI is particularly good at config systems – Terraform,
-Ansible, CI pipelines – it is possible to move very fast without fully
+<p>Because AI is particularly good at config systems (Terraform,
+Ansible, CI pipelines), it is possible to move very fast without fully
 understanding what was built. The acceleration is real. So is the
 risk.</p>
 <p>This is not unique to AI. It is a well-studied pattern in automation
@@ -3347,7 +3370,7 @@ building the mental model that lets them catch when it is wrong. In
 aviation and medicine, this is called <strong>automation bias</strong>:
 over-trusting automated output because it is usually right, even when
 evidence of an error is present. The cognitive load of staying engaged
-is high, and the tool usually gets it right – until it doesn’t.</p>
+is high, and the tool usually gets it right, until it doesn’t.</p>
 <p>For infrastructure work, the specific version looks like this:</p>
 <ul>
 <li>AI writes your Ansible task. It works. You move on.</li>
@@ -3361,9 +3384,9 @@ built it.</li>
 stronger than humans, the best human-computer teams were not
 grandmasters who let the engine decide everything, but players who kept
 their own judgment engaged and used the engine to check it. The
-technical term in HCI research is <strong>cognitive offloading</strong>
-– and the question is not whether to do it, but which parts you can
-safely offload and which you must own.</p>
+technical term in HCI research is <strong>cognitive offloading</strong>,
+and the question is not whether to do it, but which parts you can safely
+offload and which you must own.</p>
 <p>For this work, the parts you need to own:</p>
 <ul>
 <li>Why idempotency matters and how to verify it</li>
@@ -3380,7 +3403,7 @@ without opening a chat window, you do not have them yet.</p>
 <hr class="half-width">
 <p><strong>Write it down in your own words (this lesson)</strong></p>
 <p>Writing this lesson is itself a strategy. Turning what was built into
-structured explanation – not AI-generated, but your own reconstruction –
+structured explanation (not AI-generated, but your own reconstruction)
 forces contact with the material. If you cannot explain the Solr reindex
 requirement in a callout block, you do not understand it yet.</p>
 <p>This is the oldest study technique there is, and it works: retrieval
@@ -3399,7 +3422,7 @@ reduces outdated syntax.</p>
 <p>Then read the generated output line by line, the same way you would
 read a code review. If you cannot explain what a line does, look it up
 before using it.</p>
-<p><strong>Validate before applying – always</strong></p>
+<p><strong>Validate before applying, always</strong></p>
 <p>Every piece of AI-generated configuration should go through the same
 path as everything else: <code>terraform plan</code>,
 <code>--check</code> mode, the test suite.</p>
@@ -3407,12 +3430,12 @@ path as everything else: <code>terraform plan</code>,
 product.</p>
 <p><strong>Practice without the tool periodically</strong></p>
 <p>Work through a piece of configuration or a debugging problem without
-AI assistance, even if it takes longer. This is not about refusing help
-– it is about checking that the skill is still there when you need it.
+AI assistance, even if it takes longer. This is not about refusing help:
+it is about checking that the skill is still there when you need it.
 Pilots practice manual landings even though automation is usually
 better. The same logic applies.</p>
 <p><strong>Pair with another person</strong></p>
-<p>When another person is present – Jamie, a student, a colleague –
+<p>When another person is present (Jamie, a student, a colleague),
 explain what you are doing and why. This is not about the other person
 checking your work; it is about the act of explaining. If you cannot
 explain it, you do not understand it. Onboarding Leigh or a new
@@ -3421,10 +3444,10 @@ not have the context forces you to articulate things you have
 internalized.</p>
 <p>This project in particular has two people with different working
 styles: Tim works automation-first, through Terraform and Ansible;
-Jamie’s default mode is direct, hands-on-the-box troubleshooting –
-fixing what’s in front of her with whatever tool gets there fastest (see
-the static-key example in Episode 6). Neither style is wrong on its own,
-but they can silently diverge from each other – a manual fix that works
+Jamie’s default mode is direct, hands-on-the-box troubleshooting: fixing
+what’s in front of her with whatever tool gets there fastest (see the
+static-key example in Episode 6). Neither style is wrong on its own, but
+they can silently diverge from each other: a manual fix that works
 doesn’t automatically make it back into the role that’s supposed to be
 the source of truth. That makes explaining <em>why</em> the automated
 path matters, not just what it does, actually part of the technical work
@@ -3437,8 +3460,8 @@ here, not a soft add-on to it.</p>
 <div id="a-question-worth-asking-periodically" class="callout-inner">
 <h3 class="callout-title">A question worth asking periodically</h3>
 <div class="callout-content">
-<p>Could you rebuild this environment – Terraform, Ansible, Dataverse
-configuration – from scratch without AI assistance if you had to?</p>
+<p>Could you rebuild this environment (Terraform, Ansible, Dataverse
+configuration) from scratch without AI assistance if you had to?</p>
 <p>Not immediately, and not perfectly. But could you trace the steps,
 know what to look for, and understand why each piece is there?</p>
 <p>If the answer is uncertain, that is a signal. Not to stop using AI,
@@ -3474,7 +3497,7 @@ replaced?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3484,7 +3507,7 @@ replaced?</p>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="fu">dataverse_s3_bucket</span><span class="kw">:</span><span class="at"> &lt;s3-bucket-name&gt;</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1" aria-label="code-block-3-4"></a><span class="fu">dataverse_doi_authority</span><span class="kw">:</span><span class="at"> </span><span class="st">"10.25346"</span></span></code></pre>
 </div>
-<p>The DOI authority (<code>10.25346</code>) is a public value – safe to
+<p>The DOI authority (<code>10.25346</code>) is a public value: safe to
 share. The RDS endpoint, password, and bucket name should be replaced.
 The bucket name is not a credential, but it identifies your
 institution’s storage; use a placeholder when the real name is not
@@ -3517,19 +3540,19 @@ prevented it.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
 <strong>Automation bias</strong> (over-trusting output that’s
 usually correct, so you stop building the mental model needed to catch
 it when it’s wrong) is the underlying pattern; the proximate cause here
-is that the <em>understanding was never transferred</em> – the task
+is that the <em>understanding was never transferred</em>: the task
 worked, so you moved on without owning why it worked.</li>
 <li>Any of: asking for an explanation before accepting the output,
 reading the generated config line by line, or writing your own
 explanation of what the task does (retrieval practice) at the time it
-was added – not six months later when it breaks.</li>
+was added, not six months later when it breaks.</li>
 </ol>
 </div>
 </div>
@@ -3555,11 +3578,11 @@ infrastructure details?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <p>Gemini via Google Workspace. It matters beyond compliance because a
 licensed institutional tool comes with data-handling terms your
-institution has actually reviewed – an unlicensed consumer tool may
+institution has actually reviewed. An unlicensed consumer tool may
 retain or train on what you paste in, which matters even after redacting
 credentials, since hostnames, bucket-naming patterns, and architecture
 details are still information about UCLA’s infrastructure.</p>
@@ -3580,7 +3603,7 @@ Gemini via Google Workspace.</li>
 <li>Never share credentials, private hostnames, database connection
 strings, or SSH keys with any AI tool.</li>
 <li>AI is particularly strong with config systems like Terraform and
-Ansible – and that is exactly where the risk of losing contact is
+Ansible, and that is exactly where the risk of losing contact is
 highest.</li>
 <li>Automation bias is real: over-trusting AI output because it is
 usually right, until it isn’t.</li>
@@ -3661,10 +3684,10 @@ Java 17 (up from Java 11 in 5.x)</li>
 <strong>API changes</strong>: Some API endpoints changed or were
 deprecated; any integrations need to be verified</li>
 </ul>
-<p>These changes mean a 5.x database cannot simply be imported into a
+<p>These changes mean a 5.x database cannot be imported directly into a
 6.x instance without migration steps. The migration process handles
-database schema updates automatically – Dataverse runs schema migrations
-on startup – but the Solr index must be rebuilt manually.</p>
+database schema updates automatically (Dataverse runs schema migrations
+on startup), but the Solr index must be rebuilt manually.</p>
 <div id="the-target-version-moved-after-this-lessons-title-was-set" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -3676,14 +3699,14 @@ title was set</h3>
 <div class="callout-content">
 <p>This lesson (and its episode titles) were written targeting 6.8,
 which is what <code>group_vars</code> is actually pinned to as of this
-writing – the version bump below hasn’t happened yet. It needs to:
+writing. The version bump below hasn’t happened yet. It needs to:
 CVE-2026-1879 affects 6.0 through 6.8 and is patched starting at 6.10,
 so the real target is now 6.10.1 or 6.11 (not the newest release, 6.12
-as of September 2026 – letting a release season for a few weeks before
+as of September 2026; letting a release season for a few weeks before
 adopting it is a reasonable default for a two-person team). That version
 bump also carries a Payara 6-to-7 and Java 17-to-21 runtime upgrade,
-which upstream <code>gdcc/dataverse-ansible</code> already made –
-reusing their migration commit as a template beats re-deriving it from
+which upstream <code>gdcc/dataverse-ansible</code> already made. Reusing
+their migration commit as a template beats re-deriving it from
 scratch.</p>
 <p>Treat “6.8” throughout this lesson as “the version this was written
 against,” not “the current target.” Once the group_vars pins actually
@@ -3698,7 +3721,10 @@ updated.</p>
 <p>The migration is structured in seven phases. Each phase ends with a
 gate: the test suite and (where applicable) baseline comparisons must
 pass before the next phase begins.</p>
-<div class="section level3">
+<figure><img src="../fig/migration-phases.svg" alt="Pipeline diagram of the 7 migration phases in order: Phase 1 Production baseline (complete), Phase 2 Rebuild and hardening (1 of 3 done), Phase 3 Expanded test coverage, Phase 4 Jamie onboarding, Phase 5 Shibboleth/SSO, Phase 6 Maintenance window plan, Phase 7 DNS cutover." class="figure mx-auto d-block"><div class="figcaption">The seven migration phases run in sequence, each
+gated by test/baseline passage before the next begins. Phase 2 is only
+one-third complete as of this writing.</div>
+</figure><div class="section level3">
 <h3 id="phase-1-production-baseline-capture-complete">Phase 1: Production Baseline Capture (complete)<a class="anchor" aria-label="anchor" href="#phase-1-production-baseline-capture-complete"></a>
 </h3>
 <p>Capture a timestamped snapshot of the production 5.14 instance before
@@ -3720,18 +3746,18 @@ DNS wait on each rebuild), FAKE DOI provider,
 post-restore gate. Three plans, and they’re not all done:</p>
 <ul>
 <li>
-<code>02-01</code> Elastic IP resource in Terraform – <strong>not
+<code>02-01</code> Elastic IP resource in Terraform: <strong>not
 started</strong>. This is the item covered in Episode 3: an
 <code>aws_eip</code> resource exists, but it’s tied to the instance’s
 lifecycle and doesn’t survive <code>terraform destroy</code>, so
 rebuilds still require a manual DNS update.</li>
 <li>
 <code>02-02</code> FAKE DOI provider config +
-<code>test_cert: true</code> + Solr reindex make target –
+<code>test_cert: true</code> + Solr reindex make target:
 <strong>done</strong>.</li>
 <li>
 <code>02-03</code> Full <code>make rebuild ENV=tim</code> cycle
-validation (clean rebuild, reindex, smoke tests pass) – <strong>not
+validation (clean rebuild, reindex, smoke tests pass): <strong>not
 started</strong>.</li>
 </ul>
 <p>So “Phase 2 complete” would mean all three; right now it’s one of
@@ -3768,7 +3794,7 @@ production cutover.</p>
 <p>Configure Shibboleth authentication via Ansible, register the SP
 metadata with the UCLA campus IdP, deploy to Jamie’s environment, and
 validate the full login flow.</p>
-<p>This phase has a long lead time – campus IT needs to register the SP
+<p>This phase has a long lead time: campus IT needs to register the SP
 metadata. Coordination starts in Phase 2 to avoid blocking the cutover
 schedule.</p>
 </div>
@@ -3806,6 +3832,32 @@ document that the team follows on cutover day.</p>
 <p>Rollback is possible until step 9 (EZID switch). If anything fails
 before that point, switch DNS back to the old instance and the 5.14
 instance is back up within the TTL window.</p>
+<div id="cutover-pressure-and-the-pull-toward-hand-fixing" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="cutover-pressure-and-the-pull-toward-hand-fixing" class="callout-inner">
+<h3 class="callout-title">Cutover pressure and the pull toward
+hand-fixing</h3>
+<div class="callout-content">
+<p>Step 7 is the moment automation trust gets tested hardest: something
+in the test suite or baseline comparison fails, users are waiting, and
+SSHing into the new instance to patch whatever’s wrong feels like the
+responsible thing to do. It’s the same instinct Episode 4 (Ansible:
+Configuration and Idempotency) warns about, just under more
+pressure.</p>
+<p>Resist it here more than anywhere else. A hand-patch made during
+cutover is exactly the kind of undocumented change that breaks the “read
+the repo, know the server” property this stack depends on, and it
+happens at the one moment when there’s the least time to notice it
+happened. The rollback table below and the phase gates before it exist
+so the answer to “something broke during cutover” is “roll back, or
+re-run the documented sequence,” not “fix it live and write it down
+later.”</p>
+</div>
+</div>
+</div>
 <div id="a-gap-this-sequence-doesnt-cover-the-actual-file-bytes" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -3815,21 +3867,21 @@ instance is back up within the TTL window.</p>
 <h3 class="callout-title">A gap this sequence doesn’t cover: the actual
 file bytes</h3>
 <div class="callout-content">
-<p>Steps 3-6 move the <em>database</em> – dump, restore, rebuild,
+<p>Steps 3-6 move the <em>database</em>: dump, restore, rebuild,
 reindex. None of them move the files themselves from the old instance’s
 storage to the new one’s S3 bucket. The infrastructure
 security/reliability audit flags this as a High-severity gap (F6):
 today, file-bytes migration exists only as manual prose in the ansible
 repo’s migration guide (an <code>aws s3 sync</code> command a human is
 expected to run and remember), and the integrity checks in step 7
-(baseline comparison) count database rows and S3 object counts – they
+(baseline comparison) count database rows and S3 object counts; they
 don’t verify that a given file is actually downloadable. A cutover that
 follows only the 11 steps above could produce a production Dataverse
 where datasets exist, search works, and downloads 404. A round-trip
 file-retrievability test is planned (roadmap <code>03-02</code>) but
-isn’t itself a migration step – something still has to actually move the
-bytes, and that’s not automated yet. Resolve this before Phase 7, not
-during it.</p>
+isn’t itself a migration step. Something still has to move the bytes,
+and that’s not automated yet. Resolve this before Phase 7, not during
+it.</p>
 </div>
 </div>
 </div>
@@ -3877,7 +3929,7 @@ seconds.</p>
 <p>The plan is for an Elastic IP to give the new 6.x instance a known,
 stable address before cutover day, so the DNS change is a single A
 record update. That depends on <code>02-01</code> landing first, though
-(see Phase 2 above) – as of today the EIP doesn’t survive a rebuild, so
+(see Phase 2 above). As of today the EIP doesn’t survive a rebuild, so
 “known, stable IP before cutover” isn’t true yet. If cutover happened
 this week, step 8 below would still need the same manual “read the new
 IP off the Terraform output” step every other rebuild requires.</p>
@@ -3904,7 +3956,7 @@ can start:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>Phase 3 requires Phase 2 complete: Tim’s env must rebuild cleanly
@@ -3931,7 +3983,7 @@ runbook is written and reviewed.</li>
 <li>Is Phase 2 done? Name the one item of three that’s actually
 complete.</li>
 <li>Besides the 7 roadmap phases, what other body of work now also has
-to be resolved before Phase 7 can safely run – and why wasn’t it part of
+to be resolved before Phase 7 can safely run, and why wasn’t it part of
 the original roadmap?</li>
 </ol>
 </div>
@@ -3942,7 +3994,7 @@ the original roadmap?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>No. Only <code>02-02</code> (FAKE DOI + <code>test_cert</code> +
@@ -3953,7 +4005,7 @@ roadmap was written, found real gaps the 7 phases don’t cover: an open
 admin API on an internet-facing instance (Critical), unencrypted RDS
 storage, a stale/manual backup pipeline, and no automated file-bytes
 migration step (the gap covered above). None of these were anticipated
-when the roadmap’s phases were scoped – they surfaced from auditing what
+when the roadmap’s phases were scoped: they surfaced from auditing what
 was actually built, not from the migration plan itself. They now gate
 Phase 7 alongside the original 6 phases.</li>
 </ol>
@@ -3972,16 +4024,16 @@ Phase 7 alongside the original 6 phases.</li>
 <li>Dataverse 6.x requires Java 17, a Solr schema rebuild, and updated
 DOI/S3 configuration.</li>
 <li>The 7-phase plan gates each phase with tests before proceeding to
-the next – but “current phase” doesn’t mean “current phase complete.”
+the next, but “current phase” doesn’t mean “current phase complete.”
 Phase 2 is one-third done as of this writing.</li>
 <li>Phases 1-3 establish the foundation; phases 4-6 harden for
 production; phase 7 is cutover.</li>
-<li>Rollback is straightforward until the DNS switch and EZID activation
-– that window is the target.</li>
+<li>Rollback is straightforward until the DNS switch and EZID
+activation. That window is the target.</li>
 <li>DNS TTL reduction and a <em>persistent</em> Elastic IP would
-together make the cutover switchover fast and predictable – but the EIP
+together make the cutover switchover fast and predictable, but the EIP
 isn’t persistent yet, and the automated cutover sequence has no step
-that moves file bytes, a gap found after the roadmap was written.</li>
+that moves file bytes: a gap found after the roadmap was written.</li>
 </ul>
 </div>
 </div>

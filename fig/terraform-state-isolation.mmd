@@ -1,0 +1,16 @@
+flowchart TB
+    subgraph Tim["Tim's environment"]
+        TimApply["terraform apply<br/>(environments/tim)"]
+        TimState[("S3: ucla-tim-terraform-state")]
+        TimApply --> TimState
+    end
+
+    subgraph Jamie["Jamie's environment"]
+        JamieApply["terraform apply<br/>(environments/jamie)"]
+        JamieState[("S3: ucla-library-terraform-state")]
+        JamieApply --> JamieState
+    end
+
+    Lock[("DynamoDB: terraform-locks<br/>(shared)")]
+    TimApply -.lock.-> Lock
+    JamieApply -.lock.-> Lock

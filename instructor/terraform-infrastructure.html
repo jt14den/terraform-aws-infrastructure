@@ -359,7 +359,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Terraform: The Infrastructure Layer</h1>
-        <p>Last updated on 2026-07-30 |
+        <p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/terraform-infrastructure.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -403,8 +403,8 @@ yet simplify the rebuild cycle.</li>
 </div>
 </div>
 <section><h2 class="section-heading" id="what-terraform-manages">What Terraform manages<a class="anchor" aria-label="anchor" href="#what-terraform-manages"></a></h2>
-<hr class="half-width"><p>Terraform is responsible for the AWS resources that exist – the
-“what” of the infrastructure. For this project, those resources are:</p>
+<hr class="half-width"><p>Terraform is responsible for the AWS resources that exist: the “what”
+of the infrastructure. For this project, those resources are:</p>
 <ul><li>
 <strong>EC2 instance</strong>: the virtual machine where Dataverse
 and its supporting services run</li>
@@ -434,30 +434,34 @@ environment:</p>
   modules/      &lt;- shared resource definitions used by both environments</code></pre>
 <p>Each environment directory has its own <code>main.tf</code>,
 <code>variables.tf</code>, and <code>terraform.tfvars</code>. The
-environments are mostly identical – they share modules – but use
-different resource names and sizes so Tim and Jamie can work
-independently without affecting each other.</p>
+environments are mostly identical (they share modules) but use different
+resource names and sizes so Tim and Jamie can work independently without
+affecting each other.</p>
 </section><section><h2 class="section-heading" id="remote-state">Remote state<a class="anchor" aria-label="anchor" href="#remote-state"></a></h2>
 <hr class="half-width"><p>By default, Terraform stores its state in a local file called
 <code>terraform.tfstate</code>. This is a problem for a team: if two
 people run Terraform from different machines, their state files diverge
 and Terraform loses track of what actually exists in AWS.</p>
-<p>This project uses <strong>remote state</strong> – but each operator
+<p>This project uses <strong>remote state</strong>, but each operator
 has their own bucket and key, not a shared one:</p>
 <pre><code>Tim:   s3://ucla-tim-terraform-state/terraform-dataverse/tim/terraform.tfstate
 Jamie: s3://ucla-library-terraform-state/terraform-dataverse/jamie/terraform.tfstate</code></pre>
 <p>Tim’s <code>apply</code> and Jamie’s <code>apply</code> cannot see or
-affect each other’s state at all – they are backed by different buckets.
+affect each other’s state at all: they are backed by different buckets.
 This is deliberate: it means destroying or rebuilding one operator’s
 environment can’t touch the other’s, which matters a lot given how often
 <code>make rebuild</code> tears an environment down and recreates it
 (Episode 6). Both backends still use a shared DynamoDB table
 (<code>terraform-locks</code>) for locking, which prevents two
 <code>terraform apply</code> runs against the <em>same</em> state from
-racing each other – but that only protects an operator against
-themselves (e.g. two terminal tabs), not against each other.</p>
-<p><code>s3://ucla-dataverse-migration-assets/</code> is a different
-bucket entirely – it holds database dumps and migration assets, not
+racing each other. That only protects an operator against themselves
+(e.g. two terminal tabs), not against each other.</p>
+<figure><img src="../fig/terraform-state-isolation.svg" alt="Diagram: Tim's environment applies to S3 bucket ucla-tim-terraform-state, and Jamie's environment applies to S3 bucket ucla-library-terraform-state. Both environments take a lock against a shared DynamoDB table called terraform-locks before applying." class="figure mx-auto d-block"><div class="figcaption">Tim and Jamie’s operator environments each apply
+against their own S3 state bucket. Both share a DynamoDB lock table, so
+the shared table prevents same-operator races but not cross-operator
+conflicts.</div>
+</figure><p><code>s3://ucla-dataverse-migration-assets/</code> is a different
+bucket entirely: it holds database dumps and migration assets, not
 Terraform state. Don’t confuse the two.</p>
 <div id="never-edit-the-state-file-directly" class="callout">
 <div class="callout-square">
@@ -478,8 +482,8 @@ repair it.</p>
 </section><section><h2 class="section-heading" id="elastic-ip">Elastic IP<a class="anchor" aria-label="anchor" href="#elastic-ip"></a></h2>
 <hr class="half-width"><p>An Elastic IP (EIP) is a static IP address you reserve in AWS and
 attach to an EC2 instance.</p>
-<p>Without an Elastic IP, every time you run <code>make rebuild</code> –
-which destroys and recreates the EC2 instance – the instance gets a new
+<p>Without an Elastic IP, every time you run <code>make rebuild</code>
+(which destroys and recreates the EC2 instance), the instance gets a new
 public IP address. That means:</p>
 <ul><li>The Ansible inventory file needs to be updated before Ansible can
 run</li>
@@ -494,15 +498,15 @@ even when the instance doesn’t.</p>
 <code>modules/dataverse_ec2/main.tf</code> is defined in the <em>same
 module</em> as the EC2 instance, associated directly to
 <code>aws_instance.dataverse.id</code>. When <code>make rebuild</code>
-runs <code>terraform destroy</code>, it tears down the whole module –
-instance and EIP together – so the address does <em>not</em> survive a
+runs <code>terraform destroy</code>, it tears down the whole module,
+instance and EIP together, so the address does <em>not</em> survive a
 rebuild yet. Roadmap item <code>02-01</code> (“Elastic IP resource… for
 both environments”) is still unchecked for exactly this reason: having
 an <code>aws_eip</code> resource isn’t the same as having a
 <em>persistent</em> one. The real <code>make rebuild</code> output today
 prints a new IP and pauses for you to update the DNS A record by hand
-(<code>Makefile</code>, the <code>rebuild</code> target) – which is the
-friction this feature is meant to remove, and hasn’t yet.</p>
+(<code>Makefile</code>, the <code>rebuild</code> target). That’s the
+friction this feature is meant to remove and hasn’t yet.</p>
 </section><section><h2 class="section-heading" id="variables-and-tfvars">Variables and tfvars<a class="anchor" aria-label="anchor" href="#variables-and-tfvars"></a></h2>
 <hr class="half-width"><p>Terraform configurations use variables to avoid hardcoding values
 that differ between environments.</p>
@@ -513,15 +517,15 @@ and their types (like a function signature)</li>
 <strong><code>terraform.tfvars</code></strong>: provides values for
 those variables (like the function call)</li>
 </ul><p>The <code>terraform.tfvars</code> file for each environment is
-<strong>gitignored, not committed</strong> – each operator creates their
+<strong>gitignored, not committed</strong>. Each operator creates their
 own from <code>terraform.tfvars.example</code> during setup (Episode 2).
 That’s intentional, because in practice it’s not secret-free: Tim’s real
 <code>tfvars</code> includes a plaintext <code>db_password</code>. This
-is a known, flagged gap (the security audit calls it out as finding F8)
-– the intended design keeps secrets in Ansible Vault, not Terraform, but
+is a known, flagged gap (the security audit calls it out as finding F8):
+the intended design keeps secrets in Ansible Vault, not Terraform, but
 <code>db_password</code> currently lives in both places, and the
 Terraform copy isn’t encrypted. Don’t treat “it’s gitignored” as
-equivalent to “it’s safe” – gitignore keeps a file out of version
+equivalent to “it’s safe”: gitignore keeps a file out of version
 control, it doesn’t encrypt what’s on disk.</p>
 <div id="read-a-terraform-plan" class="callout challenge">
 <div class="callout-square">
@@ -547,7 +551,7 @@ what CIDR range?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>The exact output will depend on current state. Things to look
 for:</p>
@@ -589,10 +593,10 @@ to the specific piece of config that proves your answer.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
-<ol style="list-style-type: decimal"><li>No – each environment’s <code>main.tf</code> points at a different
-S3 bucket/key for its backend (<code>ucla-tim-terraform-state</code>
+<ol style="list-style-type: decimal"><li>No. Each environment’s <code>main.tf</code> points at a different S3
+bucket/key for its backend (<code>ucla-tim-terraform-state</code>
 vs. <code>ucla-library-terraform-state</code>, different keys).
 Terraform only knows about resources tracked in the state it’s pointed
 at, so Tim’s <code>destroy</code> has no way to reach anything in
@@ -616,16 +620,16 @@ EIP persistent.</li>
 <ul><li>Terraform manages EC2, RDS, S3, security groups, an Elastic IP
 resource, and IAM for this project.</li>
 <li>State is stored remotely in S3, but Tim and Jamie each have their
-own bucket/key – state is isolated per operator, not shared.</li>
+own bucket/key: state is isolated per operator, not shared.</li>
 <li>Each operator has their own environment directory; both use shared
 modules.</li>
 <li>An Elastic IP resource exists, but it’s tied to the instance’s
 lifecycle, so it does <strong>not</strong> yet survive
-<code>make rebuild</code> – that’s still open work (roadmap
+<code>make rebuild</code>. That’s still open work (roadmap
 <code>02-01</code>).</li>
 <li>
 <code>terraform.tfvars</code> is gitignored per environment, but is
-not currently secret-free in practice – a known gap (audit F8).</li>
+not currently secret-free in practice: a known gap (audit F8).</li>
 </ul></div>
 </div>
 </div>
@@ -693,7 +697,7 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/terraform-infrastructure.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/terraform-infrastructure.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-07-30",
+  "dateModified": "2026-09-21",
   "datePublished": "2026-09-21"
 }
 
