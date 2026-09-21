@@ -35,6 +35,25 @@ These changes mean a 5.x database cannot simply be imported into a 6.x instance 
 migration steps. The migration process handles database schema updates automatically --
 Dataverse runs schema migrations on startup -- but the Solr index must be rebuilt manually.
 
+::::::::::::::::::::::::::::::::::::: callout
+
+### The target version moved after this lesson's title was set
+
+This lesson (and its episode titles) were written targeting 6.8, which is what
+`group_vars` is actually pinned to as of this writing -- the version bump below hasn't
+happened yet. It needs to: CVE-2026-1879 affects 6.0 through 6.8 and is patched starting
+at 6.10, so the real target is now 6.10.1 or 6.11 (not the newest release, 6.12 as of
+September 2026 -- letting a release season for a few weeks before adopting it is a
+reasonable default for a two-person team). That version bump also carries a Payara
+6-to-7 and Java 17-to-21 runtime upgrade, which upstream `gdcc/dataverse-ansible` already
+made -- reusing their migration commit as a template beats re-deriving it from scratch.
+
+Treat "6.8" throughout this lesson as "the version this was written against," not
+"the current target." Once the group_vars pins actually move, the episode titles and
+this callout should be the first things updated.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 ## The 7-phase plan
 
 The migration is structured in seven phases. Each phase ends with a gate: the test suite

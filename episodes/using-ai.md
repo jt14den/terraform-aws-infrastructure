@@ -142,6 +142,28 @@ This is the central risk. Never copy AI-generated configuration into a productio
 context without running it through the validation steps: `terraform plan`, `--check` mode,
 the test suite.
 
+::::::::::::::::::::::::::::::::::::: callout
+
+### This happened while writing this lesson's own migration plan
+
+In September 2026, an AI-assisted research pass surveying open GitHub issues reported
+that `dataverse-ansible` #41 (the backup pointer bug) was "still open -- not formally
+closed despite the fix being confirmed working." That claim was specific, plausible, and
+wrong: `gh issue view 41` showed it had been closed weeks earlier. The error surfaced
+only because a later step happened to re-check the same issue directly for an unrelated
+reason -- not because anything about the original claim looked suspicious. It read like
+every other correct finding in the same report.
+
+Nothing about that claim was a wild hallucination -- it was a plausible-sounding status
+report, exactly the kind of output this section warns about, produced by a tool doing
+research rather than writing code. The verification habit this episode asks for
+(`terraform plan`, `--check` mode, the test suite) applies just as much to a status claim
+about a GitHub issue as it does to a Terraform resource block: if an action depends on
+"is this actually true," check it directly before acting, don't take the summary's word
+for it.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 **Security decisions**
 
 Do not outsource security decisions to an AI tool. Questions like "is this IAM policy
@@ -237,6 +259,15 @@ are doing and why. This is not about the other person checking your work; it is 
 the act of explaining. If you cannot explain it, you do not understand it.
 Onboarding Leigh or a new DataSquad student is actually useful for this: teaching
 someone who does not have the context forces you to articulate things you have internalized.
+
+This project in particular has two people with different working styles: Tim works
+automation-first, through Terraform and Ansible; Jamie's default mode is direct,
+hands-on-the-box troubleshooting -- fixing what's in front of her with whatever tool
+gets there fastest (see the static-key example in Episode 6). Neither style is wrong on
+its own, but they can silently diverge from each other -- a manual fix that works doesn't
+automatically make it back into the role that's supposed to be the source of truth. That
+makes explaining *why* the automated path matters, not just what it does, actually part
+of the technical work here, not a soft add-on to it.
 
 ::::::::::::::::::::::::::::::::::::: callout
 

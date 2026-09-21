@@ -93,6 +93,24 @@ is waiting for Dataverse to finish its own initialization before it can call the
 
 ::::::::::::::::::::::::::::::::::::: callout
 
+### An unsupported version isn't "safe" -- it's just unmonitored
+
+CVE-2026-1879 (an unrestricted file upload via `uploadLogo`) affects Dataverse 6.0
+through 6.8, and was patched starting at 6.10. Production here still runs 5.14, which
+sounds like it should be a separate question -- except IQSS doesn't issue CVEs against
+the unsupported 5.x line at all. That's not the same as 5.x being unaffected; it means
+nobody is tracking it either way. "No CVE filed" and "confirmed not vulnerable" are
+different claims, and it's easy to read the first as the second.
+
+The practical takeaway: for a version this far behind, checking the CVE database and
+finding nothing tells you the version is off the radar, not that it's clean. The actual
+fix is the version upgrade itself (6.10 or later), not a scan that will never surface
+what isn't being tracked.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: callout
+
 ### Payara vs. GlassFish
 
 Dataverse documentation and older issues sometimes reference GlassFish commands and

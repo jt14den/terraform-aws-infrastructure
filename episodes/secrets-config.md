@@ -37,6 +37,28 @@ EC2 instance authenticates to S3 through an IAM instance profile (`s3.use_iam_ro
 in `group_vars`) -- there's no access key to leak in the first place, which is the safer
 design and worth naming as deliberate, not an oversight.
 
+::::::::::::::::::::::::::::::::::::: callout
+
+### When the design and the workaround disagree
+
+The IAM-role design above is the intended pattern, but it only holds if everyone actually
+uses it. In August 2026, a manual troubleshooting session against a real S3-permissions
+error (`ansible-infrastructure` #56, "Dataverse files not found") worked around the problem
+with `asadmin create-jvm-options` setting a static `dataverse.files.s3.access-key` and
+`secret-key` directly -- which works, and also reintroduces exactly the access key this
+design exists to avoid.
+
+This is not a story about someone doing it wrong. It's what manual, hands-on-the-box
+troubleshooting produces under time pressure: a fix that resolves the symptom in front of
+you, using whatever tool is fastest, without necessarily routing back through the Ansible
+role that's supposed to be the source of truth. If you rebuild that instance from scratch
+with `make rebuild`, the static key disappears and the IAM-role config is what actually
+ships -- so the two modes of operating (rebuild-from-role vs. patch-the-live-box) can
+silently diverge without anyone deciding they should. Worth checking group_vars against
+the live instance's actual JVM options after any manual intervention like this one.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 There's no separate `group_vars/all/vault.yml` file -- secrets are inline, encrypted
 in place inside the same flat `group_vars/<env>.yml` files as everything else, using
 `!vault |` blocks:
@@ -129,6 +151,24 @@ The FAKE provider is used in all non-production environments throughout the migr
 The switch to real EZID happens only at Phase 7 (DNS cutover) -- and since there's no
 `production.yml` yet, that switch requires writing production config, not just flipping
 a value in an existing file.
+
+::::::::::::::::::::::::::::::::::::: callout
+
+### A dev-environment convenience got mistaken for a decision
+
+For a while in mid-2026, this project's own planning documents disagreed with each other
+about whether production DOIs come from EZID or DataCite -- the roadmap and workplan said
+EZID, but `dev.yml`/`staging.yml`'s DataCite-shaped test config (real sandbox URLs, a real
+test prefix) looked like evidence someone had decided to switch. Tim confirmed directly in
+September 2026: production has always been EZID. The DataCite stub in dev/test config
+existed because DataCite's public sandbox needs no campus credentials and EZID's does --
+it was the path of least resistance for testing, not a provider decision.
+
+The lesson: what's easiest to configure in a test environment is not evidence of what
+production actually uses. If you find yourself inferring a real-world fact from a dev
+config default, that's a question to ask a person, not a conclusion to write down.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Environment configuration summary
 
