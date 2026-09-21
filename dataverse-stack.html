@@ -473,7 +473,59 @@ configured in Ansible group_vars. Default is 2GB – increase if you see
 version may not match what Payara expects. Check the Ansible
 <code>payara.yml</code> task output for errors during the deploy
 step.</li>
-</ul><div id="an-unsupported-version-isnt-safe-its-just-unmonitored" class="callout">
+</ul><div id="swap-and-disk-pressure-are-usually-one-problem-wearing-two-costumes" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="swap-and-disk-pressure-are-usually-one-problem-wearing-two-costumes" class="callout-inner">
+<h3 class="callout-title">Swap and disk pressure are usually one problem
+wearing two costumes</h3>
+<div class="callout-content">
+<p><code>modules/dataverse_ec2/main.tf</code> provisions a fixed 2GB
+swapfile on the <em>same root volume</em> as everything else, regardless
+of instance size – and this project’s real production instance has had
+recurring swap and disk-space pressure that nobody had sized against
+actual usage. It’s tempting to treat “swap full” and “disk full” as two
+problems to fix separately (bigger swapfile, bigger EBS volume), but on
+a small instance type they’re frequently the same root cause: undersized
+RAM for the JVM heap forces Payara into swap, and swap lives on the disk
+that’s also filling up with Solr’s index and application logs. Throwing
+more disk at that doesn’t fix the memory pressure; it just delays when
+you notice.</p>
+<p>Sizing production correctly (rather than guessing, which is what the
+current <code>t3.medium</code>/<code>t3.large</code> dev/test choices
+and the commented-out <code>m5.xlarge</code> “production grade” hint in
+<code>terraform.tfvars.example</code> both are) means separating three
+questions instead of reaching for one bigger number:</p>
+<ol style="list-style-type: decimal"><li>
+<strong>Is swap chronically engaged</strong>, not just during a
+reindex or restore spike? Chronic swap under normal load means the
+instance type is undersized for memory – check with <code>free -h</code>
+and <code>vmstat 1</code> under idle vs. load, not a single
+point-in-time reading.</li>
+<li>
+<strong>What’s actually on the root disk that won’t move to
+S3?</strong> If production’s files currently live on local disk rather
+than S3 (an open question in this project – see
+<code>MIGRATION_DECISIONS.md</code> Q1), that entire category of usage
+disappears once the new environment is S3-backed. Solr’s index and
+Payara’s logs are what’s left, and <code>du -sh</code> on those specific
+directories tells you far more than a total <code>df -h</code>
+percentage.</li>
+<li>
+<strong>What’s the growth trend, not the current reading?</strong> A
+disk at 70% today could be flat or climbing fast –
+<code>make baseline</code> snapshots over time (dataset/file counts) are
+a usable proxy for growth rate even without dedicated host-metric
+history.</li>
+</ol><p>The architecture change (local storage to S3) is doing real sizing
+work here for free – don’t undercut it by copying the old box’s total
+disk usage into the new one’s spec.</p>
+</div>
+</div>
+</div>
+<div id="an-unsupported-version-isnt-safe-its-just-unmonitored" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
