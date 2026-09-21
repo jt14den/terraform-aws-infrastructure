@@ -93,6 +93,41 @@ is waiting for Dataverse to finish its own initialization before it can call the
 
 ::::::::::::::::::::::::::::::::::::: callout
 
+### Swap and disk pressure are usually one problem wearing two costumes
+
+`modules/dataverse_ec2/main.tf` provisions a fixed 2GB swapfile on the *same root volume*
+as everything else, regardless of instance size -- and this project's real production
+instance has had recurring swap and disk-space pressure that nobody had sized against
+actual usage. It's tempting to treat "swap full" and "disk full" as two problems to fix
+separately (bigger swapfile, bigger EBS volume), but on a small instance type they're
+frequently the same root cause: undersized RAM for the JVM heap forces Payara into swap,
+and swap lives on the disk that's also filling up with Solr's index and application logs.
+Throwing more disk at that doesn't fix the memory pressure; it just delays when you notice.
+
+Sizing production correctly (rather than guessing, which is what the current
+`t3.medium`/`t3.large` dev/test choices and the commented-out `m5.xlarge` "production
+grade" hint in `terraform.tfvars.example` both are) means separating three questions
+instead of reaching for one bigger number:
+
+1. **Is swap chronically engaged**, not just during a reindex or restore spike? Chronic
+   swap under normal load means the instance type is undersized for memory -- check with
+   `free -h` and `vmstat 1` under idle vs. load, not a single point-in-time reading.
+2. **What's actually on the root disk that won't move to S3?** If production's files
+   currently live on local disk rather than S3 (an open question in this project -- see
+   `MIGRATION_DECISIONS.md` Q1), that entire category of usage disappears once the new
+   environment is S3-backed. Solr's index and Payara's logs are what's left, and `du -sh`
+   on those specific directories tells you far more than a total `df -h` percentage.
+3. **What's the growth trend, not the current reading?** A disk at 70% today could be flat
+   or climbing fast -- `make baseline` snapshots over time (dataset/file counts) are a
+   usable proxy for growth rate even without dedicated host-metric history.
+
+The architecture change (local storage to S3) is doing real sizing work here for free --
+don't undercut it by copying the old box's total disk usage into the new one's spec.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: callout
+
 ### An unsupported version isn't "safe" -- it's just unmonitored
 
 CVE-2026-1879 (an unrestricted file upload via `uploadLogo`) affects Dataverse 6.0
