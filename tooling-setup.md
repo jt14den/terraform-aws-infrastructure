@@ -88,6 +88,25 @@ role this one is forked from. The Makefile's paths (`terraform-dataverse/environ
 `dataverse-ansible`) all assume this nested layout -- if you clone the child repos
 somewhere else, nothing in the Makefile will find them.
 
+::::::::::::::::::::::::::::::::::::: callout
+
+### `gh pr create` picks the wrong repo here
+
+Because `dataverse-ansible` is a *GitHub-level* fork of `gdcc/dataverse-ansible` (not just
+a role that happens to look similar), the GitHub CLI's default behavior for `gh pr create`
+is to open the PR against the upstream fork parent, not this project's own `develop`
+branch. Run it without thinking and you'll file a PR against `gdcc/dataverse-ansible` for
+work that has nothing to do with the generic upstream role. Always pass both flags explicitly:
+
+```bash
+gh pr create --repo ucla-data-science-center/dataverse-ansible --base develop
+```
+
+This has bitten real work before -- it's easy to not notice until someone asks why a
+UCLA-specific branding fix shows up on the upstream project.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 ## Initializing Terraform
 
 From inside your operator environment directory:
@@ -146,6 +165,30 @@ If this fails, the most common causes are:
 - SSH key not loaded (`ssh-add ~/.ssh/your-key`)
 - Security group not open on port 22 (check in AWS console or Terraform config)
 - EC2 instance not yet fully booted (wait 60 seconds and retry)
+
+::::::::::::::::::::::::::::::::::::: callout
+
+### "Could not match supplied host pattern" usually means a hand-typed inventory
+
+A real example from this project (`dataverse-ansible` #55): running the playbook by hand
+outside the Makefile,
+
+```bash
+ansible-playbook -i "dataverse ansible_host=localhost ansible_connection=local," dataverse/dataverse.pb -e "@dataverse/defaults/main.yml"
+```
+
+fails with `[WARNING]: Could not match supplied host pattern, ignoring: dataverse` --
+the inline inventory string and the play's `hosts:` target didn't agree, and the playbook
+path itself was wrong too (it's `site.yml` at the repo root, not `dataverse/dataverse.pb`).
+`make ansible ENV=<env>` builds this command correctly every time by generating the
+inventory from Terraform output and pointing at the real entry point -- typing the
+equivalent by hand, especially mid-troubleshooting, is exactly where small mismatches
+like this creep in. If you're debugging live and reach for a hand-typed
+`ansible-playbook` command instead of the Makefile, double-check the inventory path and
+playbook path against what `make ansible` actually generates before assuming Ansible
+itself is broken.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: challenge
 

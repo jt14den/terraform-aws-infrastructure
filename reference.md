@@ -336,8 +336,12 @@ The current production Dataverse version at UCLA Library at the start of this mi
 Released 2023. Uses Java 11, an older Solr schema, and a different PID provider configuration.
 
 **6.8**
-The target Dataverse version for the migration. Requires Java 17, a new Solr schema,
-and updated S3/DOI configuration.
+The version this lesson was originally written against, and what `group_vars` is still
+pinned to as of this writing. Requires Java 17, a new Solr schema, and updated S3/DOI
+configuration. **No longer the actual target** -- CVE-2026-1879 affects 6.0 through 6.8,
+so the real target moved to 6.10.1 or 6.11 (patched, and bundles a Payara 6-to-7 / Java
+17-to-21 upgrade upstream already made). The version bump itself hadn't happened yet as
+of September 2026. See the callout in Episode 9 (Migration Arc).
 
 **Migration arc**
 The 7-phase plan for migrating the UCLA Dataverse instance from 5.14 to 6.8.
