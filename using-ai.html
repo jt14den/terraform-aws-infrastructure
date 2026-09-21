@@ -361,7 +361,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Using AI Tools in Infrastructure Work</h1>
-        <p>Last updated on 2026-07-30 |
+        <p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/using-ai.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -516,6 +516,36 @@ the output may not work.</p>
 a production context without running it through the validation steps:
 <code>terraform plan</code>, <code>--check</code> mode, the test
 suite.</p>
+<div id="this-happened-while-writing-this-lessons-own-migration-plan" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="this-happened-while-writing-this-lessons-own-migration-plan" class="callout-inner">
+<h3 class="callout-title">This happened while writing this lesson’s own
+migration plan</h3>
+<div class="callout-content">
+<p>In September 2026, an AI-assisted research pass surveying open GitHub
+issues reported that <code>dataverse-ansible</code> #41 (the backup
+pointer bug) was “still open – not formally closed despite the fix being
+confirmed working.” That claim was specific, plausible, and wrong:
+<code>gh issue view 41</code> showed it had been closed weeks earlier.
+The error surfaced only because a later step happened to re-check the
+same issue directly for an unrelated reason – not because anything about
+the original claim looked suspicious. It read like every other correct
+finding in the same report.</p>
+<p>Nothing about that claim was a wild hallucination – it was a
+plausible-sounding status report, exactly the kind of output this
+section warns about, produced by a tool doing research rather than
+writing code. The verification habit this episode asks for
+(<code>terraform plan</code>, <code>--check</code> mode, the test suite)
+applies just as much to a status claim about a GitHub issue as it does
+to a Terraform resource block: if an action depends on “is this actually
+true,” check it directly before acting, don’t take the summary’s word
+for it.</p>
+</div>
+</div>
+</div>
 <p><strong>Security decisions</strong></p>
 <p>Do not outsource security decisions to an AI tool. Questions like “is
 this IAM policy safe?” benefit from AI explanation, but the final
@@ -598,6 +628,16 @@ explain it, you do not understand it. Onboarding Leigh or a new
 DataSquad student is actually useful for this: teaching someone who does
 not have the context forces you to articulate things you have
 internalized.</p>
+<p>This project in particular has two people with different working
+styles: Tim works automation-first, through Terraform and Ansible;
+Jamie’s default mode is direct, hands-on-the-box troubleshooting –
+fixing what’s in front of her with whatever tool gets there fastest (see
+the static-key example in Episode 6). Neither style is wrong on its own,
+but they can silently diverge from each other – a manual fix that works
+doesn’t automatically make it back into the role that’s supposed to be
+the source of truth. That makes explaining <em>why</em> the automated
+path matters, not just what it does, actually part of the technical work
+here, not a soft add-on to it.</p>
 <div id="a-question-worth-asking-periodically" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -643,7 +683,7 @@ replaced?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -684,7 +724,7 @@ prevented it.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>
 <strong>Automation bias</strong> (over-trusting output that’s
@@ -720,7 +760,7 @@ infrastructure details?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>Gemini via Google Workspace. It matters beyond compliance because a
 licensed institutional tool comes with data-handling terms your
@@ -819,8 +859,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/using-ai.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/using-ai.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-07-30",
-  "datePublished": "2026-09-15"
+  "dateModified": "2026-09-21",
+  "datePublished": "2026-09-21"
 }
 
   </script><script>

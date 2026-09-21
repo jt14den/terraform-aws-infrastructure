@@ -612,7 +612,7 @@ above</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>Some things to look for:</p>
 <ul>
@@ -658,7 +658,7 @@ it happen automatically?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
@@ -704,7 +704,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-tooling-setup"><p>Content from <a href="tooling-setup.html">Tooling Setup</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/tooling-setup.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -855,15 +855,44 @@ role this one is forked from. The Makefile’s paths
 <code>dataverse-ansible</code>) all assume this nested layout – if you
 clone the child repos somewhere else, nothing in the Makefile will find
 them.</p>
+<div id="gh-pr-create-picks-the-wrong-repo-here" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="gh-pr-create-picks-the-wrong-repo-here" class="callout-inner">
+<h3 class="callout-title">
+<code>gh pr create</code> picks the wrong repo
+here</h3>
+<div class="callout-content">
+<p>Because <code>dataverse-ansible</code> is a <em>GitHub-level</em>
+fork of <code>gdcc/dataverse-ansible</code> (not just a role that
+happens to look similar), the GitHub CLI’s default behavior for
+<code>gh pr create</code> is to open the PR against the upstream fork
+parent, not this project’s own <code>develop</code> branch. Run it
+without thinking and you’ll file a PR against
+<code>gdcc/dataverse-ansible</code> for work that has nothing to do with
+the generic upstream role. Always pass both flags explicitly:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">gh</span> pr create <span class="at">--repo</span> ucla-data-science-center/dataverse-ansible <span class="at">--base</span> develop</span></code></pre>
+</div>
+<p>This has bitten real work before – it’s easy to not notice until
+someone asks why a UCLA-specific branding fix shows up on the upstream
+project.</p>
+</div>
+</div>
+</div>
 </section><section><h2 class="section-heading" id="initializing-terraform">Initializing Terraform<a class="anchor" aria-label="anchor" href="#initializing-terraform"></a>
 </h2>
 <hr class="half-width">
 <p>From inside your operator environment directory:</p>
-<div class="codewrapper sourceCode" id="cb4">
+<div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="bu">cd</span> terraform-dataverse/environments/tim   <span class="co"># or jamie</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="ex">terraform</span> init</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="bu">cd</span> terraform-dataverse/environments/tim   <span class="co"># or jamie</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1" aria-label="code-block-5-2"></a><span class="ex">terraform</span> init</span></code></pre>
 </div>
 <p><code>terraform init</code> does three things:</p>
 <ul>
@@ -873,10 +902,10 @@ stores its state file)</li>
 <li>Validates the configuration syntax</li>
 </ul>
 <p>After init, run:</p>
-<div class="codewrapper sourceCode" id="cb5">
+<div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="ex">terraform</span> plan</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="ex">terraform</span> plan</span></code></pre>
 </div>
 <p>This shows what Terraform would create, change, or destroy – without
 making any changes. Read the plan output before running
@@ -888,11 +917,11 @@ worth pausing on.</p>
 <p>Secrets in <code>group_vars</code> (database passwords, admin
 passwords, API tokens) are encrypted with Ansible Vault. Before Ansible
 can decrypt them, you need a local vault password file:</p>
-<div class="codewrapper sourceCode" id="cb6">
+<div class="codewrapper sourceCode" id="cb7">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="bu">cd</span> dataverse-ansible</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1" aria-label="code-block-6-2"></a><span class="ex">openssl</span> rand <span class="at">-base64</span> 24 <span class="op">&gt;</span> .vault-password</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="bu">cd</span> dataverse-ansible</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1" aria-label="code-block-7-2"></a><span class="ex">openssl</span> rand <span class="at">-base64</span> 24 <span class="op">&gt;</span> .vault-password</span></code></pre>
 </div>
 <p><code>.vault-password</code> is gitignored – it never gets committed,
 and if you lose it the vault-encrypted secrets in
@@ -907,10 +936,10 @@ it hits a vaulted variable.</p>
 <code>terraform apply</code>, Terraform writes an inventory file to a
 path the Makefile knows about.</p>
 <p>To check Ansible can reach the host:</p>
-<div class="codewrapper sourceCode" id="cb7">
+<div class="codewrapper sourceCode" id="cb8">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="ex">ansible</span> <span class="at">-i</span> <span class="op">&lt;</span>inventory-file<span class="op">&gt;</span> all <span class="at">-m</span> ping</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1" aria-label="code-block-8-1"></a><span class="ex">ansible</span> <span class="at">-i</span> <span class="op">&lt;</span>inventory-file<span class="op">&gt;</span> all <span class="at">-m</span> ping</span></code></pre>
 </div>
 <p>A successful response:
 <code>dataverse | SUCCESS =&gt; {"ping": "pong"}</code></p>
@@ -921,6 +950,40 @@ path the Makefile knows about.</p>
 Terraform config)</li>
 <li>EC2 instance not yet fully booted (wait 60 seconds and retry)</li>
 </ul>
+<div id="could-not-match-supplied-host-pattern-usually-means-a-hand-typed-inventory" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="could-not-match-supplied-host-pattern-usually-means-a-hand-typed-inventory" class="callout-inner">
+<h3 class="callout-title">“Could not match supplied host pattern”
+usually means a hand-typed inventory</h3>
+<div class="callout-content">
+<p>A real example from this project (<code>dataverse-ansible</code>
+#55): running the playbook by hand outside the Makefile,</p>
+<div class="codewrapper sourceCode" id="cb9">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1" aria-label="code-block-9-1"></a><span class="ex">ansible-playbook</span> <span class="at">-i</span> <span class="st">"dataverse ansible_host=localhost ansible_connection=local,"</span> dataverse/dataverse.pb <span class="at">-e</span> <span class="st">"@dataverse/defaults/main.yml"</span></span></code></pre>
+</div>
+<p>fails with
+<code>[WARNING]: Could not match supplied host pattern, ignoring: dataverse</code>
+– the inline inventory string and the play’s <code>hosts:</code> target
+didn’t agree, and the playbook path itself was wrong too (it’s
+<code>site.yml</code> at the repo root, not
+<code>dataverse/dataverse.pb</code>).
+<code>make ansible ENV=&lt;env&gt;</code> builds this command correctly
+every time by generating the inventory from Terraform output and
+pointing at the real entry point – typing the equivalent by hand,
+especially mid-troubleshooting, is exactly where small mismatches like
+this creep in. If you’re debugging live and reach for a hand-typed
+<code>ansible-playbook</code> command instead of the Makefile,
+double-check the inventory path and playbook path against what
+<code>make ansible</code> actually generates before assuming Ansible
+itself is broken.</p>
+</div>
+</div>
+</div>
 <div id="credentials-check" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -963,7 +1026,7 @@ What file is missing, and what command creates it?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>The Makefile can’t find <code>terraform-dataverse</code> or
@@ -1217,7 +1280,7 @@ what CIDR range?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>The exact output will depend on current state. Things to look
 for:</p>
@@ -1263,7 +1326,7 @@ to the specific piece of config that proves your answer.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>No – each environment’s <code>main.tf</code> points at a different
@@ -1530,7 +1593,7 @@ is the supported way to recover?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p><code>ok</code> means the module checked state and found nothing to
 do. <code>changed</code> means it modified something. A
@@ -1568,7 +1631,7 @@ second is false?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <p>Module idempotency is a per-task property: a well-written module
 checks current state before acting, so running it twice in a row causes
@@ -1622,7 +1685,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-dataverse-stack"><p>Content from <a href="dataverse-stack.html">The Dataverse Stack: Payara, Solr, and the Data Layer</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/dataverse-stack.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -1761,6 +1824,31 @@ version may not match what Payara expects. Check the Ansible
 <code>payara.yml</code> task output for errors during the deploy
 step.</li>
 </ul>
+<div id="an-unsupported-version-isnt-safe-its-just-unmonitored" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="an-unsupported-version-isnt-safe-its-just-unmonitored" class="callout-inner">
+<h3 class="callout-title">An unsupported version isn’t “safe” – it’s
+just unmonitored</h3>
+<div class="callout-content">
+<p>CVE-2026-1879 (an unrestricted file upload via
+<code>uploadLogo</code>) affects Dataverse 6.0 through 6.8, and was
+patched starting at 6.10. Production here still runs 5.14, which sounds
+like it should be a separate question – except IQSS doesn’t issue CVEs
+against the unsupported 5.x line at all. That’s not the same as 5.x
+being unaffected; it means nobody is tracking it either way. “No CVE
+filed” and “confirmed not vulnerable” are different claims, and it’s
+easy to read the first as the second.</p>
+<p>The practical takeaway: for a version this far behind, checking the
+CVE database and finding nothing tells you the version is off the radar,
+not that it’s clean. The actual fix is the version upgrade itself (6.10
+or later), not a scan that will never surface what isn’t being
+tracked.</p>
+</div>
+</div>
+</div>
 <div id="payara-vs.-glassfish" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -1909,7 +1997,7 @@ is usable again?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>RDS gets a new file record (name, checksum, storage identifier,
@@ -1950,7 +2038,7 @@ proxy), what would break, and what’s the planned fix?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
@@ -2003,7 +2091,7 @@ any links that you are not going to use.
 </div>
 </section></section><section id="aio-secrets-config"><p>Content from <a href="secrets-config.html">Secrets and Environment Configuration</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/secrets-config.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -2060,6 +2148,37 @@ through an IAM instance profile (<code>s3.use_iam_role: true</code> in
 <code>group_vars</code>) – there’s no access key to leak in the first
 place, which is the safer design and worth naming as deliberate, not an
 oversight.</p>
+<div id="when-the-design-and-the-workaround-disagree" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="when-the-design-and-the-workaround-disagree" class="callout-inner">
+<h3 class="callout-title">When the design and the workaround
+disagree</h3>
+<div class="callout-content">
+<p>The IAM-role design above is the intended pattern, but it only holds
+if everyone actually uses it. In August 2026, a manual troubleshooting
+session against a real S3-permissions error
+(<code>ansible-infrastructure</code> #56, “Dataverse files not found”)
+worked around the problem with <code>asadmin create-jvm-options</code>
+setting a static <code>dataverse.files.s3.access-key</code> and
+<code>secret-key</code> directly – which works, and also reintroduces
+exactly the access key this design exists to avoid.</p>
+<p>This is not a story about someone doing it wrong. It’s what manual,
+hands-on-the-box troubleshooting produces under time pressure: a fix
+that resolves the symptom in front of you, using whatever tool is
+fastest, without necessarily routing back through the Ansible role
+that’s supposed to be the source of truth. If you rebuild that instance
+from scratch with <code>make rebuild</code>, the static key disappears
+and the IAM-role config is what actually ships – so the two modes of
+operating (rebuild-from-role vs. patch-the-live-box) can silently
+diverge without anyone deciding they should. Worth checking group_vars
+against the live instance’s actual JVM options after any manual
+intervention like this one.</p>
+</div>
+</div>
+</div>
 <p>There’s no separate <code>group_vars/all/vault.yml</code> file –
 secrets are inline, encrypted in place inside the same flat
 <code>group_vars/&lt;env&gt;.yml</code> files as everything else, using
@@ -2165,6 +2284,32 @@ throughout the migration. The switch to real EZID happens only at Phase
 7 (DNS cutover) – and since there’s no <code>production.yml</code> yet,
 that switch requires writing production config, not just flipping a
 value in an existing file.</p>
+<div id="a-dev-environment-convenience-got-mistaken-for-a-decision" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="a-dev-environment-convenience-got-mistaken-for-a-decision" class="callout-inner">
+<h3 class="callout-title">A dev-environment convenience got mistaken for
+a decision</h3>
+<div class="callout-content">
+<p>For a while in mid-2026, this project’s own planning documents
+disagreed with each other about whether production DOIs come from EZID
+or DataCite – the roadmap and workplan said EZID, but
+<code>dev.yml</code>/<code>staging.yml</code>’s DataCite-shaped test
+config (real sandbox URLs, a real test prefix) looked like evidence
+someone had decided to switch. Tim confirmed directly in September 2026:
+production has always been EZID. The DataCite stub in dev/test config
+existed because DataCite’s public sandbox needs no campus credentials
+and EZID’s does – it was the path of least resistance for testing, not a
+provider decision.</p>
+<p>The lesson: what’s easiest to configure in a test environment is not
+evidence of what production actually uses. If you find yourself
+inferring a real-world fact from a dev config default, that’s a question
+to ask a person, not a conclusion to write down.</p>
+</div>
+</div>
+</div>
 </section><section><h2 class="section-heading" id="environment-configuration-summary">Environment configuration summary<a class="anchor" aria-label="anchor" href="#environment-configuration-summary"></a>
 </h2>
 <hr class="half-width">
@@ -2833,7 +2978,7 @@ PASSED tests/test_solr.py::test_solr_index_not_empty</code></pre>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>The API and Solr are working, so Payara is up and Solr is indexed. S3
 connectivity is the problem – Dataverse cannot reach S3.</p>
@@ -2877,7 +3022,7 @@ not?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <p>Not a failure. <code>downloads</code>/guestbook history is treated as
 informational-only by <code>baseline-compare.sh</code> – download counts
@@ -2922,7 +3067,7 @@ any links that you are not going to use.
 </div>
 </section></section><section id="aio-using-ai"><p>Content from <a href="using-ai.html">Using AI Tools in Infrastructure Work</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/using-ai.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -3089,6 +3234,36 @@ the output may not work.</p>
 a production context without running it through the validation steps:
 <code>terraform plan</code>, <code>--check</code> mode, the test
 suite.</p>
+<div id="this-happened-while-writing-this-lessons-own-migration-plan" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="this-happened-while-writing-this-lessons-own-migration-plan" class="callout-inner">
+<h3 class="callout-title">This happened while writing this lesson’s own
+migration plan</h3>
+<div class="callout-content">
+<p>In September 2026, an AI-assisted research pass surveying open GitHub
+issues reported that <code>dataverse-ansible</code> #41 (the backup
+pointer bug) was “still open – not formally closed despite the fix being
+confirmed working.” That claim was specific, plausible, and wrong:
+<code>gh issue view 41</code> showed it had been closed weeks earlier.
+The error surfaced only because a later step happened to re-check the
+same issue directly for an unrelated reason – not because anything about
+the original claim looked suspicious. It read like every other correct
+finding in the same report.</p>
+<p>Nothing about that claim was a wild hallucination – it was a
+plausible-sounding status report, exactly the kind of output this
+section warns about, produced by a tool doing research rather than
+writing code. The verification habit this episode asks for
+(<code>terraform plan</code>, <code>--check</code> mode, the test suite)
+applies just as much to a status claim about a GitHub issue as it does
+to a Terraform resource block: if an action depends on “is this actually
+true,” check it directly before acting, don’t take the summary’s word
+for it.</p>
+</div>
+</div>
+</div>
 <p><strong>Security decisions</strong></p>
 <p>Do not outsource security decisions to an AI tool. Questions like “is
 this IAM policy safe?” benefit from AI explanation, but the final
@@ -3179,6 +3354,16 @@ explain it, you do not understand it. Onboarding Leigh or a new
 DataSquad student is actually useful for this: teaching someone who does
 not have the context forces you to articulate things you have
 internalized.</p>
+<p>This project in particular has two people with different working
+styles: Tim works automation-first, through Terraform and Ansible;
+Jamie’s default mode is direct, hands-on-the-box troubleshooting –
+fixing what’s in front of her with whatever tool gets there fastest (see
+the static-key example in Episode 6). Neither style is wrong on its own,
+but they can silently diverge from each other – a manual fix that works
+doesn’t automatically make it back into the role that’s supposed to be
+the source of truth. That makes explaining <em>why</em> the automated
+path matters, not just what it does, actually part of the technical work
+here, not a soft add-on to it.</p>
 <div id="a-question-worth-asking-periodically" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -3224,7 +3409,7 @@ replaced?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3267,7 +3452,7 @@ prevented it.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
@@ -3305,7 +3490,7 @@ infrastructure details?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <p>Gemini via Google Workspace. It matters beyond compliance because a
 licensed institutional tool comes with data-handling terms your
@@ -3348,7 +3533,7 @@ any links that you are not going to use.
  -->
 </section></section><section id="aio-migration-arc"><p>Content from <a href="migration-arc.html">The Migration Arc: 5.14 to 6.8</a></p>
 <hr>
-<p>Last updated on 2026-07-30 |
+<p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/migration-arc.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -3414,6 +3599,33 @@ deprecated; any integrations need to be verified</li>
 6.x instance without migration steps. The migration process handles
 database schema updates automatically – Dataverse runs schema migrations
 on startup – but the Solr index must be rebuilt manually.</p>
+<div id="the-target-version-moved-after-this-lessons-title-was-set" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="the-target-version-moved-after-this-lessons-title-was-set" class="callout-inner">
+<h3 class="callout-title">The target version moved after this lesson’s
+title was set</h3>
+<div class="callout-content">
+<p>This lesson (and its episode titles) were written targeting 6.8,
+which is what <code>group_vars</code> is actually pinned to as of this
+writing – the version bump below hasn’t happened yet. It needs to:
+CVE-2026-1879 affects 6.0 through 6.8 and is patched starting at 6.10,
+so the real target is now 6.10.1 or 6.11 (not the newest release, 6.12
+as of September 2026 – letting a release season for a few weeks before
+adopting it is a reasonable default for a two-person team). That version
+bump also carries a Payara 6-to-7 and Java 17-to-21 runtime upgrade,
+which upstream <code>gdcc/dataverse-ansible</code> already made –
+reusing their migration commit as a template beats re-deriving it from
+scratch.</p>
+<p>Treat “6.8” throughout this lesson as “the version this was written
+against,” not “the current target.” Once the group_vars pins actually
+move, the episode titles and this callout should be the first things
+updated.</p>
+</div>
+</div>
+</div>
 </section><section><h2 class="section-heading" id="the-7-phase-plan">The 7-phase plan<a class="anchor" aria-label="anchor" href="#the-7-phase-plan"></a>
 </h2>
 <hr class="half-width">
@@ -3626,7 +3838,7 @@ can start:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>Phase 3 requires Phase 2 complete: Tim’s env must rebuild cleanly
@@ -3664,7 +3876,7 @@ the original roadmap?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>No. Only <code>02-02</code> (FAKE DOI + <code>test_cert</code> +
@@ -3762,8 +3974,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/aio.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/aio.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-09-15",
-  "datePublished": "2026-09-15"
+  "dateModified": "2026-09-21",
+  "datePublished": "2026-09-21"
 }
 
   </script><script>

@@ -336,7 +336,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Reference: Glossary</h1>
-        <p>Last updated on 2026-07-30 |
+        <p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/learners/reference.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -641,9 +641,15 @@ migration.</p>
 UCLA Library at the start of this migration. Released 2023. Uses Java
 11, an older Solr schema, and a different PID provider
 configuration.</p>
-<p><strong>6.8</strong> The target Dataverse version for the migration.
-Requires Java 17, a new Solr schema, and updated S3/DOI
-configuration.</p>
+<p><strong>6.8</strong> The version this lesson was originally written
+against, and what <code>group_vars</code> is still pinned to as of this
+writing. Requires Java 17, a new Solr schema, and updated S3/DOI
+configuration. <strong>No longer the actual target</strong> –
+CVE-2026-1879 affects 6.0 through 6.8, so the real target moved to
+6.10.1 or 6.11 (patched, and bundles a Payara 6-to-7 / Java 17-to-21
+upgrade upstream already made). The version bump itself hadn’t happened
+yet as of September 2026. See the callout in Episode 9 (Migration
+Arc).</p>
 <p><strong>Migration arc</strong> The 7-phase plan for migrating the
 UCLA Dataverse instance from 5.14 to 6.8. Each phase gates the next with
 test suite and baseline validation. See Episode 9.</p>
@@ -713,8 +719,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/reference.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/reference.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-07-30",
-  "datePublished": "2026-09-15"
+  "dateModified": "2026-09-21",
+  "datePublished": "2026-09-21"
 }
 
   </script><script>

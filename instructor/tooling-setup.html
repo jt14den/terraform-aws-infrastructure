@@ -360,7 +360,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Tooling Setup</h1>
-        <p>Last updated on 2026-07-30 |
+        <p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/tooling-setup.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -486,13 +486,42 @@ role this one is forked from. The Makefile’s paths
 <code>dataverse-ansible</code>) all assume this nested layout – if you
 clone the child repos somewhere else, nothing in the Makefile will find
 them.</p>
-</section><section><h2 class="section-heading" id="initializing-terraform">Initializing Terraform<a class="anchor" aria-label="anchor" href="#initializing-terraform"></a></h2>
-<hr class="half-width"><p>From inside your operator environment directory:</p>
+<div id="gh-pr-create-picks-the-wrong-repo-here" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="gh-pr-create-picks-the-wrong-repo-here" class="callout-inner">
+<h3 class="callout-title">
+<code>gh pr create</code> picks the wrong repo
+here</h3>
+<div class="callout-content">
+<p>Because <code>dataverse-ansible</code> is a <em>GitHub-level</em>
+fork of <code>gdcc/dataverse-ansible</code> (not just a role that
+happens to look similar), the GitHub CLI’s default behavior for
+<code>gh pr create</code> is to open the PR against the upstream fork
+parent, not this project’s own <code>develop</code> branch. Run it
+without thinking and you’ll file a PR against
+<code>gdcc/dataverse-ansible</code> for work that has nothing to do with
+the generic upstream role. Always pass both flags explicitly:</p>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="bu">cd</span> terraform-dataverse/environments/tim   <span class="co"># or jamie</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="ex">terraform</span> init</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">gh</span> pr create <span class="at">--repo</span> ucla-data-science-center/dataverse-ansible <span class="at">--base</span> develop</span></code></pre>
+</div>
+<p>This has bitten real work before – it’s easy to not notice until
+someone asks why a UCLA-specific branding fix shows up on the upstream
+project.</p>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="initializing-terraform">Initializing Terraform<a class="anchor" aria-label="anchor" href="#initializing-terraform"></a></h2>
+<hr class="half-width"><p>From inside your operator environment directory:</p>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="bu">cd</span> terraform-dataverse/environments/tim   <span class="co"># or jamie</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1" aria-label="code-block-5-2"></a><span class="ex">terraform</span> init</span></code></pre>
 </div>
 <p><code>terraform init</code> does three things:</p>
 <ul><li>Downloads the AWS provider plugin</li>
@@ -500,10 +529,10 @@ them.</p>
 stores its state file)</li>
 <li>Validates the configuration syntax</li>
 </ul><p>After init, run:</p>
-<div class="codewrapper sourceCode" id="cb5">
+<div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="ex">terraform</span> plan</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="ex">terraform</span> plan</span></code></pre>
 </div>
 <p>This shows what Terraform would create, change, or destroy – without
 making any changes. Read the plan output before running
@@ -513,11 +542,11 @@ worth pausing on.</p>
 <hr class="half-width"><p>Secrets in <code>group_vars</code> (database passwords, admin
 passwords, API tokens) are encrypted with Ansible Vault. Before Ansible
 can decrypt them, you need a local vault password file:</p>
-<div class="codewrapper sourceCode" id="cb6">
+<div class="codewrapper sourceCode" id="cb7">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="bu">cd</span> dataverse-ansible</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1" aria-label="code-block-6-2"></a><span class="ex">openssl</span> rand <span class="at">-base64</span> 24 <span class="op">&gt;</span> .vault-password</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="bu">cd</span> dataverse-ansible</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1" aria-label="code-block-7-2"></a><span class="ex">openssl</span> rand <span class="at">-base64</span> 24 <span class="op">&gt;</span> .vault-password</span></code></pre>
 </div>
 <p><code>.vault-password</code> is gitignored – it never gets committed,
 and if you lose it the vault-encrypted secrets in
@@ -530,10 +559,10 @@ it hits a vaulted variable.</p>
 <code>terraform apply</code>, Terraform writes an inventory file to a
 path the Makefile knows about.</p>
 <p>To check Ansible can reach the host:</p>
-<div class="codewrapper sourceCode" id="cb7">
+<div class="codewrapper sourceCode" id="cb8">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="ex">ansible</span> <span class="at">-i</span> <span class="op">&lt;</span>inventory-file<span class="op">&gt;</span> all <span class="at">-m</span> ping</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1" aria-label="code-block-8-1"></a><span class="ex">ansible</span> <span class="at">-i</span> <span class="op">&lt;</span>inventory-file<span class="op">&gt;</span> all <span class="at">-m</span> ping</span></code></pre>
 </div>
 <p>A successful response:
 <code>dataverse | SUCCESS =&gt; {"ping": "pong"}</code></p>
@@ -542,7 +571,41 @@ path the Makefile knows about.</p>
 <li>Security group not open on port 22 (check in AWS console or
 Terraform config)</li>
 <li>EC2 instance not yet fully booted (wait 60 seconds and retry)</li>
-</ul><div id="credentials-check" class="callout challenge">
+</ul><div id="could-not-match-supplied-host-pattern-usually-means-a-hand-typed-inventory" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="could-not-match-supplied-host-pattern-usually-means-a-hand-typed-inventory" class="callout-inner">
+<h3 class="callout-title">“Could not match supplied host pattern”
+usually means a hand-typed inventory</h3>
+<div class="callout-content">
+<p>A real example from this project (<code>dataverse-ansible</code>
+#55): running the playbook by hand outside the Makefile,</p>
+<div class="codewrapper sourceCode" id="cb9">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1" aria-label="code-block-9-1"></a><span class="ex">ansible-playbook</span> <span class="at">-i</span> <span class="st">"dataverse ansible_host=localhost ansible_connection=local,"</span> dataverse/dataverse.pb <span class="at">-e</span> <span class="st">"@dataverse/defaults/main.yml"</span></span></code></pre>
+</div>
+<p>fails with
+<code>[WARNING]: Could not match supplied host pattern, ignoring: dataverse</code>
+– the inline inventory string and the play’s <code>hosts:</code> target
+didn’t agree, and the playbook path itself was wrong too (it’s
+<code>site.yml</code> at the repo root, not
+<code>dataverse/dataverse.pb</code>).
+<code>make ansible ENV=&lt;env&gt;</code> builds this command correctly
+every time by generating the inventory from Terraform output and
+pointing at the real entry point – typing the equivalent by hand,
+especially mid-troubleshooting, is exactly where small mismatches like
+this creep in. If you’re debugging live and reach for a hand-typed
+<code>ansible-playbook</code> command instead of the Makefile,
+double-check the inventory path and playbook path against what
+<code>make ansible</code> actually generates before assuming Ansible
+itself is broken.</p>
+</div>
+</div>
+</div>
+<div id="credentials-check" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
 </div>
@@ -582,7 +645,7 @@ What file is missing, and what command creates it?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>The Makefile can’t find <code>terraform-dataverse</code> or
 <code>dataverse-ansible</code> – it expects them cloned <em>inside</em>
@@ -688,8 +751,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/tooling-setup.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/tooling-setup.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-07-30",
-  "datePublished": "2026-09-15"
+  "dateModified": "2026-09-21",
+  "datePublished": "2026-09-21"
 }
 
   </script><script>

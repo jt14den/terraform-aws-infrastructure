@@ -358,7 +358,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>The Migration Arc: 5.14 to 6.8</h1>
-        <p>Last updated on 2026-07-30 |
+        <p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/migration-arc.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -424,6 +424,33 @@ deprecated; any integrations need to be verified</li>
 6.x instance without migration steps. The migration process handles
 database schema updates automatically – Dataverse runs schema migrations
 on startup – but the Solr index must be rebuilt manually.</p>
+<div id="the-target-version-moved-after-this-lessons-title-was-set" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="the-target-version-moved-after-this-lessons-title-was-set" class="callout-inner">
+<h3 class="callout-title">The target version moved after this lesson’s
+title was set</h3>
+<div class="callout-content">
+<p>This lesson (and its episode titles) were written targeting 6.8,
+which is what <code>group_vars</code> is actually pinned to as of this
+writing – the version bump below hasn’t happened yet. It needs to:
+CVE-2026-1879 affects 6.0 through 6.8 and is patched starting at 6.10,
+so the real target is now 6.10.1 or 6.11 (not the newest release, 6.12
+as of September 2026 – letting a release season for a few weeks before
+adopting it is a reasonable default for a two-person team). That version
+bump also carries a Payara 6-to-7 and Java 17-to-21 runtime upgrade,
+which upstream <code>gdcc/dataverse-ansible</code> already made –
+reusing their migration commit as a template beats re-deriving it from
+scratch.</p>
+<p>Treat “6.8” throughout this lesson as “the version this was written
+against,” not “the current target.” Once the group_vars pins actually
+move, the episode titles and this callout should be the first things
+updated.</p>
+</div>
+</div>
+</div>
 </section><section><h2 class="section-heading" id="the-7-phase-plan">The 7-phase plan<a class="anchor" aria-label="anchor" href="#the-7-phase-plan"></a></h2>
 <hr class="half-width"><p>The migration is structured in seven phases. Each phase ends with a
 gate: the test suite and (where applicable) baseline comparisons must
@@ -593,7 +620,7 @@ can start:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>Phase 3 requires Phase 2 complete: Tim’s env must rebuild cleanly
 with Elastic IP, FAKE DOI, and test_cert enforced.</li>
@@ -627,7 +654,7 @@ the original roadmap?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>No. Only <code>02-02</code> (FAKE DOI + <code>test_cert</code> +
 reindex target) is done. The Elastic IP (<code>02-01</code>) and full
@@ -731,8 +758,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/migration-arc.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/migration-arc.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-07-30",
-  "datePublished": "2026-09-15"
+  "dateModified": "2026-09-21",
+  "datePublished": "2026-09-21"
 }
 
   </script><script>

@@ -356,7 +356,7 @@
       </div>
     </nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>The Dataverse Stack: Payara, Solr, and the Data Layer</h1>
-        <p>Last updated on 2026-07-30 |
+        <p>Last updated on 2026-09-21 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/dataverse-stack.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -475,7 +475,32 @@ configured in Ansible group_vars. Default is 2GB – increase if you see
 version may not match what Payara expects. Check the Ansible
 <code>payara.yml</code> task output for errors during the deploy
 step.</li>
-</ul><div id="payara-vs.-glassfish" class="callout">
+</ul><div id="an-unsupported-version-isnt-safe-its-just-unmonitored" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="an-unsupported-version-isnt-safe-its-just-unmonitored" class="callout-inner">
+<h3 class="callout-title">An unsupported version isn’t “safe” – it’s
+just unmonitored</h3>
+<div class="callout-content">
+<p>CVE-2026-1879 (an unrestricted file upload via
+<code>uploadLogo</code>) affects Dataverse 6.0 through 6.8, and was
+patched starting at 6.10. Production here still runs 5.14, which sounds
+like it should be a separate question – except IQSS doesn’t issue CVEs
+against the unsupported 5.x line at all. That’s not the same as 5.x
+being unaffected; it means nobody is tracking it either way. “No CVE
+filed” and “confirmed not vulnerable” are different claims, and it’s
+easy to read the first as the second.</p>
+<p>The practical takeaway: for a version this far behind, checking the
+CVE database and finding nothing tells you the version is off the radar,
+not that it’s clean. The actual fix is the version upgrade itself (6.10
+or later), not a scan that will never surface what isn’t being
+tracked.</p>
+</div>
+</div>
+</div>
+<div id="payara-vs.-glassfish" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
@@ -614,7 +639,7 @@ is usable again?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>RDS gets a new file record (name, checksum, storage identifier,
 dataset reference). S3 gets the file bytes at the storage identifier
@@ -651,7 +676,7 @@ proxy), what would break, and what’s the planned fix?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>
 <code>curl -X DELETE https://$HOST/api/admin/index</code> – a
@@ -758,8 +783,8 @@ any links that you are not going to use.
   "url": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/dataverse-stack.html",
   "identifier": "https://jt14den.github.io/terraform-aws-infrastructure/instructor/dataverse-stack.html",
   "dateCreated": "2025-11-28",
-  "dateModified": "2026-07-30",
-  "datePublished": "2026-09-15"
+  "dateModified": "2026-09-21",
+  "datePublished": "2026-09-21"
 }
 
   </script><script>
