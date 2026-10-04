@@ -4,6 +4,18 @@ teaching: 30
 exercises: 10
 ---
 
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::: questions
 
 - What is Payara and why does Dataverse use it?
@@ -190,7 +202,7 @@ will show the file as available but fail when users try to download it.
 
 The `make baseline` command captures both database counts (via the Dataverse Metrics API)
 and S3 object counts (via `aws s3 ls`). Comparing pre- and post-migration baselines
-verifies that both the database and the storage bucket survived the migration intact.
+detects count discrepancies. It does not prove intact bytes or correct record-to-object relationships; verify identifiers, checksums, and historical downloads too.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 

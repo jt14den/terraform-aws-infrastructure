@@ -4,6 +4,18 @@ teaching: 25
 exercises: 5
 ---
 
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::: questions
 
 - What changes between Dataverse 5.14 and 6.8?
@@ -54,7 +66,9 @@ this callout should be the first things updated.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## The 7-phase plan
+## The historical 7-phase plan
+
+The completion labels below reproduce the planning snapshot this case study was based on. They have not been revalidated as current operational status.
 
 The migration is structured in seven phases. Each phase ends with a gate: the test suite
 and (where applicable) baseline comparisons must pass before the next phase begins.
@@ -69,14 +83,14 @@ This snapshot is the anchor for the final comparison after cutover.
 - Run by Jamie against production with `BASELINE_UPLOAD_BUCKET` set
 - Stored in S3 for durability
 
-### Phase 2: Rebuild + Infrastructure Hardening (current, partially complete)
+### Phase 2: Rebuild + Infrastructure Hardening (partially complete in the snapshot)
 
 Goal: Tim's dev environment rebuilds cleanly with an Elastic IP (no DNS wait on each
 rebuild), FAKE DOI provider, `test_cert: true` enforced, and Solr reindex as an explicit
 post-restore gate. Three plans, and they're not all done:
 
 - `02-01` Elastic IP resource in Terraform: **not started**. This is the item covered
-  in Episode 3: an `aws_eip` resource exists, but it's tied to the instance's lifecycle
+  in [Terraform](terraform-infrastructure.md): an `aws_eip` resource exists, but it's tied to the instance's lifecycle
   and doesn't survive `terraform destroy`, so rebuilds still require a manual DNS update.
 - `02-02` FAKE DOI provider config + `test_cert: true` + Solr reindex make target: **done**.
 - `02-03` Full `make rebuild ENV=tim` cycle validation (clean rebuild, reindex, smoke
@@ -129,31 +143,53 @@ the team follows on cutover day.
 
 ### Phase 7: DNS Cutover
 
-The production migration itself:
+The following is an **illustrative sequence for review**, not a runnable
+production procedure. The local orchestration Makefile inspected on 2026-10-04
+(commit `9e4d642`) starts `rebuild` with an unscoped `terraform destroy`, provisions
+resources, runs Ansible, and invokes `scripts/restore-db.sh`. This establishes
+that `rebuild` is not an in-place application restart. Actual deletion behavior
+also depends on Terraform protections and resource configuration. Never place
+this destructive target after a final restore.
 
-1. Reduce DNS TTL to 60 seconds (done days in advance)
-2. Open maintenance window; notify users
-3. Run final production DB dump
-4. Restore DB to 6.x environment
-5. Run `make rebuild ENV=jamie` against 6.x
-6. Run Solr reindex
-7. Run full test suite; baseline comparison must pass
-8. Switch DNS A record to the Elastic IP on the 6.x instance
-9. Switch DOI/EZID configuration from FAKE to real
-10. Monitor for 24 hours
-11. Terminate old 5.14 instance
+1. Rehearse creation and configuration of the destination **before final restoration**.
+   Verify target versions, database upgrade order, storage identifiers, ownership,
+   deletion protections, backup independence, and the exact scope of every target.
+2. Prepare DNS/routing and lower TTL ahead of the maintenance window. Notify users
+   and record who can authorize cutover or rollback.
+3. Freeze writes on the source, including uploads, APIs, background jobs, and
+   administrative changes. Keep the destination closed to user writes as well.
+4. Capture the final consistent database dump/snapshot and a baseline at that
+   boundary. Record timestamps, checksums, versions, and restore identifiers.
+   Keep the recovery copy outside any resources slated for destruction.
+5. Synchronize file/object bytes from the source storage to the destination,
+   including the final delta after the freeze. Verify the mapping from database
+   storage identifiers to objects; an earlier bulk copy alone is insufficient.
+6. Restore that exact final database to the prepared destination. Apply the
+   documented version-specific schema upgrade sequence, then rebuild Solr.
+   Verify the restore helper selects the intended final dump rather than an older
+   object labeled "latest". Do not run `make rebuild` afterwards.
+7. Check counts, metadata relationships, object sizes/checksums, and representative
+   downloads against known source bytes. Check authentication, permissions, search,
+   and application behavior. Matching counts alone do not prove data integrity.
+8. Switch the reviewed DNS or routing target while writes remain frozen. Verify
+   TLS and access through the public name; retain the old system and backups.
+9. Configure the approved production identifier service and reopen writes only
+   after all gates pass. Record this boundary and monitor new writes and failures.
+10. Retire the old system only after the agreed recovery/retention period and
+    explicit approval. A fixed 24-hour timer is not proof that recovery is safe.
 
-Rollback is possible until step 9 (EZID switch). If anything fails before that point,
-switch DNS back to the old instance and the 5.14 instance is back up within the TTL window.
+Maintainers must resolve file synchronization, freeze enforcement, restore
+selection, upgrade compatibility, admin API access, and post-cutover data
+reconciliation in the real runbook. The lesson does not validate these details.
 
 ::::::::::::::::::::::::::::::::::::: callout
 
 ### Cutover pressure and the pull toward hand-fixing
 
-Step 7 is the moment automation trust gets tested hardest: something in the test suite or
+The validation gate is the moment automation trust gets tested hardest: something in the test suite or
 baseline comparison fails, users are waiting, and SSHing into the new instance to patch
 whatever's wrong feels like the responsible thing to do. It's the same instinct
-Episode 4 (Ansible: Configuration and Idempotency) warns about, just under more pressure.
+[Ansible idempotency](ansible-idempotency.md) (Ansible: Configuration and Idempotency) warns about, just under more pressure.
 
 Resist it here more than anywhere else. A hand-patch made during cutover is exactly the
 kind of undocumented change that breaks the "read the repo, know the server" property this
@@ -166,32 +202,27 @@ it happened. The rollback table below and the phase gates before it exist so the
 
 ::::::::::::::::::::::::::::::::::::: callout
 
-### A gap this sequence doesn't cover: the actual file bytes
+### Database and file bytes are one recovery boundary
 
-Steps 3-6 move the *database*: dump, restore, rebuild, reindex. None of them move the
-files themselves from the old instance's storage to the new one's S3 bucket. The
-infrastructure security/reliability audit flags this as a High-severity gap (F6): today,
-file-bytes migration exists only as manual prose in the ansible repo's migration guide
-(an `aws s3 sync` command a human is expected to run and remember), and the integrity
-checks in step 7 (baseline comparison) count database rows and S3 object counts; they
-don't verify that a given file is actually downloadable. A cutover that follows only the
-11 steps above could produce a production Dataverse where datasets exist, search works,
-and downloads 404. A round-trip file-retrievability test is planned (roadmap `03-02`)
-but isn't itself a migration step. Something still has to move the bytes, and
-that's not automated yet. Resolve this before Phase 7, not during it.
+The historical rebuild target restores a database, but that does not establish
+that uploaded files were copied or restored. The sequence above makes the final
+file/object synchronization explicit. A round-trip upload test exercises a new
+file; it does not prove historical files survived. Compare stored identifiers,
+checksums and retrievability with the frozen source.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Rollback decision points
 
-| Point | Rollback action |
+| Point | What rollback requires |
 |---|---|
-| Before DNS switch | Switch DNS back; old instance still running |
-| After DNS switch, before EZID | Switch DNS back; new DOIs minted as FAKE can be re-minted |
-| After EZID switch | Rollback is complex; requires DOI management coordination |
+| Before routing changes, writes frozen | Keep the destination closed; verify the source is authoritative before reopening it |
+| After routing changes, both systems still frozen | Route back, verify clients reach the old service, then reopen writes under the runbook |
+| After new writes on the destination | Freeze again and reconcile or replay new metadata and file writes before reverting; DNS alone risks data loss |
+| After external identifier registration | Also coordinate persistent identifier records and their targets; do not assume they can be undone |
 
-The goal is to not reach a point where rollback is complex. The test suite gate
-after the DB restore (step 7) is the last clean opportunity to stop.
+Accepting new writes changes rollback even if no DOI has been registered.
+Do not allow both systems to accept independent writes during routing changes.
 
 ## DNS TTL and the Elastic IP
 
@@ -200,13 +231,13 @@ If the TTL is 3600 seconds (one hour) and you switch the DNS A record,
 some users will still be routed to the old IP for up to an hour.
 
 The procedure reduces TTL to 60 seconds several days before cutover.
-At that TTL, the propagation delay after the DNS switch is at most 60 seconds.
+A lower TTL reduces expected cache duration, but does not guarantee every client switches within 60 seconds. Test routing and allow for resolver and client caching.
 
 The plan is for an Elastic IP to give the new 6.x instance a known, stable address before
 cutover day, so the DNS change is a single A record update. That depends on `02-01`
 landing first, though (see Phase 2 above). As of today the EIP doesn't survive a
 rebuild, so "known, stable IP before cutover" isn't true yet. If cutover happened this
-week, step 8 below would still need the same manual "read the new IP off the Terraform
+week, the routing step would still need the same manual "read the new IP off the Terraform
 output" step every other rebuild requires.
 
 ::::::::::::::::::::::::::::::::::::: challenge
@@ -257,7 +288,7 @@ For each phase below, identify what must be true before that phase can start:
 - Dataverse 6.x requires Java 17, a Solr schema rebuild, and updated DOI/S3 configuration.
 - The 7-phase plan gates each phase with tests before proceeding to the next, but "current phase" doesn't mean "current phase complete." Phase 2 is one-third done as of this writing.
 - Phases 1-3 establish the foundation; phases 4-6 harden for production; phase 7 is cutover.
-- Rollback is straightforward until the DNS switch and EZID activation. That window is the target.
-- DNS TTL reduction and a *persistent* Elastic IP would together make the cutover switchover fast and predictable, but the EIP isn't persistent yet, and the automated cutover sequence has no step that moves file bytes: a gap found after the roadmap was written.
+- Keep both sides write-frozen through validation and routing changes. New writes require reconciliation on rollback, independently of DOI registration.
+- DNS TTL reduction and a *persistent* Elastic IP would together make the cutover switchover fast and predictable, but the EIP isn't persistent yet, and file-byte synchronization must be implemented and rehearsed before the illustrative cutover sequence becomes a runbook.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

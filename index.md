@@ -2,30 +2,50 @@
 site: sandpaper::sandpaper_site
 ---
 
-This lesson traces the infrastructure that runs the UCLA Library Dataverse instance. It covers the AWS resources that provide compute, storage, and networking; the Ansible configuration that installs Dataverse and its dependencies; and the tooling that makes rebuilding and migrating the system repeatable.
+Learn infrastructure as code by configuring a small public Potree website with
+Ansible on your laptop. Then use a separate Dataverse case study to reason about
+Terraform, secrets, data migration, and operational risk.
 
-It is written for people working in or being onboarded to UCLA Library data services: DSC staff, DataSquad students, and anyone who will be operating or handing off this infrastructure. The assumption is comfort with the command line and some exposure to cloud services or configuration management, but not infrastructure expertise.
+This lesson is for library data-services staff, OSPO and DataSquad students, and
+incoming service operators. You should be comfortable navigating a terminal,
+editing text files, and using basic Git. No AWS account, cloud credentials, or
+private repository access is required for the public core.
 
-By the end of this lesson you will be able to:
+## Preparing for EX294
 
-- Describe the components that make up a running Dataverse instance and what each does
-- Navigate the three repositories that manage the UCLA Dataverse infrastructure
-- Explain the division of responsibility between Terraform (infrastructure) and Ansible (configuration)
-- Run the key Makefile targets for daily operations: `rebuild`, `baseline`, `reindex`
-- Read test output and baseline comparisons to verify the system is in a known-good state
-- Explain the 7-phase migration plan and what each phase accomplishes
+For learners aiming to pass EX294, the core is a first practice pass, not complete
+exam preparation. After each worked example, close the solution and reproduce
+the required state independently, then verify it. Use the
+[certification track](learners/certification.md) for requirement-driven drills and
+the explicit coverage gaps. Dataverse is optional for this goal; Terraform is not
+an EX294 objective. Completing the website labs alone is not an exam-readiness test.
 
-## Who this is for
+## Public core: six episodes
 
-- **Data Science Center staff** coming up to speed on what the infrastructure team built and why
-- **DataSquad students** supporting data services and infrastructure work
-- **Incoming operators** taking over responsibility for the Dataverse instance
-- **Tim and Jamie** using this as a structured way to document decisions made during the 5.14 to 6.8 migration
+1. [Follow one point cloud request](episodes/pointcloud-request.md): trace HTTP requests and diagnose a failure boundary.
+2. [First converge and second run](episodes/first-converge.md): write and repair a task, inspecting state as well as the recap.
+3. [Variables, templates and handlers](episodes/variables-handlers.md): change a requirement and predict a reload.
+4. [Organize a role, validate inputs](episodes/roles-validation.md): add collection content without duplicating infrastructure logic.
+5. [Break, diagnose, recover](episodes/diagnose-recover.md): use evidence to repair a fault and rebuild locally.
+6. [Operate the service](episodes/operate-service.md): interpret monitoring, release content, and roll back locally.
 
-## Prerequisites
+Allow about four hours plus breaks, with installation completed beforehand.
+You will publish and verify a local collection landing page; rendering an actual
+3D scan still depends on the live public service. The companion repository has
+no verified offline point-cloud fixture workflow yet. Live exercises are labeled;
+recorded outputs support discussion when that service is unavailable.
 
-- Comfortable with the command line (navigating directories, running commands)
-- Basic familiarity with Git (clone, commit, push)
-- An AWS account with credentials for the `ucla-library-dsc` profile, or access to the team's shared environment
+## Dataverse extension and optional practice
 
-See the [Setup](learners/setup.md) page for installation instructions.
+Start the [Dataverse case study](episodes/introduction.md) after the core. It
+explains the larger stack and historical operational decisions. Its command
+examples are for analysis, not a production runbook. Authorized maintainers need
+their project's current repositories, access process, and reviewed runbook before
+operating infrastructure. Public learners can reason from the included excerpts.
+
+Staff can use the extension to explain deployment, monitoring, restore, and
+cutover gates; reading it does not demonstrate production operating competence.
+The [certification track](learners/certification.md) maps practice and gaps
+separately. [Using AI](episodes/using-ai.md) adds an optional task-review exercise.
+
+Start with [Setup](learners/setup.md).
