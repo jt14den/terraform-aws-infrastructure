@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<title>Dataverse Infrastructure: Terraform, Ansible, and the Migration Path: Key Points</title>
+<title>Infrastructure as Code for Library Services: Ansible and Terraform: Key Points</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="../assets/themetoggle.js"></script><link rel="stylesheet" type="text/css" href="../assets/styles.css">
 <script src="../assets/scripts.js" type="text/javascript"></script><!-- mathjax --><!-- NOTE: https://docs.mathjax.org/en/latest/output/mathml.html#mathml-support --><!-- Changes from V2 to V4: https://mathjax.github.io/MathJax-demos-web/convert-configuration/convert-configuration.html
@@ -41,7 +41,7 @@
     <div class="col-md-8">
       <div class="large-logo">
         <a href="index.html">
-        <img id="incubator-logo" alt="A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible." src="../assets/images/incubator-logo.svg"></a>
+        <img id="incubator-logo" alt="Learn Ansible with a public Potree service, then study Terraform and Dataverse operations." src="../assets/images/incubator-logo.svg"></a>
 
         <span class="badge text-bg-danger">
           <abbr title="This lesson is in the pre-alpha phase, which means that it is in early development, but has not yet been taught.">
@@ -100,10 +100,10 @@
     </button>
     <div class="nav-logo">
       <a href="index.html">
-      <img class="small-logo" alt="A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible." src="../assets/images/incubator-logo-sm.svg"></a>
+      <img class="small-logo" alt="Learn Ansible with a public Potree service, then study Terraform and Dataverse operations." src="../assets/images/incubator-logo-sm.svg"></a>
     </div>
     <div class="lesson-title-md">
-      Dataverse Infrastructure: Terraform, Ansible, and the Migration Path
+      Infrastructure as Code for Library Services: Ansible and Terraform
     </div>
     <div class="search-icon-sm">
       <!-- TODO: do not show until we have search
@@ -114,7 +114,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 <li class="nav-item">
           <span class="lesson-title">
-            Dataverse Infrastructure: Terraform, Ansible, and the Migration Path
+            Infrastructure as Code for Library Services: Ansible and Terraform
           </span>
         </li>
         <li class="nav-item">
@@ -246,7 +246,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="introduction.html">1. Introduction: Why We Built This Way</a>
+        <a href="pointcloud-request.html">1. Follow One Point Cloud Request</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -258,7 +258,7 @@
 <div class="accordion accordion-flush" id="accordionFlush3">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading3">
-        <a href="pointcloud-request.html">2. Follow One Point Cloud Request</a>
+        <a href="first-converge.html">2. First Converge and Second Run</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -270,7 +270,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="first-converge.html">3. First Converge and Second Run</a>
+        <a href="variables-handlers.html">3. Variables, Templates and Handlers</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -282,7 +282,7 @@
 <div class="accordion accordion-flush" id="accordionFlush5">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading5">
-        <a href="tooling-setup.html">4. Tooling Setup</a>
+        <a href="roles-validation.html">4. Organize a Role, Validate Inputs</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -294,7 +294,7 @@
 <div class="accordion accordion-flush" id="accordionFlush6">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading6">
-        <a href="terraform-infrastructure.html">5. Terraform: The Infrastructure Layer</a>
+        <a href="diagnose-recover.html">5. Break, Diagnose, Recover</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -306,7 +306,7 @@
 <div class="accordion accordion-flush" id="accordionFlush7">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading7">
-        <a href="ansible-idempotency.html">6. Ansible: Configuration and Idempotency</a>
+        <a href="operate-service.html">6. Operate the Service</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -318,7 +318,7 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="dataverse-stack.html">7. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
+        <a href="introduction.html">7. Dataverse Case Study: Why We Built This Way</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -330,7 +330,7 @@
 <div class="accordion accordion-flush" id="accordionFlush9">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading9">
-        <a href="secrets-config.html">8. Secrets and Environment Configuration</a>
+        <a href="tooling-setup.html">8. Tooling Setup</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -342,7 +342,7 @@
 <div class="accordion accordion-flush" id="accordionFlush10">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading10">
-        <a href="makefile-operations.html">9. The Makefile: Daily Operations</a>
+        <a href="terraform-infrastructure.html">9. Terraform: The Infrastructure Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -354,7 +354,7 @@
 <div class="accordion accordion-flush" id="accordionFlush11">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading11">
-        <a href="testing-validation.html">10. Testing and Validation</a>
+        <a href="ansible-idempotency.html">10. Ansible: Configuration and Idempotency</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -366,7 +366,7 @@
 <div class="accordion accordion-flush" id="accordionFlush12">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading12">
-        <a href="using-ai.html">11. Using AI Tools in Infrastructure Work</a>
+        <a href="dataverse-stack.html">11. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -378,7 +378,55 @@
 <div class="accordion accordion-flush" id="accordionFlush13">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading13">
-        <a href="migration-arc.html">12. The Migration Arc: 5.14 to 6.8</a>
+        <a href="secrets-config.html">12. Secrets and Environment Configuration</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush14">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading14">
+        <a href="makefile-operations.html">13. The Makefile: Daily Operations</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush15">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading15">
+        <a href="testing-validation.html">14. Testing and Validation</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush16">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading16">
+        <a href="using-ai.html">15. Using AI Tools in Infrastructure Work</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush17">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading17">
+        <a href="migration-arc.html">16. The Migration Arc: 5.14 to 6.8</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -462,22 +510,7 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Key Points</h1>
         
-<section id="introduction"><h2 class="section-heading"><a href="introduction.html">Introduction: Why We Built This Way</a></h2>
-<hr class="half-width">
-<ul>
-<li>Dataverse needs five components: Payara (app server), Solr (search),
-PostgreSQL via RDS (metadata), S3 (file content), Apache (proxy and
-SSL).</li>
-<li>Terraform provisions the AWS infrastructure; Ansible configures what
-runs on it.</li>
-<li>The three repos are <code>terraform-dataverse</code>,
-<code>dataverse-ansible</code>, and
-<code>dataverse-infrastructure</code>.</li>
-<li>Infrastructure as code makes the system reproducible, reviewable,
-and rebuildable.</li>
-<li>Many decisions in this codebase were shaped by the 5.14 to 6.8
-migration, and that context appears throughout the lesson.</li>
-</ul></section><section id="pointcloud-request"><h2 class="section-heading"><a href="pointcloud-request.html">Follow One Point Cloud Request</a></h2>
+<section id="pointcloud-request"><h2 class="section-heading"><a href="pointcloud-request.html">Follow One Point Cloud Request</a></h2>
 <hr class="half-width">
 <ul>
 <li>A point cloud page involves three systems: Apache serves the page
@@ -493,38 +526,74 @@ belongs somewhere other than where the symptom appears.</li>
 </ul></section><section id="first-converge"><h2 class="section-heading"><a href="first-converge.html">First Converge and Second Run</a></h2>
 <hr class="half-width">
 <ul>
-<li>A converge brings a host to the state the playbook describes;
-<code>ok</code> means already there, <code>changed</code> means Ansible
-had to act.</li>
-<li>A second run with no edits should report <code>changed=0</code>.
-That’s idempotence.</li>
+<li>A converge applies the described state; recap <code>ok</code>
+includes successful tasks that reported <code>changed</code>.</li>
+<li>A second run should report <code>changed=0</code>, but verify the
+resulting state as well.</li>
 <li>
-<code>shell</code> and <code>command</code> describe actions, not
-states; prefer modules like <code>copy</code>, or guard commands with
-<code>creates</code>, <code>removes</code> or
-<code>changed_when</code>.</li>
+<code>creates</code>, <code>removes</code>, and <code>when</code>
+can prevent execution; <code>changed_when</code> only changes reporting
+and handler notification.</li>
 <li>Molecule’s idempotence step checks the playbook; its verify step
 checks the result. You need both, and an outside-in check for what
 staging can’t see.</li>
+</ul></section><section id="variables-handlers"><h2 class="section-heading"><a href="variables-handlers.html">Variables, Templates and Handlers</a></h2>
+<hr class="half-width">
+<ul>
+<li>Variables carry requirements; templates render them into managed
+files.</li>
+<li>Changed template output can notify handlers; reporting no change
+suppresses notification.</li>
+<li>Check the served result as well as configuration syntax.</li>
+</ul></section><section id="roles-validation"><h2 class="section-heading"><a href="roles-validation.html">Organize a Role, Validate Inputs</a></h2>
+<hr class="half-width">
+<ul>
+<li>Reuse a role by changing inputs and content, not by copying
+infrastructure tasks.</li>
+<li>Input validation catches some errors early; it does not replace
+service checks.</li>
+<li>HTML publication and successful point-cloud rendering are different
+outcomes.</li>
+</ul></section><section id="diagnose-recover"><h2 class="section-heading"><a href="diagnose-recover.html">Break, Diagnose, Recover</a></h2>
+<hr class="half-width">
+<ul>
+<li>A 200 response does not establish correct content.</li>
+<li>A verifier only checks requirements it actually asserts.</li>
+<li>Repair source, inspect the result, and rebuild to test
+reproducibility.</li>
+</ul></section><section id="operate-service"><h2 class="section-heading"><a href="operate-service.html">Operate the Service</a></h2>
+<hr class="half-width">
+<ul>
+<li>Monitors provide bounded evidence, including early warnings.</li>
+<li>Verify a release with a requirement-specific check.</li>
+<li>Static-content rollback does not establish data-migration rollback
+safety.</li>
+</ul></section><section id="introduction"><h2 class="section-heading"><a href="introduction.html">Dataverse Case Study: Why We Built This Way</a></h2>
+<hr class="half-width">
+<ul>
+<li>Dataverse needs five components: Payara (app server), Solr (search),
+PostgreSQL via RDS (metadata), S3 (file content), Apache (proxy and
+SSL).</li>
+<li>Terraform provisions the AWS infrastructure; Ansible configures what
+runs on it.</li>
+<li>The three repos are <code>terraform-dataverse</code>,
+<code>dataverse-ansible</code>, and
+<code>dataverse-infrastructure</code>.</li>
+<li>Infrastructure as code makes the system reproducible, reviewable,
+and rebuildable.</li>
+<li>Many decisions in this codebase were shaped by the 5.14 to 6.8
+migration, and that context appears throughout the lesson.</li>
 </ul></section><section id="tooling-setup"><h2 class="section-heading"><a href="tooling-setup.html">Tooling Setup</a></h2>
 <hr class="half-width">
 <ul>
-<li>Five tools required: Terraform, Ansible, AWS CLI, Make, uv.</li>
-<li>AWS profile is <code>ucla-library-dsc</code>: set
-<code>AWS_PROFILE</code> in your shell before running anything.</li>
-<li>Clone <code>dataverse-infrastructure</code> first, then run
-<code>make bootstrap</code>: it nests the other two repos inside it.
-They are not siblings.</li>
-<li>Ansible Vault needs a local <code>.vault-password</code> file
-(<code>openssl rand -base64 24 &gt; .vault-password</code> in
-<code>dataverse-ansible</code>) before any vaulted
-<code>group_vars</code> can be decrypted.</li>
-<li>
-<code>terraform init</code> must succeed before any other Terraform
-command will work.</li>
-<li>
-<code>terraform plan</code> is always safe: it shows changes without
-making them.</li>
+<li>Public learners need only the core setup; operator onboarding is
+separate.</li>
+<li>Repository paths, credentials, inventory, and permissions must match
+the current project.</li>
+<li>Existing Vault ciphertext needs its existing password, not a newly
+generated one.</li>
+<li>Configuration, connectivity, and privilege escalation are distinct
+checks.</li>
 </ul></section><section id="terraform-infrastructure"><h2 class="section-heading"><a href="terraform-infrastructure.html">Terraform: The Infrastructure Layer</a></h2>
 <hr class="half-width">
 <ul>
@@ -617,7 +686,7 @@ counts.</li>
 <li>
 <code>make reindex ENV=&lt;env&gt;</code> rebuilds the Solr index
 after any database restore, and depends on the admin API being open over
-public HTTPS (a known security gap, Episode 5).</li>
+public HTTPS (a known security gap, <a href="dataverse-stack.html">Dataverse stack</a>).</li>
 <li>Always specify <code>ENV=</code>: the Makefile will error without
 it.</li>
 </ul></section><section id="testing-validation"><h2 class="section-heading"><a href="testing-validation.html">Testing and Validation</a></h2>
@@ -630,18 +699,17 @@ round-trip, and Solr indexing as real pytest classes.</li>
 <code>TestPIDConfiguration</code> class exists but only runs under the
 <code>migration</code> marker and mostly checks settings exist, not
 FAKE-vs-EZID behavior.</li>
-<li>Baseline comparisons verify data integrity by comparing counts
-before and after migration, saved to <code>baseline-snapshots/</code>
-(no <code>latest.json</code>).</li>
+<li>Baseline comparisons detect count discrepancies; they do not prove
+byte integrity or correct record-to-object mappings.</li>
 <li>Every baseline field must match exactly <strong>except</strong>
 <code>downloads</code>, which is deliberately informational-only.</li>
-<li>Jamie’s pre-migration production baseline is the anchor for the
-final Phase 7 comparison.</li>
+<li>A final write-freeze baseline anchors the cutover comparison; an
+older planning snapshot is supporting context.</li>
 </ul></section><section id="using-ai"><h2 class="section-heading"><a href="using-ai.html">Using AI Tools in Infrastructure Work</a></h2>
 <hr class="half-width">
 <ul>
-<li>Use your institution’s licensed AI tools for work; at UCLA, that is
-Gemini via Google Workspace.</li>
+<li>Check current institutional tool and data policies separately from
+general learning guidance.</li>
 <li>Never share credentials, private hostnames, database connection
 strings, or SSH keys with any AI tool.</li>
 <li>AI is particularly strong with config systems like Terraform and
@@ -663,12 +731,14 @@ the next, but “current phase” doesn’t mean “current phase complete.”
 Phase 2 is one-third done as of this writing.</li>
 <li>Phases 1-3 establish the foundation; phases 4-6 harden for
 production; phase 7 is cutover.</li>
-<li>Rollback is straightforward until the DNS switch and EZID
-activation. That window is the target.</li>
+<li>Keep both sides write-frozen through validation and routing changes.
+New writes require reconciliation on rollback, independently of DOI
+registration.</li>
 <li>DNS TTL reduction and a <em>persistent</em> Elastic IP would
 together make the cutover switchover fast and predictable, but the EIP
-isn’t persistent yet, and the automated cutover sequence has no step
-that moves file bytes: a gap found after the roadmap was written.</li>
+isn’t persistent yet, and file-byte synchronization must be implemented
+and rehearsed before the illustrative cutover sequence becomes a
+runbook.</li>
 </ul></section>
 </div>
     </main>

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<title>Dataverse Infrastructure: Terraform, Ansible, and the Migration Path: Instructor Notes</title>
+<title>Infrastructure as Code for Library Services: Ansible and Terraform: Instructor Notes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="assets/themetoggle.js"></script><link rel="stylesheet" type="text/css" href="assets/styles.css">
 <script src="assets/scripts.js" type="text/javascript"></script><!-- mathjax --><!-- NOTE: https://docs.mathjax.org/en/latest/output/mathml.html#mathml-support --><!-- Changes from V2 to V4: https://mathjax.github.io/MathJax-demos-web/convert-configuration/convert-configuration.html
@@ -41,7 +41,7 @@
     <div class="col-md-8">
       <div class="large-logo">
         <a href="index.html">
-        <img id="incubator-logo" alt="A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible." src="assets/images/incubator-logo.svg"></a>
+        <img id="incubator-logo" alt="Learn Ansible with a public Potree service, then study Terraform and Dataverse operations." src="assets/images/incubator-logo.svg"></a>
 
         <span class="badge text-bg-danger">
           <abbr title="This lesson is in the pre-alpha phase, which means that it is in early development, but has not yet been taught.">
@@ -100,10 +100,10 @@
     </button>
     <div class="nav-logo">
       <a href="index.html">
-      <img class="small-logo" alt="A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible." src="assets/images/incubator-logo-sm.svg"></a>
+      <img class="small-logo" alt="Learn Ansible with a public Potree service, then study Terraform and Dataverse operations." src="assets/images/incubator-logo-sm.svg"></a>
     </div>
     <div class="lesson-title-md">
-      Dataverse Infrastructure: Terraform, Ansible, and the Migration Path
+      Infrastructure as Code for Library Services: Ansible and Terraform
     </div>
     <div class="search-icon-sm">
       <!-- TODO: do not show until we have search
@@ -114,7 +114,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 <li class="nav-item">
           <span class="lesson-title">
-            Dataverse Infrastructure: Terraform, Ansible, and the Migration Path
+            Infrastructure as Code for Library Services: Ansible and Terraform
           </span>
         </li>
         <li class="nav-item">
@@ -245,7 +245,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="introduction.html">1. Introduction: Why We Built This Way</a>
+        <a href="pointcloud-request.html">1. Follow One Point Cloud Request</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -257,7 +257,7 @@
 <div class="accordion accordion-flush" id="accordionFlush3">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading3">
-        <a href="pointcloud-request.html">2. Follow One Point Cloud Request</a>
+        <a href="first-converge.html">2. First Converge and Second Run</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -269,7 +269,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="first-converge.html">3. First Converge and Second Run</a>
+        <a href="variables-handlers.html">3. Variables, Templates and Handlers</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -281,7 +281,7 @@
 <div class="accordion accordion-flush" id="accordionFlush5">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading5">
-        <a href="tooling-setup.html">4. Tooling Setup</a>
+        <a href="roles-validation.html">4. Organize a Role, Validate Inputs</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -293,7 +293,7 @@
 <div class="accordion accordion-flush" id="accordionFlush6">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading6">
-        <a href="terraform-infrastructure.html">5. Terraform: The Infrastructure Layer</a>
+        <a href="diagnose-recover.html">5. Break, Diagnose, Recover</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -305,7 +305,7 @@
 <div class="accordion accordion-flush" id="accordionFlush7">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading7">
-        <a href="ansible-idempotency.html">6. Ansible: Configuration and Idempotency</a>
+        <a href="operate-service.html">6. Operate the Service</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -317,7 +317,7 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="dataverse-stack.html">7. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
+        <a href="introduction.html">7. Dataverse Case Study: Why We Built This Way</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -329,7 +329,7 @@
 <div class="accordion accordion-flush" id="accordionFlush9">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading9">
-        <a href="secrets-config.html">8. Secrets and Environment Configuration</a>
+        <a href="tooling-setup.html">8. Tooling Setup</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -341,7 +341,7 @@
 <div class="accordion accordion-flush" id="accordionFlush10">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading10">
-        <a href="makefile-operations.html">9. The Makefile: Daily Operations</a>
+        <a href="terraform-infrastructure.html">9. Terraform: The Infrastructure Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -353,7 +353,7 @@
 <div class="accordion accordion-flush" id="accordionFlush11">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading11">
-        <a href="testing-validation.html">10. Testing and Validation</a>
+        <a href="ansible-idempotency.html">10. Ansible: Configuration and Idempotency</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -365,7 +365,7 @@
 <div class="accordion accordion-flush" id="accordionFlush12">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading12">
-        <a href="using-ai.html">11. Using AI Tools in Infrastructure Work</a>
+        <a href="dataverse-stack.html">11. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -377,7 +377,55 @@
 <div class="accordion accordion-flush" id="accordionFlush13">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading13">
-        <a href="migration-arc.html">12. The Migration Arc: 5.14 to 6.8</a>
+        <a href="secrets-config.html">12. Secrets and Environment Configuration</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush14">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading14">
+        <a href="makefile-operations.html">13. The Makefile: Daily Operations</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush15">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading15">
+        <a href="testing-validation.html">14. Testing and Validation</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush16">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading16">
+        <a href="using-ai.html">15. Using AI Tools in Infrastructure Work</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush17">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading17">
+        <a href="migration-arc.html">16. The Migration Arc: 5.14 to 6.8</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -461,14 +509,158 @@
         <h1>Instructor Notes</h1>
         
 
-<p>This is a placeholder file. Please add content here.</p>
+<section><h2 class="section-heading" id="prepare-the-public-core">Prepare the public core<a class="anchor" aria-label="anchor" href="#prepare-the-public-core"></a>
+</h2>
+<hr class="half-width">
+<p>Use <a href="index.html#setup">Setup</a> before the workshop. Allocate
+30–60 minutes for downloads separately from teaching. Test on a
+learner-like machine, record the companion commit and
+<code>pixi run ansible --version</code>, and confirm Podman, ports 8080
+and 8443, <code>staging-up</code>, and <code>staging-verify</code> work.
+The lesson was statically aligned with pointcloud-infra commit
+<code>71ed862</code> on 2026-10-04. Recheck if the companion moves.</p>
+<p>No AWS credentials or private repository access are needed. Ensure
+learners have an editor, terminal, Git, curl, Pixi, and Podman. Windows
+learners use WSL according to the companion guide. Start from a learner
+branch and record existing edits. Never use a blanket reset to clear a
+learner’s prior work.</p>
+<p>There is no verified offline point-cloud fixture workflow. Request
+tracing depends on the public site; record actual outputs and dates if
+demonstrating live. If it is unavailable, use the episode’s recorded
+examples for diagnosis and label the activity as analysis. The other
+core labs publish HTML locally and do not prove 3D rendering. Do not
+substitute a production deployment for a failed local lab.</p>
+</section><section><h2 class="section-heading" id="facilitation-and-timing">Facilitation and timing<a class="anchor" aria-label="anchor" href="#facilitation-and-timing"></a>
+</h2>
+<hr class="half-width">
+<p>The core totals 240 minutes, plus breaks. Installation and delayed
+retrieval practice are outside that allocation. Allow extra time for the
+first pilot; container downloads and machine performance can dominate
+the first converge.</p>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="23%">
+<col width="30%">
+<col width="23%">
+<col width="23%">
+</colgroup>
+<thead><tr>
+<th>Episode</th>
+<th align="right">Minutes</th>
+<th>Expected evidence</th>
+<th>Check for understanding</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Request tracing</td>
+<td align="right">35</td>
+<td>Page/code status, metadata response with supplied Referer</td>
+<td>Why does 200 not prove rendering? Can a client forge Referer?</td>
+</tr>
+<tr>
+<td>First converge</td>
+<td align="right">50</td>
+<td>Recap, growing MOTD despite <code>changed_when: false</code>,
+repaired exact file</td>
+<td>Are changed tasks included in recap <code>ok</code>? What prevents
+execution?</td>
+</tr>
+<tr>
+<td>Variables and handlers</td>
+<td align="right">35</td>
+<td>Description change, config check and reload, no second
+notification</td>
+<td>Why does Apache reload for config but not plain HTML?</td>
+</tr>
+<tr>
+<td>Roles and validation</td>
+<td align="right">40</td>
+<td>New landing page and rejected TLS typo</td>
+<td>What does argument validation leave untested?</td>
+</tr>
+<tr>
+<td>Diagnose and recover</td>
+<td align="right">35</td>
+<td>200 with wrong heading, repaired source, fresh-container check</td>
+<td>Why did the stock verifier miss the custom requirement?</td>
+</tr>
+<tr>
+<td>Operate</td>
+<td align="right">40</td>
+<td>Expiry warning interpretation, changed release, restored
+heading</td>
+<td>What data would a static-content rollback not restore?</td>
+</tr>
+</tbody>
+</table>
+<p>The listed episodes sum to 235 minutes; reserve five minutes for
+transitions. For EX294 preparation, use the certification drills after
+the core and let learners skip Dataverse. Prioritize independent,
+requirement-driven repetitions over additional service-specific reading.
+Ask learners to predict before revealing output or solutions. Pair on
+explanations, not just command entry. Collect a short evidence log:
+prediction, command, observed state, explanation, and assistance used
+(unaided, hint, or solution). Give one hint at a time after an attempt;
+ask the learner to explain their repair before showing a solution.
+Revisit the concept later with a small variation. Completing a reading
+exercise is not an executed lab.</p>
+</section><section><h2 class="section-heading" id="common-failures">Common failures<a class="anchor" aria-label="anchor" href="#common-failures"></a>
+</h2>
+<hr class="half-width">
+<ul>
+<li>Podman connection errors: check the platform’s machine/service
+startup procedure.</li>
+<li>Port conflicts: identify the local process using 8080/8443 before
+changing anything.</li>
+<li>TLS warnings: use the documented self-signed exception only on
+localhost; do not teach <code>curl -k</code> as a fix for public
+certificate failures.</li>
+<li>Missing Ansible commands: stay at the companion root and use
+<code>pixi run</code>; Molecule direct commands run inside the shown
+<code>(cd ansible &amp;&amp; ...)</code> subshell.</li>
+<li>YAML parsing errors: inspect indentation and duplicate mappings. Add
+entries to the existing <code>folders</code> map, not a second copy of
+it.</li>
+<li>Nonzero second converge: identify the specific changed task and
+inspect its state. Never “fix” this by hiding change reports.</li>
+<li>A verifier fails after an intentional description change: restore
+that lab edit before running the baseline verifier; explain its
+hardcoded expectations.</li>
+<li>The invalid TLS input fails before configuration: this is the
+intended observation.</li>
+<li>Staging does not load S3 scans: this is a documented lab limitation,
+not evidence that learner HTML publication failed.</li>
+</ul></section><section><h2 class="section-heading" id="reset-and-continuity">Reset and continuity<a class="anchor" aria-label="anchor" href="#reset-and-continuity"></a>
+</h2>
+<hr class="half-width">
+<p>After First converge, remove only the tasks learners added to
+<code>maintenance.yml</code>. After the description lab, restore only
+that description. Keep the new Workshop folder and its description
+through the next three labs. At the end, remove only those
+learner-created entries, or retain them on a learner branch. Review
+diffs before cleanup. <code>pixi run staging-down</code> destroys the
+local lab container; <code>pixi run staging-up</code> recreates it from
+the current source.</p>
+<p>Do not run cloud, deploy, migration, or production Ansible targets.
+The Dataverse extension is a separate discussion using historical
+excerpts, not an operator qualification or runnable migration procedure.
+Count comparisons must be paired with integrity evidence; writes and
+external effects determine rollback limits.</p>
+</section><section><h2 class="section-heading" id="pilot-and-completion">Pilot and completion<a class="anchor" aria-label="anchor" href="#pilot-and-completion"></a>
+</h2>
+<hr class="half-width">
+<p>Pilot with someone who did not build the companion repository. Record
+setup time, unclear directory transitions, predictions, actual errors,
+and whether recovery works without instructor intervention. Student
+completion means independently publishing, verifying, diagnosing, and
+restoring local content. Staff need separate approved operational
+practice. Certification learners need requirement-driven practice, SSH,
+real-host security, and reboot checks beyond this container core.</p>
 <!--
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use.
  -->
-
-
-      <section id="aggregate-instructor-notes"></section>
+</section><section id="aggregate-instructor-notes"></section>
 </div>
     </main>
 </div>

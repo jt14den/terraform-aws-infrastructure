@@ -28,6 +28,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/dataverse-stack.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/diagnose-recover.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/first-converge.html</loc>
   </url>
   <url>
@@ -70,6 +73,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/dataverse-stack.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/diagnose-recover.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/first-converge.html</loc>
   </url>
   <url>
@@ -100,6 +106,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/migration-arc.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/operate-service.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/pointcloud-request.html</loc>
   </url>
   <url>
@@ -110,6 +119,9 @@
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/remote-state.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/roles-validation.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/secrets-config.html</loc>
@@ -133,6 +145,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/variables-and-modules.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/variables-handlers.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/instructor/variables.html</loc>
   </url>
   <url>
@@ -151,6 +166,9 @@
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/migration-arc.html</loc>
   </url>
   <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/operate-service.html</loc>
+  </url>
+  <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/pointcloud-request.html</loc>
   </url>
   <url>
@@ -161,6 +179,9 @@
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/remote-state.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/roles-validation.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/secrets-config.html</loc>
@@ -182,6 +203,9 @@
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/variables-and-modules.html</loc>
+  </url>
+  <url>
+    <loc>https://jt14den.github.io/terraform-aws-infrastructure/variables-handlers.html</loc>
   </url>
   <url>
     <loc>https://jt14den.github.io/terraform-aws-infrastructure/variables.html</loc>
