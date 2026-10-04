@@ -39,6 +39,14 @@ Before writing any automation, you need a picture of what the system *does*. Thi
 
 Three systems, three places to fail.
 
+::::::::::::::::::::::::::::::::::::: callout
+
+### These commands depend on the live site
+
+The outputs below were captured on 2026-10-04 against the real site. The S3 bucket's access rule, the redirects, and even which collection pages exist can change. If a command here gives a different result, don't assume you've done something wrong: check the repository's `docs/` and recent pull requests for what changed, and treat the difference as something to explain. That's good practice for the exam too, since you'll often meet systems that don't match the instructions.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 ## Step 1: the page
 
 ```bash
