@@ -1,35 +1,23 @@
-# Terraforming AWS Infrastructure for Beginners
+# Infrastructure as Code for Library Services
 
-This lesson introduces new learners to the fundamentals of managing cloud
-infrastructure with Terraform. It uses a real example of deploying a simple EC2
-instance on AWS, then grows into variables, security groups, modules, and
-remote backends. The lesson is written for complete beginners and follows the
-Carpentries Workbench format.
+A Carpentries Workbench lesson with a six-episode public Potree/Ansible core and
+a separate Dataverse/Terraform operational case study. Core learners need no AWS
+credentials or private repository access. See [Setup](learners/setup.md).
 
-**Rendered lesson:**  
-https://jt14den.github.io/terraform-aws-infrastructure/
+**Rendered lesson:** [www.tim-dennis.com/terraform-aws-infrastructure](https://www.tim-dennis.com/terraform-aws-infrastructure/)
 
-## Who this lesson is for
+## Local validation
 
-Learners who want a practical introduction to:
+Use the established R/Workbench environment (also described in `.devcontainer/`).
+CI uses `sandpaper::validate_lesson()` and builds lesson markdown. To validate and
+build locally without deployment:
 
-- Infrastructure-as-Code (IaC)
-- Terraform basics
-- Deploying resources on AWS safely
-- Understanding state, variables, modules, and security groups
+```bash
+Rscript -e 'sandpaper::validate_lesson(); sandpaper::build_lesson(preview = FALSE)'
+```
 
-No prior Terraform experience is required.
-
-## Learning goals
-
-By the end of the lesson, learners will be able to:
-
-- Install and configure Terraform
-- Create an EC2 instance using a minimal configuration
-- Manage state locally and remotely
-- Use variables and modules
-- Build secure security groups
-- Read, plan, and apply Terraform infrastructure changes
+The build writes ignored output under `site/`. Do not use the CI deployment entry
+point for local checks. Building the prose does not execute Ansible labs.
 
 ## Contributing
 

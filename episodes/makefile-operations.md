@@ -4,6 +4,18 @@ teaching: 20
 exercises: 10
 ---
 
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::: questions
 
 - What can I do from the Makefile?
@@ -16,7 +28,7 @@ exercises: 10
 
 - List the main Makefile targets and what each does.
 - Trace the steps of `make rebuild` in order.
-- Run `make baseline` and inspect the snapshot it produces.
+- Interpret an illustrative baseline snapshot without contacting infrastructure.
 - Identify when each operational target should be used.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
@@ -49,14 +61,14 @@ configures it and restores data. It requires `DB_PASS` and prints a real warning
 it runs, because of exactly the misconception this section used to encode: this is not
 an EC2-only operation.
 
-The real 7 steps, from the Makefile itself:
+The seven steps below were statically checked against the local orchestration Makefile at `9e4d642` on 2026-10-04. This is not evidence of a successful rebuild or the current deployed state. The destroy command is unscoped; actual deletion depends on resource configuration, deletion protection, and provider behavior. The historical target describes:
 
 1. **Destroy**: `terraform destroy` tears down the whole per-environment module: EC2,
    RDS, and the S3 bucket all go together. Nothing about this step is EC2-scoped.
 2. **Provision**: `terraform init -upgrade` then `terraform apply` builds all of it
    back from scratch: new EC2 instance, new empty RDS database, new empty S3 bucket.
 3. **DNS propagation**: prints the new EC2 IP and pauses for you to manually update
-   the DNS A record (this is the Elastic IP gap from Episode 3 in practice: the IP
+   the DNS A record (this is the Elastic IP gap from [Terraform](terraform-infrastructure.md) in practice: the IP
    really did change, and nothing updates DNS automatically yet).
 4. **Ansible**: runs `site.yml` to install and configure Payara, Solr, Apache, and Dataverse.
 5. **Restore the database from S3**: `scripts/restore-db.sh` pulls the latest dump and
@@ -83,15 +95,14 @@ make rebuild ENV=tim DB_PASS=<dataverse_postgresql_password>
 
 ::::::::::::::::::::::::::::::::::::: callout
 
-### Nothing survives a rebuild by default: the restore step is what saves you
+### A database restore is not complete recovery
 
 The single most consequential fact about `make rebuild`: it destroys RDS and S3 along
 with EC2, and the reason the environment isn't empty afterward is step 5, restoring from
 a database dump in S3 (`ucla-dataverse-migration-assets`), a *separate* bucket from the
 one `terraform destroy` just deleted. The security/reliability audit of this repo calls
 this restore-every-rebuild pattern "the single most valuable reliability practice here":
-it means every rebuild is implicitly a disaster-recovery drill, proving the backup
-actually works. But it also means a stale or missing dump turns rebuild into "spin up an
+it means every rebuild is implicitly a disaster-recovery drill, exercising a database restore when the target succeeds. It does not prove file/object recovery or full integrity. But it also means a stale or missing dump turns rebuild into "spin up an
 empty Dataverse," not "restore my environment." There's no confirmation step that checks
 dump freshness before restoring (a known gap, audit F4).
 
@@ -155,7 +166,7 @@ The time it takes depends on how many datasets exist.
 
 Under the hood this is a `curl -X DELETE` to Dataverse's admin API over public HTTPS.
 That only works today because that API is currently open to the internet, a Critical
-security finding covered in depth in Episode 5. `make baseline` and `make test` share the
+security finding covered in depth in [Dataverse stack](dataverse-stack.md). `make baseline` and `make test` share the
 same dependency.
 
 ### `make test`
@@ -167,7 +178,7 @@ make test ENV=tim
 ```
 
 The tests cover API smoke tests, S3 connectivity, Solr health, and basic CRUD operations.
-See Episode 8 for detail on what the tests check.
+See [Testing and validation](testing-validation.md) for detail on what the tests check.
 
 ## The `ENV` argument
 
@@ -184,12 +195,11 @@ Running `make rebuild` without `ENV` will error. Always specify it.
 
 ### Trace a rebuild, for real this time
 
-Open `dataverse-infrastructure/Makefile` and find the `rebuild` target. Without relying
-on memory of this episode, answer from the actual Makefile:
+Use the seven-step excerpt above. Authorized maintainers can also compare it with the current private Makefile without executing it:
 
 1. What happens to the RDS database during step 1? What restores it, and from where?
 2. Does the target end with a test run? What does it actually end with?
-3. What manual action does step 3 require from the operator, and what does that tell you about the Elastic IP's current state (Episode 3)?
+3. What manual action does step 3 require from the operator, and what does that tell you about the Elastic IP's current state ([Terraform](terraform-infrastructure.md))?
 
 :::::::::::::::::::::::::::::::::::: solution
 
@@ -201,7 +211,7 @@ on memory of this episode, answer from the actual Makefile:
    you to `make logs` to monitor. `make test` is a separate command you run yourself afterward.
 3. Step 3 pauses and prints the new EC2 IP, asking you to update the DNS A record by hand
    before continuing. That's only necessary because the Elastic IP doesn't yet survive a
-   rebuild (Episode 3). If it did, this manual step wouldn't exist.
+   rebuild ([Terraform](terraform-infrastructure.md)). If it did, this manual step wouldn't exist.
 
 ::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -212,7 +222,7 @@ on memory of this episode, answer from the actual Makefile:
 - The Makefile is the daily operations interface: rarely run Terraform or Ansible directly.
 - `make rebuild ENV=<env> DB_PASS=<pass>` destroys and recreates EC2, RDS, **and** S3 together, then restores the database from an S3 dump. It does not preserve data by default: the restore step is what puts data back.
 - `make baseline ENV=<env>` captures a timestamped snapshot to `baseline-snapshots/`, with dataset, file, and S3 counts.
-- `make reindex ENV=<env>` rebuilds the Solr index after any database restore, and depends on the admin API being open over public HTTPS (a known security gap, Episode 5).
+- `make reindex ENV=<env>` rebuilds the Solr index after any database restore, and depends on the admin API being open over public HTTPS (a known security gap, [Dataverse stack](dataverse-stack.md)).
 - Always specify `ENV=`: the Makefile will error without it.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

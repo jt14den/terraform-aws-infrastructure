@@ -4,6 +4,18 @@ teaching: 25
 exercises: 10
 ---
 
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::: questions
 
 - What AWS resources does Terraform manage for this project?
@@ -17,7 +29,7 @@ exercises: 10
 - Read a Terraform config and identify the AWS resource types it defines.
 - Explain what remote state is and why it matters for a multi-operator project.
 - Describe what an Elastic IP is and why the one defined here doesn't yet simplify the rebuild cycle.
-- Run `terraform plan` and interpret the output.
+- Interpret an illustrative Terraform plan excerpt without AWS access.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -50,7 +62,7 @@ terraform-dataverse/
 
 Each environment directory has its own `main.tf`, `variables.tf`, and `terraform.tfvars`.
 The environments are mostly identical (they share modules) but use different resource names
-and sizes so Tim and Jamie can work independently without affecting each other.
+and sizes to support independent work. Resource ownership and permissions must also be checked before assuming isolation.
 
 ## Remote state
 
@@ -66,14 +78,13 @@ Tim:   s3://ucla-tim-terraform-state/terraform-dataverse/tim/terraform.tfstate
 Jamie: s3://ucla-library-terraform-state/terraform-dataverse/jamie/terraform.tfstate
 ```
 
-Tim's `apply` and Jamie's `apply` cannot see or affect each other's state at all:
-they are backed by different buckets. This is deliberate: it means destroying or
-rebuilding one operator's environment can't touch the other's, which matters a lot
-given how often `make rebuild` tears an environment down and recreates it (Episode 6).
-Both backends still use a shared DynamoDB table (`terraform-locks`) for locking, which
-prevents two `terraform apply` runs against the *same* state from racing each other.
-That only protects an operator against themselves (e.g. two terminal tabs), not
-against each other.
+Separate bucket/key backends separate **state bookkeeping**, not necessarily
+resources or permissions. Two states can mistakenly track the same resource,
+reference shared resources, or use credentials authorized to change both
+environments. Isolation also requires distinct resource ownership, correct
+configuration, and scoped IAM permissions. A shared lock table serializes writers
+to the same state identity; it does not protect different states from changing
+the same cloud resource.
 
 ![Tim and Jamie's operator environments each apply against their own S3 state bucket. Both share a DynamoDB lock table, so the shared table prevents same-operator races but not cross-operator conflicts.](fig/terraform-state-isolation.svg){alt="Diagram: Tim's environment applies to S3 bucket ucla-tim-terraform-state, and Jamie's environment applies to S3 bucket ucla-library-terraform-state. Both environments take a lock against a shared DynamoDB table called terraform-locks before applying."}
 
@@ -124,7 +135,7 @@ Terraform configurations use variables to avoid hardcoding values that differ be
 - **`terraform.tfvars`**: provides values for those variables (like the function call)
 
 The `terraform.tfvars` file for each environment is **gitignored, not committed**.
-Each operator creates their own from `terraform.tfvars.example` during setup (Episode 2).
+Each operator creates their own from `terraform.tfvars.example` during setup ([Tooling setup](tooling-setup.md)).
 That's intentional, because in practice it's not secret-free: Tim's real `tfvars` includes
 a plaintext `db_password`. This is a known, flagged gap (the security audit calls it out
 as finding F8): the intended design keeps secrets in Ansible Vault, not Terraform, but
@@ -136,23 +147,26 @@ version control, it doesn't encrypt what's on disk.
 
 ### Read a Terraform plan
 
-From `terraform-dataverse/environments/tim`, run `terraform plan`.
+Read this simplified, fictional plan excerpt. Do not run Terraform:
 
-Answer these questions from the output:
+```text
++ aws_instance.example
++ aws_security_group.example
+    ingress: tcp 22 from 192.0.2.0/24
+    ingress: tcp 443 from 0.0.0.0/0
+Plan: 2 to add, 0 to change, 0 to destroy.
+```
 
-1. How many resources does Terraform plan to create, change, or destroy?
-2. Which resource type appears the most?
-3. Find the security group resource. What ports does it open, and to what CIDR range?
+1. How many resources would be created, changed, or destroyed?
+2. Which source networks could reach SSH and HTTPS?
+3. Does this excerpt establish isolation from another environment?
 
 :::::::::::::::::::::::::::::::::: solution
 
-The exact output will depend on current state. Things to look for:
-
-- `aws_instance` (the EC2 instance)
-- `aws_security_group` and `aws_security_group_rule` (firewall rules)
-- `aws_eip` and `aws_eip_association` (Elastic IP)
-- `aws_db_instance` (RDS)
-- Port 22 (SSH), 80 (HTTP), 443 (HTTPS), and 8080/4848 (Payara) in the security group rules
+Two resources would be created. SSH is limited to the example documentation
+network `192.0.2.0/24`; HTTPS permits all IPv4 sources. Neither this excerpt nor
+a separate state key establishes isolation: inspect full ownership, references,
+credentials, and policies. A plan excerpt is analysis, not permission to apply.
 
 ::::::::::::::::::::::::::::::::::::::::::
 
@@ -165,15 +179,14 @@ The exact output will depend on current state. Things to look for:
 Without checking the episode:
 
 1. Can Tim accidentally destroy Jamie's environment by running `terraform destroy` in
-   his own environment directory? Point to the specific piece of config that proves your answer.
+   his own environment directory? Is a different backend bucket sufficient evidence?
 2. Does today's public EC2 IP survive `make rebuild ENV=tim`? Why or why not?
 
 :::::::::::::::::::::::::::::::::::: solution
 
-1. No. Each environment's `main.tf` points at a different S3 bucket/key for its backend
-   (`ucla-tim-terraform-state` vs. `ucla-library-terraform-state`, different keys). Terraform
-   only knows about resources tracked in the state it's pointed at, so Tim's `destroy` has no
-   way to reach anything in Jamie's state file.
+1. You cannot conclude that from backend separation. Check for shared or
+   overlapping resource IDs, cross-environment references, and IAM permissions.
+   Separate states do not prevent one operator from affecting shared resources.
 2. No. `aws_eip.dataverse` lives in the same module as `aws_instance.dataverse` and is
    associated directly to it, so `terraform destroy` removes both together. The address
    changes on every rebuild until roadmap item `02-01` makes the EIP persistent.

@@ -4,7 +4,11 @@ title: "Certification track: EX294"
 
 This page is optional. It's for learners using this lesson to prepare for Red Hat exam **EX294, the Red Hat Certified Advanced System Administrator in Ansible exam**, which counts toward Red Hat Certified Engineer in Ansible. Nothing in the core episodes depends on it.
 
-Check the exam details before you book: Red Hat updates objectives, and the exam page says objectives are based on the most recent product version. As of October 2026, the matching course (AU294) is based on **RHEL 10, ansible-core 2.16, and Ansible development tools aligned with Ansible Automation Platform 2.6**.
+The [official EX294 objectives](https://www.redhat.com/en/services/training/ex294-red-hat-certified-engineer-rhce-exam-red-hat-enterprise-linux)
+were checked on 2026-10-04. They describe a practical exam and require configurations
+to persist after reboot. Available exam versions can differ; check the version
+you book. The companion's `exam` environment pins ansible-core 2.16 for practice;
+that pin alone does not establish parity with every available exam version.
 
 ## How the exam works, and what that means for practice
 
@@ -13,6 +17,18 @@ Check the exam details before you book: Red Hat updates objectives, and the exam
 - Your playbooks run against freshly installed systems, so practice from clean machines, not from something you've tweaked by hand.
 
 So practice the same way: from a requirement, without the finished solution open, using only `ansible-doc`, then rerun and reboot to prove it holds.
+
+## Route toward passing
+
+Use the public core to learn the mechanics, then do the existing drills below
+from requirements with solutions closed. Record whether each result was actually
+executed and independently verified, not merely read. Repeat weak areas from a
+clean target without AI or the finished role. Do not spend exam study time on the
+optional Dataverse/Terraform extension unless it helps a specific Ansible gap.
+
+The remaining VM topics at the end of this page are required preparation gaps,
+not optional evidence you can replace with a green container test. This revision
+does not supply that VM lab or claim full exam readiness.
 
 ## The study loop
 
@@ -27,9 +43,41 @@ Use this for every exercise in the lesson and every drill below:
 
 AI tools are useful for review and hints (see the AI episode), but the exam has none. Do at least every other drill without one.
 
+## Check what you can do without Claude or ChatGPT
+
+For each existing core exercise or drill, use this routine before opening its solution:
+
+1. Write the required state and a check for it in your own words.
+2. Spend 10–15 minutes attempting it with `ansible-doc`, without AI-generated YAML.
+3. If stuck, request one conceptual hint or a documentation pointer. Try again
+   before requesting code; record the assistance you used.
+4. Run your attempt in the disposable lab. Inspect the resulting state and run
+   again. Explain any difference between your prediction and the evidence.
+5. Close the code and explain why each module, condition, and handler is needed.
+6. On another day, repeat from a clean target with a changed filename, value, or
+   host group. Keep the previous solution closed.
+
+Use a small practice record:
+
+| Requirement | Prediction | State evidence | Assistance | Next retry |
+|---|---|---|---|---|
+| Exact one-line marker | First run changes; second does not | Contents, line count, permissions, two recaps | Unaided / hint / solution | Date and one changed requirement |
+
+A successful run after copying a solution is a worked example, not yet independent
+practice. A useful checkpoint is whether you can build it, verify it, diagnose a
+wrong result, and explain it on the later attempt. Record failures too; they identify
+what to practice next. This is a study aid, not a prediction of your exam score.
+
+When using an assistant as a tutor, give it this instruction:
+
+> Give me one requirement from the existing lesson at a time. Do not supply YAML
+> or the solution before I attempt it. Ask for my prediction, code, and observed
+> output. Review my evidence and explanation, and give only one hint if I ask.
+> Later, test the same concept with a small variation and no earlier solution.
+
 ## Tools: the exam environment
 
-[pointcloud-infra](https://github.com/ucla-data-science-center/pointcloud-infra) has a separate environment pinned to the exam's stack, so you practice against the same Ansible version the exam uses:
+[pointcloud-infra](https://github.com/ucla-data-science-center/pointcloud-infra) has a separate practice environment pinned to ansible-core 2.16:
 
 ```bash
 cd pointcloud-infra
@@ -47,6 +95,19 @@ The default environment (`pixi run ...`, ansible-core 2.21) is for running the r
 ansible-navigator run site.yml -i inventory --ee false -m stdout
 ```
 
+## Practiced, mapped, and planned coverage
+
+Completing the six core labs practices variables, templates, handlers, role input
+validation, file publication, diagnosis, and local rollback. Reading a role that
+uses another module only **maps** an objective; it does not demonstrate that you
+can write it independently. The drills below provide additional practice if you
+actually execute and verify them. VM, reboot, SSH, and development-container
+coverage remains separate or planned.
+
+Controller tools (Pixi, ansible-navigator, execution environments, and editor dev
+containers) run the automation. Managed targets (Molecule containers or lab VMs)
+receive it. A controller execution environment is not itself a managed-node lab.
+
 ## Objective map
 
 The **Drill** notes below refer to the numbered drills further down this page. Objectives are grouped as on Red Hat's EX294 page (checked 2026-10-04). **Where** shows where you can see or practice each one in this lesson or in pointcloud-infra. **Gap** means you need a separate drill.
@@ -57,8 +118,8 @@ The **Drill** notes below refer to the numbered drills further down this page. O
 | **Configuration:** `ansible.cfg`, `ansible-navigator.yml`, static inventory files, host groups | `pointcloud-infra/ansible/ansible.cfg` | The project uses a dynamic AWS inventory and no `ansible-navigator.yml`. Drill: write a static inventory with two groups and a group of groups, plus an `ansible-navigator.yml` that sets the inventory and mode |
 | **Managed nodes:** configure nodes, SSH keys, privilege escalation, deploy files | `become: true` in `playbooks/site.yml` | Drill (exam lab): create an automation user on each node, distribute its SSH key, give it passwordless sudo, then switch your inventory to use it |
 | **Running playbooks:** `ansible-navigator` and `ansible-playbook`, find modules in collections, create inventories, configure the environment | `pixi run deploy-check`, `ansible/requirements.yml` | Drill: run the same playbook with both tools; use `ansible-navigator collections` and `ansible-doc` to find a module you haven't used |
-| **Source control:** Git clone and add; VS Code to create playbooks and push | The whole lesson workflow (branch, commit, PR) | Drill: set up VS Code with the Ansible extension and write one drill in it |
-| **Playbook creation:** common modules, registered results, conditionals, error handling, system configuration | `register` + `when` in `tasks/release.yml` and `tasks/apache.yml` | Covered by the drills above |
+| **Source control:** Git clone and add; VS Code to create playbooks and push | Basic cloning and learner branches in the core; commits/pushes are not demonstrated by these labs | Drill: set up VS Code with the Ansible extension and write one drill in it |
+| **Playbook creation:** common modules, registered results, conditionals, error handling, system configuration | `register` + `when` in `tasks/release.yml` and `tasks/apache.yml` | Practice only if the relevant drills are completed and verified |
 | **Roles and collections:** create and use roles, install roles, install collections, related content | The `potree` role; `meta/argument_specs.yml`; `requirements.yml` | Drill: install a role from Ansible Galaxy with `ansible-galaxy role install` and use it |
 | **RHCSA tasks:** packages/repos, services, firewall, file systems, storage, file content, archiving, scheduling, security, users/groups | EPEL and packages (`tasks/packages.yml`); services and timers; firewalld; `ini_file`, `copy`, `template`; `unarchive`; SELinux checks (`tasks/selinux.yml`) | Not in the project: storage and file systems (`community.general.lvg`/`lvol`, `filesystem`, `mount`), `lineinfile`, `archive`, `cron`, `user`/`group`, `seboolean`/`sefcontext`. Drills on lab VMs (containers can't do storage or reboots) |
 | **Content:** templates, Ansible Vault | `templates/pointcloud.conf.j2` | Vault: the project has no secrets. Drill: encrypt a dummy variable file, use it in a play, show the plaintext never appears in output |
@@ -113,10 +174,11 @@ Tear down when you're done studying: `podman rm -f node1 node2 node3`.
 
 ### Drill 1: inventory and navigator (15 minutes)
 
-Create `inventory.ini`, `ansible-navigator.yml` and `ping.yml` so that:
+Create `inventory.ini`, `ansible.cfg`, `ansible-navigator.yml` and `ping.yml` in `~/ex294-drills` so that:
 
 - `node1` and `node2` are in group `web`; `node3` is in group `db`; a group `prod` contains both groups.
 - All hosts connect through Podman (`ansible_connection=containers.podman.podman`).
+- `ansible.cfg` sets `inventory = inventory.ini` and `collections_path = ./collections` under `[defaults]`, so the plain CLI finds the inventory and locally installed collections. Keep running from this directory in the active exam shell.
 - `ansible-navigator.yml` sets stdout mode, disables the execution environment, and points at your inventory.
 - `ping.yml` runs on `prod` and prints each host's groups.
 
@@ -235,20 +297,24 @@ You'll see a red `fatal:` line for each node, which is expected: the failure hap
 
 ### Drill 3: Vault (20 minutes)
 
-Create a variables file `secrets.yml` containing `app_db_password: "S3cret-drill-only"`, encrypted with Ansible Vault using a password file. Write a play for the `db` group that creates `/etc/drill-app.conf` (root, mode 0600) containing `db_password=<the value>`.
+This drill uses dummy secrets only. In your fresh practice directory, use `umask 077`, create a new `.vault-pass` without overwriting an existing file, and exclude `.vault-pass`, plaintext secret files, and private keys from Git before creating them. Stop if these filenames already exist.
+
+Create a **whole-file encrypted** variables file `secrets.yml` containing `app_db_password: "S3cret-drill-only"`, encrypted with Ansible Vault using a password file. Write a play for the `db` group that creates `/etc/drill-app.conf` (root, mode 0600) containing `db_password=<the value>`.
 
 **Checks**
 
 1. `head -1 secrets.yml` shows `$ANSIBLE_VAULT;...`, not your password.
-2. Running with `-v` never prints the password: `ansible-playbook vault.yml --vault-password-file .vault-pass -v | grep -c S3cret` prints `0`.
+2. Run `ansible-playbook vault.yml --vault-password-file .vault-pass -v`; confirm success and that the dummy value is absent from output. Absence alone is insufficient: a failed run can also print no secret. Do not use debug output to inspect real secrets.
 3. `podman exec node3 stat -c '%a %U' /etc/drill-app.conf` prints `600 root`.
 4. A second run reports `changed=0`.
 
 :::::::::::::::::::::::::::::::::: solution
 
 ```bash
-echo 'drill-vault-pass' > .vault-pass && chmod 600 .vault-pass
-printf 'app_db_password: "S3cret-drill-only"\n' > secrets.yml
+umask 077
+printf '\n.vault-pass\nsecrets.yml\ndrill_key\n' >> .gitignore
+(set -C; printf '%s\n' 'drill-vault-pass' > .vault-pass)
+(set -C; printf 'app_db_password: "S3cret-drill-only"\n' > secrets.yml)
 ansible-vault encrypt secrets.yml --vault-password-file .vault-pass
 ```
 
@@ -279,7 +345,12 @@ ansible-vault encrypt secrets.yml --vault-password-file .vault-pass
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-### Drill 4: users, SSH keys, privilege escalation (25 minutes)
+### Drill 4: account, key and sudo configuration (25 minutes)
+
+These checks inspect account/key/sudo configuration through Podman. They do not
+demonstrate an SSH login as `automation` or Ansible privilege escalation from that
+account. Those require a separate SSH-capable VM exercise with a non-root login
+and a `become` task that verifies the effective user is root.
 
 On every node in `prod`:
 
@@ -345,7 +416,7 @@ On every node in `prod`:
         validate: /usr/sbin/visudo -cf %s
 ```
 
-`validate:` matters: a syntax error in a sudoers file can lock everyone out, so Ansible checks the new file before moving it into place. First run `changed=4` on each node (group, users, key, sudoers; the package was already there), second run `changed=0`.
+`validate:` matters: a syntax error in a sudoers file can lock everyone out, so Ansible checks the new file before moving it into place. First-run counts depend on the image and existing state; the user loop can change multiple users within one task. Verify each required property and expect `changed=0` on the second run.
 
 ::::::::::::::::::::::::::::::::::::::::::
 

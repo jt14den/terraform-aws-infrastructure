@@ -274,13 +274,11 @@ making any changes. Useful for auditing configuration drift.
 The primary Makefile target for recreating an environment from scratch. Requires `DB_PASS`.
 Runs `terraform destroy` (tears down EC2, RDS, **and** S3 together, not just EC2),
 `terraform apply`, a manual DNS-update pause, the Ansible playbook, a database restore
-from an S3 dump, starting Payara over SSH, and finally a Solr reindex. Data survives a
-rebuild only because of the restore step, not by default. See: [Makefile].
+from an S3 dump, starting Payara over SSH, and finally a Solr reindex. Database recovery depends on the restore step; file/object recovery must be verified separately. See: [Makefile].
 
 **make baseline**
 Captures a timestamped JSON snapshot (`baseline-snapshots/baseline_<timestamp>.json`) of
-dataset, file, user, and S3 counts from a running Dataverse instance. Used to verify data
-integrity before and after migration.
+dataset, file, user, and S3 counts from a running Dataverse instance. Used to detect count discrepancies before and after migration; checksums and retrievability provide additional integrity evidence.
 
 **make reindex**
 Triggers a full Solr reindex of all datasets from the database. Required after any database
@@ -294,7 +292,7 @@ behind named targets. See: [make rebuild], [make baseline], [make reindex].
 **Baseline**
 A timestamped JSON snapshot of system state captured by `make baseline`. Fields include
 dataset count, file count, user count, and S3 object count/bytes. Pre- and post-migration
-baselines are compared to verify data integrity.
+baselines are compared to detect count discrepancies. Matching counts alone do not prove integrity.
 
 **DNS TTL**
 Time To Live for a DNS record. Controls how long DNS resolvers cache the record before
@@ -341,11 +339,11 @@ pinned to as of this writing. Requires Java 17, a new Solr schema, and updated S
 configuration. **No longer the actual target**: CVE-2026-1879 affects 6.0 through 6.8,
 so the real target moved to 6.10.1 or 6.11 (patched, and bundles a Payara 6-to-7 / Java
 17-to-21 upgrade upstream already made). The version bump itself hadn't happened yet as
-of September 2026. See the callout in Episode 9 (Migration Arc).
+of September 2026. See the callout in [Migration arc](../episodes/migration-arc.md) (Migration Arc).
 
 **Migration arc**
 The 7-phase plan for migrating the UCLA Dataverse instance from 5.14 to 6.8.
-Each phase gates the next with test suite and baseline validation. See Episode 9.
+Each phase gates the next with test suite and baseline validation. See [Migration arc](../episodes/migration-arc.md).
 
 **Phase gate**
 The requirement that tests and baselines pass before proceeding to the next phase.

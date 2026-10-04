@@ -1,8 +1,20 @@
 ---
-title: "Introduction: Why We Built This Way"
+title: "Dataverse Case Study: Why We Built This Way"
 teaching: 15
 exercises: 5
 ---
+
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::: questions
 
@@ -21,23 +33,17 @@ exercises: 5
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## What this lesson is
+## From the public core to Dataverse
 
-This lesson traces the infrastructure that runs the UCLA Library Dataverse instance.
-It was written during the migration from Dataverse 5.14 to 6.8, not as abstract documentation
-but as a way to make explicit what was built, why each decision was made, and how the pieces fit together.
+The [public core](../index.md) uses Potree and Ansible to practice desired state,
+verification, diagnosis, and local rollback without AWS credentials. This
+extension transfers those habits to Dataverse, where application state, metadata,
+file storage, and external identifiers make recovery more demanding.
 
-The audience is people doing the work or being onboarded to it: DSC staff, DataSquad students,
-and anyone who will operate or hand off this system. It assumes comfort with the command line
-and some exposure to cloud services or configuration management, but not infrastructure expertise.
-
-::::::::::::::::::::::::::::::::::::: callout
-
-### Two worked examples
-
-This lesson uses two real systems built the same way. The next two episodes use **pointcloud.ucla.edu**, a small static site whose infrastructure is public and runs on your laptop, to learn the tools hands-on. The rest of the lesson applies them to **Dataverse**, where the stakes and the moving parts are much bigger.
-
-::::::::::::::::::::::::::::::::::::::::::::::::
+The following architecture and repository descriptions capture the historical
+5.14-to-6.x migration context. Version and roadmap status are historical evidence,
+not a claim about today's production deployment. Public learners can analyze the
+included diagrams and excerpts; private exploration is optional for maintainers.
 
 ## The stack at a glance
 
@@ -100,7 +106,7 @@ AWS console or running commands directly on the server by hand. That works until
 Infrastructure as code puts the desired state of the system in version-controlled files.
 Terraform describes what AWS resources should exist. Ansible describes what should be installed
 and how it should be configured. Running them again should produce the same result. This property
-is called **idempotency**, and it is one of the central ideas in Episode 4.
+is called **idempotency**, and it is one of the central ideas in [Ansible idempotency](ansible-idempotency.md).
 
 ## The migration context
 
@@ -116,17 +122,13 @@ The migration itself is the subject of the final episode.
 
 ### Take stock
 
-Before moving on, open the three repositories in your browser (these are private to the
-team; if you don't have access yet, read through the solution below instead):
+Using the repository table and stack diagram above, match each requirement to
+its repository: create an RDS instance, configure Payara, and orchestrate a
+restore. Explain the dependency order.
 
-- `your-org/terraform-dataverse`
-- `your-org/dataverse-ansible`
-- `your-org/dataverse-infrastructure`
-
-In each one, find:
-
-1. The main configuration file or entry point
-2. At least one file that corresponds to something in the stack diagram above
+Authorized maintainers may also inspect the current private repositories and
+compare their entry points with the historical paths below. Access is not
+required to complete this exercise.
 
 :::::::::::::::::::::::::::::::::: solution
 
@@ -152,7 +154,7 @@ Without looking back at the table above, answer from memory:
 :::::::::::::::::::::::::::::::::: solution
 
 1. `terraform-dataverse`: bucket policy and IAM are AWS resources, which is Terraform's domain, not Ansible's.
-2. Neither repo does it automatically. Solr's index is built from what's in RDS, and Solr has no way to know the database changed underneath it. Rebuilding is a separate, explicit step (`make reindex` in `dataverse-infrastructure`) that must be run after any restore. See Episode 5.
+2. Neither repo does it automatically. Solr's index is built from what's in RDS, and Solr has no way to know the database changed underneath it. Rebuilding is a separate, explicit step (`make reindex` in `dataverse-infrastructure`) that must be run after any restore. See [Dataverse stack](dataverse-stack.md).
 
 ::::::::::::::::::::::::::::::::::::::::::
 

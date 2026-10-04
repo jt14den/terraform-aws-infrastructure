@@ -4,6 +4,18 @@ teaching: 20
 exercises: 10
 ---
 
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::: questions
 
 - What tools do I need installed to work with this infrastructure?
@@ -14,227 +26,96 @@ exercises: 10
 
 ::::::::::::::::::::::::::::::::::::: objectives
 
-- Install and verify Terraform, Ansible, AWS CLI, and Make.
-- Configure an AWS credentials profile named `ucla-library-dsc`.
-- Clone all three repositories and orient yourself in each.
-- Run `terraform init` and confirm Ansible can reach a target host.
+- Identify the inputs an authorized maintainer needs for onboarding.
+- Explain the nested repository layout.
+- Explain why existing Vault ciphertext needs its existing password.
+- Distinguish configuration, authentication, connectivity, and privilege escalation.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## What you need
+## Operator onboarding, separate from learner setup
 
-Five tools are required before you can work with this infrastructure:
+The [public setup](../learners/setup.md) uses Pixi and Podman. The Dataverse
+orchestration checkout historically used Terraform, Ansible, AWS CLI, Make, and
+uv. Maintainers must read its current lockfiles and runbook for compatible
+versions; the Potree environment is not automatically the Dataverse environment.
 
-| Tool | Purpose | Version |
-|---|---|---|
-| Terraform | Provision AWS resources | >= 1.5 |
-| Ansible | Configure the EC2 instance | >= 2.14 |
-| AWS CLI | Authenticate to AWS, access S3 | >= 2.x |
-| Make | Run Makefile targets | system |
-| uv | Python package manager, runs the integration test suite | latest |
+The orchestration repository nests `terraform-dataverse/` and `dataverse-ansible/`.
+A local Makefile inspected on 2026-10-04 has a `bootstrap` target that clones those
+children. This explains the layout; public learners need not clone private code.
+The paths below are relative to the **orchestration repository root**:
 
-Installation instructions are on the [Setup](../learners/setup.md) page.
-
-## AWS credentials
-
-All AWS calls go through the `ucla-library-dsc` named profile. This includes:
-
-- Terraform, which creates and destroys resources
-- The baseline scripts, which read S3 object counts
-- Any direct `aws` CLI commands you run
-
-Set the profile with an environment variable:
-
-```bash
-export AWS_PROFILE=ucla-library-dsc
+```text
+terraform-dataverse/environments/<operator>/  infrastructure configuration
+dataverse-ansible/site.yml                   configuration entry point
+dataverse-ansible/group_vars/                environment inputs
+Makefile                                    orchestration
 ```
 
-The Makefile and scripts default to `ucla-library-dsc` if `AWS_PROFILE` is not set,
-but setting it explicitly avoids surprises when running commands outside the Makefile.
+Before any real operation, maintainers must establish the intended AWS account,
+role and profile, resource ownership, SSH authorization, inventory location,
+and current operating procedure. A profile name alone does not prove the account
+or permission scope. Do not run initialization, planning, or connectivity commands
+against cloud systems as part of this workshop.
 
-To verify your credentials are working:
-
-```bash
-aws sts get-caller-identity --profile ucla-library-dsc
-```
-
-A successful response shows your IAM user or role ARN, account ID, and user ID.
-
-::::::::::::::::::::::::::::::::::::: callout
-
-### Jamie's profile may differ
-
-Jamie's AWS profile may use a different name than `ucla-library-dsc`. The Makefile
-reads from `${AWS_PROFILE:-ucla-library-dsc}`, so setting `AWS_PROFILE` in your shell
-before running any `make` target is the safest approach for both operators.
-
-::::::::::::::::::::::::::::::::::::::::::::::::
-
-## Cloning the repositories
-
-`dataverse-infrastructure` is the orchestration repo: clone it first, then let it clone
-the other two as children of itself. It has a bootstrap target for exactly this:
-
-```bash
-git clone https://github.com/your-org/dataverse-infrastructure
-cd dataverse-infrastructure
-make bootstrap
-```
-
-`make bootstrap` clones `terraform-dataverse` and `dataverse-ansible` **into** the
-`dataverse-infrastructure` directory (not as siblings next to it) and wires up an
-`upstream` remote on `dataverse-ansible` pointing at the generic [gdcc/dataverse-ansible](https://github.com/gdcc/dataverse-ansible)
-role this one is forked from. The Makefile's paths (`terraform-dataverse/environments/$(ENV)`,
-`dataverse-ansible`) all assume this nested layout. If you clone the child repos
-somewhere else, nothing in the Makefile will find them.
-
-::::::::::::::::::::::::::::::::::::: callout
-
-### `gh pr create` picks the wrong repo here
-
-Because `dataverse-ansible` is a *GitHub-level* fork of `gdcc/dataverse-ansible` (not just
-a role that happens to look similar), the GitHub CLI's default behavior for `gh pr create`
-is to open the PR against the upstream fork parent, not this project's own `develop`
-branch. Run it without thinking and you'll file a PR against `gdcc/dataverse-ansible` for
-work that has nothing to do with the generic upstream role. Always pass both flags explicitly:
-
-```bash
-gh pr create --repo your-org/dataverse-ansible --base develop
-```
-
-This has bitten real work before: it's easy to not notice until someone asks why a
-UCLA-specific branding fix shows up on the upstream project.
-
-::::::::::::::::::::::::::::::::::::::::::::::::
-
-## Initializing Terraform
-
-From inside your operator environment directory:
-
-```bash
-cd terraform-dataverse/environments/tim   # or jamie
-terraform init
-```
-
-`terraform init` does three things:
-
-- Downloads the AWS provider plugin
-- Configures the remote state backend (an S3 bucket where Terraform stores its state file)
-- Validates the configuration syntax
-
-After init, run:
-
-```bash
-terraform plan
-```
-
-This shows what Terraform would create, change, or destroy, without making any changes.
-Read the plan output before running `terraform apply`. A plan that shows unexpected
-deletions is worth pausing on.
+Terraform initialization installs providers and configures a backend; validation
+and plan review are separate checks. Plans normally read remote state and APIs
+and can execute configured data sources, so calling them universally safe would
+be misleading. Use the supplied analysis exercise in
+[Terraform](terraform-infrastructure.md) without cloud access.
 
 ## Setting up Ansible Vault
 
-Secrets in `group_vars` (database passwords, admin passwords, API tokens) are encrypted
-with Ansible Vault. Before Ansible can decrypt them, you need a local vault password file:
+Existing project secrets require the **existing password that encrypted them**.
+Authorized maintainers must obtain it through the project's established process.
+This lesson does not specify that process. Generating a random replacement will
+not decrypt existing ciphertext, and can destroy access if it overwrites the
+only correct local password file.
 
-```bash
-cd dataverse-ansible
-openssl rand -base64 24 > .vault-password
-```
+If the project's current configuration expects `dataverse-ansible/.vault-password`,
+store the supplied password there with restrictive permissions (0600), outside
+version control. Verify the ignore rule without displaying the password. Do not
+replace an existing file. A password manager or other established recovery process
+must provide continuity beyond one laptop.
 
-`.vault-password` is gitignored: it never gets committed. If you lose it, the
-vault-encrypted secrets in `group_vars` are unrecoverable. Save its contents somewhere
-durable (a password manager, not just your laptop) before doing anything else. Without
-this file, `ansible-playbook` fails the moment it hits a vaulted variable.
+For a **new disposable practice vault**, use the dummy lab in
+[Secrets and environment configuration](secrets-config.md). It creates a fresh
+private temporary directory and never uses project secrets.
 
-## Verifying Ansible
+## What connectivity checks establish
 
-Ansible runs against an inventory file generated by Terraform. After `terraform apply`,
-Terraform writes an inventory file to a path the Makefile knows about.
-
-To check Ansible can reach the host:
-
-```bash
-ansible -i <inventory-file> all -m ping
-```
-
-A successful response: `dataverse | SUCCESS => {"ping": "pong"}`
-
-If this fails, the most common causes are:
-
-- SSH key not loaded (`ssh-add ~/.ssh/your-key`)
-- Security group not open on port 22 (check in AWS console or Terraform config)
-- EC2 instance not yet fully booted (wait 60 seconds and retry)
-
-::::::::::::::::::::::::::::::::::::: callout
-
-### "Could not match supplied host pattern" usually means a hand-typed inventory
-
-A real example from this project (`dataverse-ansible` #55): running the playbook by hand
-outside the Makefile,
-
-```bash
-ansible-playbook -i "dataverse ansible_host=localhost ansible_connection=local," dataverse/dataverse.pb -e "@dataverse/defaults/main.yml"
-```
-
-fails with `[WARNING]: Could not match supplied host pattern, ignoring: dataverse`.
-The inline inventory string and the play's `hosts:` target didn't agree, and the playbook
-path itself was wrong too (it's `site.yml` at the repo root, not `dataverse/dataverse.pb`).
-`make ansible ENV=<env>` builds this command correctly every time by generating the
-inventory from Terraform output and pointing at the real entry point. Typing the
-equivalent by hand, especially mid-troubleshooting, is exactly where small mismatches
-like this creep in. If you're debugging live and reach for a hand-typed
-`ansible-playbook` command instead of the Makefile, double-check the inventory path and
-playbook path against what `make ansible` actually generates before assuming Ansible
-itself is broken.
-
-::::::::::::::::::::::::::::::::::::::::::::::::
+A valid AWS identity does not demonstrate SSH reachability. An inventory that
+names a host does not demonstrate authentication. An Ansible `ping` result over
+SSH demonstrates connection and Python module execution for that user; it does
+not by itself prove privilege escalation. A separate approved `become` test must
+verify the effective user. None of these checks is run against live targets here.
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-### Credentials check
+### Explain two onboarding failures
 
-Run the AWS identity check and `terraform init` commands above.
-If either fails, note the error message and check the [Setup](../learners/setup.md)
-troubleshooting section. The most common issues are a missing profile in `~/.aws/credentials`
-or a role without sufficient IAM permissions.
+1. The Makefile expects nested repositories, but they were cloned as siblings.
+   What should you inspect before moving files?
+2. A playbook cannot decrypt an inline Vault value. Would a new random password
+   fix it? What should an authorized maintainer establish?
 
-:::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::: solution
 
-::::::::::::::::::::::::::::::::::::: challenge
+1. Read the current Makefile's paths and bootstrap target, and check for existing
+   work before rearranging anything. Relative paths depend on the checkout layout.
+2. No. Establish which vault identity/password encrypted the value and obtain the
+   existing password through the project process. Check the configured password
+   source and permissions without printing secrets. A new password is only for
+   new ciphertext or a deliberate rekey using the old password.
 
-### Two ways to fail before you even start
-
-Without checking the episode, answer from memory:
-
-1. You clone `dataverse-infrastructure` and run `git clone` on the other two repos yourself,
-   as siblings next to it. Then you run `make rebuild ENV=tim`. What happens, and why?
-2. You have all three repos cloned correctly and `terraform apply` succeeds. Then
-   `ansible-playbook` fails immediately on a vaulted variable. What file is missing,
-   and what command creates it?
-
-:::::::::::::::::::::::::::::::::::: solution
-
-1. The Makefile can't find `terraform-dataverse` or `dataverse-ansible`: it expects
-   them cloned *inside* `dataverse-infrastructure` (via `make bootstrap`), not as
-   sibling directories next to it. Targets fail with missing-path errors.
-2. `dataverse-ansible/.vault-password` is missing. Create it with
-   `openssl rand -base64 24 > .vault-password` from inside `dataverse-ansible`, and save
-   a copy somewhere durable. If it's lost, the vaulted secrets can't be recovered.
-
-::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: keypoints
 
-- Five tools required: Terraform, Ansible, AWS CLI, Make, uv.
-- AWS profile is `ucla-library-dsc`: set `AWS_PROFILE` in your shell before running anything.
-- Clone `dataverse-infrastructure` first, then run `make bootstrap`: it nests the other
-  two repos inside it. They are not siblings.
-- Ansible Vault needs a local `.vault-password` file (`openssl rand -base64 24 > .vault-password`
-  in `dataverse-ansible`) before any vaulted `group_vars` can be decrypted.
-- `terraform init` must succeed before any other Terraform command will work.
-- `terraform plan` is always safe: it shows changes without making them.
-
+- Public learners need only the core setup; operator onboarding is separate.
+- Repository paths, credentials, inventory, and permissions must match the current project.
+- Existing Vault ciphertext needs its existing password, not a newly generated one.
+- Configuration, connectivity, and privilege escalation are distinct checks.
 ::::::::::::::::::::::::::::::::::::::::::::::::
