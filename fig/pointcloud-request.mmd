@@ -1,0 +1,14 @@
+flowchart LR
+    Browser(["Browser<br/>(runs the Potree viewer)"])
+
+    subgraph AWS["AWS"]
+        subgraph EC2["EC2 instance"]
+            Apache["Apache httpd<br/>collection pages<br/>+ /build/potree/potree.js"]
+        end
+        S3[("S3 bucket<br/>point cloud data")]
+    end
+
+    Browser -- "1. GET page<br/>www.pointcloud.ucla.edu" --> Apache
+    Apache -- "2. HTML + viewer code" --> Browser
+    Browser -- "3. GET metadata.json + octree<br/>Referer: https://www.pointcloud.ucla.edu/..." --> S3
+    S3 -- "4. 200 if Referer is www,<br/>otherwise 403" --> Browser
