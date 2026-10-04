@@ -31,6 +31,14 @@ The audience is people doing the work or being onboarded to it: DSC staff, DataS
 and anyone who will operate or hand off this system. It assumes comfort with the command line
 and some exposure to cloud services or configuration management, but not infrastructure expertise.
 
+::::::::::::::::::::::::::::::::::::: callout
+
+### Two worked examples
+
+This lesson uses two real systems built the same way. The next two episodes use **pointcloud.ucla.edu**, a small static site whose infrastructure is public and runs on your laptop, to learn the tools hands-on. The rest of the lesson applies them to **Dataverse**, where the stakes and the moving parts are much bigger.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 ## The stack at a glance
 
 Running Dataverse requires several components working together:

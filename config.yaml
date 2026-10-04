@@ -26,6 +26,8 @@ contact: 'tdennis@library.ucla.edu'
 
 episodes:
   - introduction.md
+  - pointcloud-request.md
+  - first-converge.md
   - tooling-setup.md
   - terraform-infrastructure.md
   - ansible-idempotency.md
@@ -39,6 +41,7 @@ episodes:
 learners:
   - reference.md
   - setup.md
+  - certification.md
 
 instructors:
   - instructor-notes.md

@@ -8,6 +8,19 @@ title: "Setup"
 You do not need to understand everything on this page at this time. The goal is only to get the tools working.
 By the end of this setup, you will be able to authenticate to AWS, run Terraform, and prepare a working directory.
 
+## Part 1 (pointcloud episodes): no AWS needed
+
+The pointcloud episodes run on your laptop. You need **git**, **[pixi](https://pixi.sh)** and **[Podman](https://podman.io)**; pixi installs everything else (Ansible, Molecule, Terraform) at the right versions. Follow the pointcloud-infra [getting started guide](https://github.com/ucla-data-science-center/pointcloud-infra/blob/main/docs/getting-started.md), which covers macOS, Linux and Windows (via WSL), then check:
+
+```bash
+cd pointcloud-infra
+pixi run staging-up     # builds a local copy of the site
+```
+
+and open <https://localhost:8443/>. The first episode, *Follow One Point Cloud Request*, needs only `curl`.
+
+The rest of this page is for Part 2 (Dataverse), which uses AWS.
+
 ## 1. AWS Account
 
 You will need an AWS account you can log into.  

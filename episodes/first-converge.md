@@ -1,0 +1,214 @@
+---
+title: "First Converge and Second Run"
+teaching: 20
+exercises: 30
+---
+
+:::::::::::::::::::::::::::::::::::::: questions
+
+- What does it mean to run a playbook against a server, and then run it again?
+- What should the second run report, and why?
+- How is "the playbook made no changes" different from "the site works"?
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: objectives
+
+- Build a local copy of pointcloud.ucla.edu with Molecule and Podman.
+- Predict which tasks report `changed` on a first and a second run, and check the prediction.
+- Write a task that breaks idempotence, observe the failure, and fix it.
+- Distinguish Molecule's idempotence step from its verify step.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+## Before you start
+
+You need the pointcloud-infra repository set up on your laptop. Follow its [getting started guide](https://github.com/ucla-data-science-center/pointcloud-infra/blob/main/docs/getting-started.md) (about 30 minutes the first time, mostly downloads). In short:
+
+```bash
+git clone https://github.com/ucla-data-science-center/pointcloud-infra.git
+cd pointcloud-infra
+pixi run setup
+```
+
+No AWS account or server access is needed. Everything in this episode runs in a container on your machine.
+
+## Staging: the same playbook, on your laptop
+
+pointcloud-infra has one playbook, `ansible/playbooks/site.yml`, and one role, `ansible/roles/potree/`. Production and your laptop run the same code. On your laptop, [Molecule](https://ansible.readthedocs.io/projects/molecule/) creates a Rocky Linux 10 container with Podman and points the playbook at it. We call that container **staging**.
+
+Running a playbook against a host to bring it to the described state is called a **converge**.
+
+```bash
+pixi run staging-up
+```
+
+The first run takes a few minutes. Ansible prints each task, and at the end a recap:
+
+```output
+PLAY RECAP *********************************************************************
+pointcloud-staging         : ok=35   changed=27   unreachable=0    failed=0  ...
+```
+
+Your exact numbers may differ. Read them as:
+
+- **ok**: the task ran and the host was already in the described state (nothing to do), *or* it was a task that only gathers information.
+- **changed**: the task had to change something to reach the described state.
+- **failed**: something went wrong. Ansible stops for that host.
+
+Open <https://localhost:8443/> and click through the browser's certificate warning (staging uses a self-signed certificate). You should see the same UCLA Library listing as the live site.
+
+::::::::::::::::::::::::::::::::::::: callout
+
+### What staging doesn't do
+
+The point clouds themselves won't load in staging: the S3 bucket only serves pages on `www.pointcloud.ucla.edu` (see the previous episode). Staging also skips the parts a container can't do (firewalld, SELinux, rebooting, the AWS agent). The repository lists these differences and checks them on a real server with an [acceptance checklist](https://github.com/ucla-data-science-center/pointcloud-infra/blob/main/docs/acceptance.md).
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
+## The second run
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Predict, then run
+
+Before running anything, write down how many tasks you expect to report `changed` if you run `pixi run staging-up` again, right now, with no edits. Then run it.
+
+:::::::::::::::::::::::::::::::::: solution
+
+You should see `changed=0`. Every task describes an end state ("this package is installed", "this file has this content", "this service is running"), and the container is already in that state, so there's nothing to change. This property is called **idempotence**: running the playbook once or ten times leaves the host in the same state.
+
+If you see a non-zero `changed`, look at which tasks reported it. That's a real finding worth reporting as an issue.
+
+::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
+Compare this with the Dataverse role in the [Ansible episode](ansible-idempotency.md): its individual modules are idempotent, but the playbook as a whole isn't safe to rerun. The pointcloud role is held to the stronger standard, and the tests check it on every change.
+
+## Breaking idempotence on purpose
+
+Here's a reasonable-looking request: *"When an operator logs in, show a message saying the server is managed by Ansible."* The text goes in `/etc/motd`.
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Attempt 1: the shell way
+
+Make a branch, then add this task to the end of `ansible/roles/potree/tasks/maintenance.yml`:
+
+```yaml
+- name: Tell operators this host is managed
+  ansible.builtin.shell: echo "Managed by Ansible. Changes made by hand will be overwritten." >> /etc/motd
+```
+
+Predict what the recap will say on the next two runs. Then run `pixi run staging-up` twice and look at the file:
+
+```bash
+podman exec pointcloud-staging cat /etc/motd
+```
+
+:::::::::::::::::::::::::::::::::: solution
+
+Both runs report `changed=1`, and the file grows by one line each run:
+
+```output
+Managed by Ansible. Changes made by hand will be overwritten.
+Managed by Ansible. Changes made by hand will be overwritten.
+```
+
+`shell` and `command` don't know what end state you want. They run every time and always report `changed`. Here `>>` appends, so the task doesn't describe a state at all; it describes an action.
+
+::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
+Molecule has a step that catches exactly this. On a host that's already converged, it runs the playbook once more and fails if any task reports `changed`:
+
+```bash
+cd ansible
+pixi run -- molecule idempotence
+```
+
+```output
+CRITICAL Idempotence test failed because of the following tasks:
+*  => potree : Tell operators this host is managed
+```
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Attempt 2: describe the state
+
+Rewrite the task so it describes the end state of `/etc/motd` instead of an action. Use `ansible-doc ansible.builtin.copy` to find the option that sets a file's contents directly from a string. Set the owner, group and mode too.
+
+Run `pixi run staging-up`, check `/etc/motd`, then run `molecule idempotence` again.
+
+:::::::::::::::::::::::::::::::::: solution
+
+```yaml
+- name: Tell operators this host is managed
+  ansible.builtin.copy:
+    dest: /etc/motd
+    content: "Managed by Ansible. Changes made by hand will be overwritten.\n"
+    owner: root
+    group: root
+    mode: "0644"
+```
+
+The first run reports `changed=1`, and the duplicated lines from attempt 1 are gone: `copy` makes the file contain exactly this text, whatever was there before. The idempotence step then passes:
+
+```output
+INFO     default ➜ idempotence: Executed: Successful
+```
+
+That's the habit to build: tell Ansible what should be true, not what to do. When you truly need `command` or `shell`, add `creates:`, `removes:` or `changed_when:` so the task can tell when there's nothing to do.
+
+::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
+## "No changes" is not "it works"
+
+A playbook can be perfectly idempotent and still configure a broken site: if the Apache configuration had a typo, every run would happily put the same typo back. So Molecule has a separate **verify** step that checks the result, not the playbook. In pointcloud-infra, `ansible/molecule/default/verify.yml` checks things a visitor would notice: the listing has the UCLA skin and real titles, the viewer's JavaScript is served, plain HTTP redirects to HTTPS, descriptions appear.
+
+```bash
+pixi run staging-verify
+```
+
+The full test runs every step on a fresh container: create, converge, idempotence, verify, destroy.
+
+```bash
+pixi run test
+```
+
+This is what CI runs on every pull request.
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Which step catches it?
+
+For each problem, say whether the **idempotence** step, the **verify** step, or neither would catch it.
+
+1. A task appends a line to a config file on every run.
+2. A template typo makes Apache serve the default test page instead of the listing.
+3. The S3 bucket policy changes and point clouds stop loading on the live site.
+
+:::::::::::::::::::::::::::::::::: solution
+
+1. Idempotence: the task reports `changed` on the second run.
+2. Verify: the playbook converges cleanly (and idempotently), but the listing check fails.
+3. Neither. Staging doesn't load S3 data, and the bucket isn't managed by this playbook. That's what the outside-in health check from the previous episode is for. Each kind of check covers different failures; none covers everything.
+
+::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
+When you're done, put the role back (`git checkout -- ansible/roles/potree/tasks/maintenance.yml`, or keep your attempt 2 on your branch) and stop staging with `pixi run staging-down`.
+
+::::::::::::::::::::::::::::::::::::: keypoints
+
+- A converge brings a host to the state the playbook describes; `ok` means already there, `changed` means Ansible had to act.
+- A second run with no edits should report `changed=0`. That's idempotence.
+- `shell` and `command` describe actions, not states; prefer modules like `copy`, or guard commands with `creates`, `removes` or `changed_when`.
+- Molecule's idempotence step checks the playbook; its verify step checks the result. You need both, and an outside-in check for what staging can't see.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
