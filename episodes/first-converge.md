@@ -14,9 +14,9 @@ exercises: 30
 
 ::::::::::::::::::::::::::::::::::::: objectives
 
-- Build a local copy of pointcloud.ucla.edu with Molecule and Podman.
-- Predict which tasks report `changed` on a first and a second run, and check the prediction.
+- Build a local copy of pointcloud.ucla.edu with Molecule and Podman, and predict which tasks report `changed` on a first and a second run.
 - Write a task that breaks idempotence, observe the failure, and fix it.
+- Write tasks from a written requirement with no starter code, and check the result on the host.
 - Distinguish Molecule's idempotence step from its verify step.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
@@ -94,20 +94,24 @@ Here's a reasonable-looking request: *"When an operator logs in, show a message 
 
 ### Attempt 1: the shell way
 
-Make a branch, then add this task to the end of `ansible/roles/potree/tasks/maintenance.yml`:
+Make a branch. In `ansible/roles/potree/tasks/maintenance.yml`, add a task named "Tell operators this host is managed" that uses `ansible.builtin.shell` to append the line `Managed by Ansible. Changes made by hand will be overwritten.` to `/etc/motd`. Write it yourself; `ansible-doc ansible.builtin.shell` shows the options.
 
-```yaml
-- name: Tell operators this host is managed
-  ansible.builtin.shell: echo "Managed by Ansible. Changes made by hand will be overwritten." >> /etc/motd
-```
-
-Predict what the recap will say on the next two runs. Then run `pixi run staging-up` twice and look at the file:
+Before you run it, write down what the recap will say on the next two runs. Then run `pixi run staging-up` twice and look at the file:
 
 ```bash
 podman exec pointcloud-staging cat /etc/motd
 ```
 
+Finally, write one or two sentences: was your prediction right, and what does the file tell you that the recap didn't?
+
 :::::::::::::::::::::::::::::::::: solution
+
+A natural way to write it:
+
+```yaml
+- name: Tell operators this host is managed
+  ansible.builtin.shell: echo "Managed by Ansible. Changes made by hand will be overwritten." >> /etc/motd
+```
 
 Both runs report `changed=1`, and the file grows by one line each run:
 
@@ -161,6 +165,43 @@ INFO     default ➜ idempotence: Executed: Successful
 ```
 
 That's the habit to build: tell Ansible what should be true, not what to do. When you truly need `command` or `shell`, add `creates:`, `removes:` or `changed_when:` so the task can tell when there's nothing to do.
+
+::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
+
+Write down, in your own words, why attempt 2 passes the idempotence step and attempt 1 doesn't. If you can't say it without looking back, reread the two recaps side by side.
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Now one with no hints
+
+Come back to this after a break, a few hours at least, with the earlier solutions closed. Here's a new requirement:
+
+> Every server must have the `tree` package installed. Every server must also have a file `/etc/pointcloud-release` containing the line `potree X`, where `X` is the Potree version the role installs (look in `defaults/main.yml` for the variable). The file is owned by root, mode 0644.
+
+Write it as tasks in `maintenance.yml`. Before running anything, write down your prediction for the first and second runs. Then run `pixi run staging-up` twice and `molecule idempotence`. Check the file on the container yourself; don't rely on the recap.
+
+:::::::::::::::::::::::::::::::::: solution
+
+```yaml
+- name: Troubleshooting tools are installed
+  ansible.builtin.dnf:
+    name: tree
+    state: present
+
+- name: Record which Potree release this host serves
+  ansible.builtin.copy:
+    dest: /etc/pointcloud-release
+    content: "potree {{ potree_version }}\n"
+    owner: root
+    group: root
+    mode: "0644"
+```
+
+First run: `changed=2`. Second run: `changed=0`, and `molecule idempotence` passes. The variable (`potree_version`) means the file follows the version if someone upgrades Potree, with no second edit. `cat /etc/pointcloud-release` on the container shows `potree 1.8.2`.
+
+If you used `shell: echo ... > /etc/pointcloud-release`, the task reports `changed` every run even though the file never changes; that's the attempt 1 mistake again.
 
 ::::::::::::::::::::::::::::::::::::::::::
 
