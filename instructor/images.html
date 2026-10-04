@@ -133,6 +133,7 @@
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 <hr>
 <li><a class="dropdown-item" href="reference.html">Reference: Glossary</a></li>
+<li><a class="dropdown-item" href="certification.html">Certification track: EX294</a></li>
           </ul>
 </li>
       </ul>
@@ -257,7 +258,7 @@
 <div class="accordion accordion-flush" id="accordionFlush3">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading3">
-        <a href="tooling-setup.html">2. Tooling Setup</a>
+        <a href="pointcloud-request.html">2. Follow One Point Cloud Request</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -269,7 +270,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="terraform-infrastructure.html">3. Terraform: The Infrastructure Layer</a>
+        <a href="first-converge.html">3. First Converge and Second Run</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -281,7 +282,7 @@
 <div class="accordion accordion-flush" id="accordionFlush5">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading5">
-        <a href="ansible-idempotency.html">4. Ansible: Configuration and Idempotency</a>
+        <a href="tooling-setup.html">4. Tooling Setup</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -293,7 +294,7 @@
 <div class="accordion accordion-flush" id="accordionFlush6">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading6">
-        <a href="dataverse-stack.html">5. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
+        <a href="terraform-infrastructure.html">5. Terraform: The Infrastructure Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -305,7 +306,7 @@
 <div class="accordion accordion-flush" id="accordionFlush7">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading7">
-        <a href="secrets-config.html">6. Secrets and Environment Configuration</a>
+        <a href="ansible-idempotency.html">6. Ansible: Configuration and Idempotency</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -317,7 +318,7 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="makefile-operations.html">7. The Makefile: Daily Operations</a>
+        <a href="dataverse-stack.html">7. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -329,7 +330,7 @@
 <div class="accordion accordion-flush" id="accordionFlush9">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading9">
-        <a href="testing-validation.html">8. Testing and Validation</a>
+        <a href="secrets-config.html">8. Secrets and Environment Configuration</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -341,7 +342,7 @@
 <div class="accordion accordion-flush" id="accordionFlush10">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading10">
-        <a href="using-ai.html">9. Using AI Tools in Infrastructure Work</a>
+        <a href="makefile-operations.html">9. The Makefile: Daily Operations</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -353,7 +354,31 @@
 <div class="accordion accordion-flush" id="accordionFlush11">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading11">
-        <a href="migration-arc.html">10. The Migration Arc: 5.14 to 6.8</a>
+        <a href="testing-validation.html">10. Testing and Validation</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush12">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading12">
+        <a href="using-ai.html">11. Using AI Tools in Infrastructure Work</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush13">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading13">
+        <a href="migration-arc.html">12. The Migration Arc: 5.14 to 6.8</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -407,6 +432,7 @@
                     <ul>
 <hr>
 <li><a class="dropdown-item" href="reference.html">Reference: Glossary</a></li>
+<li><a class="dropdown-item" href="certification.html">Certification track: EX294</a></li>
                     </ul>
 </div>
                 </div>
@@ -441,7 +467,12 @@
 <h3 id="introduction-figure-1">Figure 1</h3>
 <p aria-hidden="true">Image 1 of 1: ‘Architecture diagram: a browser/user on the internet sends a request into an AWS box containing an EC2 instance running Apache httpd (reverse proxy and SSL termination), which forwards to Payara running the Dataverse WAR file, which talks to Solr for search. Payara also connects out to RDS PostgreSQL for metadata and S3 for file storage, both outside the EC2 instance.’</p>
 <figure><img src="../fig/stack-architecture.svg" alt="Architecture diagram: a browser/user on the internet sends a request into an AWS box containing an EC2 instance running Apache httpd (reverse proxy and SSL termination), which forwards to Payara running the Dataverse WAR file, which talks to Solr for search. Payara also connects out to RDS PostgreSQL for metadata and S3 for file storage, both outside the EC2 instance." class="figure mx-auto d-block"><div class="figcaption">The Dataverse stack</div>
-</figure><hr></section><section id="tooling-setup"><h2 class="section-heading"><a href="tooling-setup.html">Tooling Setup</a></h2>
+</figure><hr></section><section id="pointcloud-request"><h2 class="section-heading"><a href="pointcloud-request.html">Follow One Point Cloud Request</a></h2>
+<hr class="half-width">
+<h3 id="pointcloud-request-figure-1">Figure 1</h3>
+<p aria-hidden="true">Image 1 of 1: ‘Request flow: a browser asks Apache on the EC2 server for a collection page; Apache returns the HTML plus Potree's JavaScript from the same server; the Potree viewer running in the browser then requests the point cloud data directly from an S3 bucket, sending the page's address in the Referer header; S3 returns the data only if that Referer is the www site.’</p>
+<figure><img src="../fig/pointcloud-request.svg" alt="Request flow: a browser asks Apache on the EC2 server for a collection page; Apache returns the HTML plus Potree's JavaScript from the same server; the Potree viewer running in the browser then requests the point cloud data directly from an S3 bucket, sending the page's address in the Referer header; S3 returns the data only if that Referer is the www site." class="figure mx-auto d-block"></figure><hr></section><section id="first-converge"><h2 class="section-heading"><a href="first-converge.html">First Converge and Second Run</a></h2>
+<hr class="half-width"></section><section id="tooling-setup"><h2 class="section-heading"><a href="tooling-setup.html">Tooling Setup</a></h2>
 <hr class="half-width"></section><section id="terraform-infrastructure"><h2 class="section-heading"><a href="terraform-infrastructure.html">Terraform: The Infrastructure Layer</a></h2>
 <hr class="half-width">
 <h3 id="terraform-infrastructure-figure-1">Figure 1</h3>

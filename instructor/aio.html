@@ -133,6 +133,7 @@
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 <hr>
 <li><a class="dropdown-item" href="reference.html">Reference: Glossary</a></li>
+<li><a class="dropdown-item" href="certification.html">Certification track: EX294</a></li>
           </ul>
 </li>
       </ul>
@@ -257,7 +258,7 @@
 <div class="accordion accordion-flush" id="accordionFlush3">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading3">
-        <a href="tooling-setup.html">2. Tooling Setup</a>
+        <a href="pointcloud-request.html">2. Follow One Point Cloud Request</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -269,7 +270,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="terraform-infrastructure.html">3. Terraform: The Infrastructure Layer</a>
+        <a href="first-converge.html">3. First Converge and Second Run</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -281,7 +282,7 @@
 <div class="accordion accordion-flush" id="accordionFlush5">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading5">
-        <a href="ansible-idempotency.html">4. Ansible: Configuration and Idempotency</a>
+        <a href="tooling-setup.html">4. Tooling Setup</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -293,7 +294,7 @@
 <div class="accordion accordion-flush" id="accordionFlush6">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading6">
-        <a href="dataverse-stack.html">5. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
+        <a href="terraform-infrastructure.html">5. Terraform: The Infrastructure Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -305,7 +306,7 @@
 <div class="accordion accordion-flush" id="accordionFlush7">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading7">
-        <a href="secrets-config.html">6. Secrets and Environment Configuration</a>
+        <a href="ansible-idempotency.html">6. Ansible: Configuration and Idempotency</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -317,7 +318,7 @@
 <div class="accordion accordion-flush" id="accordionFlush8">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading8">
-        <a href="makefile-operations.html">7. The Makefile: Daily Operations</a>
+        <a href="dataverse-stack.html">7. The Dataverse Stack: Payara, Solr, and the Data Layer</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -329,7 +330,7 @@
 <div class="accordion accordion-flush" id="accordionFlush9">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading9">
-        <a href="testing-validation.html">8. Testing and Validation</a>
+        <a href="secrets-config.html">8. Secrets and Environment Configuration</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -341,7 +342,7 @@
 <div class="accordion accordion-flush" id="accordionFlush10">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading10">
-        <a href="using-ai.html">9. Using AI Tools in Infrastructure Work</a>
+        <a href="makefile-operations.html">9. The Makefile: Daily Operations</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -353,7 +354,31 @@
 <div class="accordion accordion-flush" id="accordionFlush11">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading11">
-        <a href="migration-arc.html">10. The Migration Arc: 5.14 to 6.8</a>
+        <a href="testing-validation.html">10. Testing and Validation</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush12">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading12">
+        <a href="using-ai.html">11. Using AI Tools in Infrastructure Work</a>
+    </div>
+<!--/div.accordion-header-->
+
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush13">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading13">
+        <a href="migration-arc.html">12. The Migration Arc: 5.14 to 6.8</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -407,6 +432,7 @@
                     <ul>
 <hr>
 <li><a class="dropdown-item" href="reference.html">Reference: Glossary</a></li>
+<li><a class="dropdown-item" href="certification.html">Certification track: EX294</a></li>
                     </ul>
 </div>
                 </div>
@@ -438,7 +464,7 @@
         
 <section id="aio-introduction"><p>Content from <a href="introduction.html">Introduction: Why We Built This Way</a></p>
 <hr>
-<p>Last updated on 2026-09-21 |
+<p>Last updated on 2026-10-04 |
 
         <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/introduction.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 20 minutes</p>
@@ -493,6 +519,23 @@ staff, DataSquad students, and anyone who will operate or hand off this
 system. It assumes comfort with the command line and some exposure to
 cloud services or configuration management, but not infrastructure
 expertise.</p>
+<div id="two-worked-examples" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="two-worked-examples" class="callout-inner">
+<h3 class="callout-title">Two worked examples</h3>
+<div class="callout-content">
+<p>This lesson uses two real systems built the same way. The next two
+episodes use <strong>pointcloud.ucla.edu</strong>, a small static site
+whose infrastructure is public and runs on your laptop, to learn the
+tools hands-on. The rest of the lesson applies them to
+<strong>Dataverse</strong>, where the stakes and the moving parts are
+much bigger.</p>
+</div>
+</div>
+</div>
 </section><section><h2 class="section-heading" id="the-stack-at-a-glance">The stack at a glance<a class="anchor" aria-label="anchor" href="#the-stack-at-a-glance"></a>
 </h2>
 <hr class="half-width">
@@ -706,6 +749,717 @@ runs on it.</li>
 and rebuildable.</li>
 <li>Many decisions in this codebase were shaped by the 5.14 to 6.8
 migration, and that context appears throughout the lesson.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-pointcloud-request"><p>Content from <a href="pointcloud-request.html">Follow One Point Cloud Request</a></p>
+<hr>
+<p>Last updated on 2026-10-04 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/pointcloud-request.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 35 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>What actually happens between typing a URL and seeing a 3D
+scan?</li>
+<li>Which part of the system is responsible for each step?</li>
+<li>When a scan doesn’t load, how do you tell where it broke?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Trace a point cloud request from the browser through Apache to
+S3.</li>
+<li>Use <code>curl</code> to check each step on its own and read the
+status codes.</li>
+<li>Locate where a failure happens using evidence rather than
+guesses.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="a-smaller-system-first">A smaller system first<a class="anchor" aria-label="anchor" href="#a-smaller-system-first"></a>
+</h2>
+<hr class="half-width">
+<p>The second half of this lesson covers Dataverse, which runs an
+application server, a search engine, a database and object storage.
+That’s a lot to hold in your head while also learning what Ansible and
+Terraform do. So we start with a much smaller service built the same
+way: <a href="https://www.pointcloud.ucla.edu/" class="external-link">pointcloud.ucla.edu</a>,
+the UCLA Library Data Science Center’s viewer for 3D scans.</p>
+<p>Everything about it is in a public repository, <a href="https://github.com/ucla-data-science-center/pointcloud-infra" class="external-link">pointcloud-infra</a>:
+the Terraform that builds the server, the Ansible role that configures
+it, and the collection pages it serves. You can read all of it, and in
+the next episode you’ll run it on your own laptop.</p>
+<p>Before writing any automation, you need a picture of what the system
+<em>does</em>. This episode builds that picture by following one
+request. You only need a terminal with <code>curl</code>.</p>
+</section><section><h2 class="section-heading" id="the-pieces">The pieces<a class="anchor" aria-label="anchor" href="#the-pieces"></a>
+</h2>
+<hr class="half-width">
+<figure><img src="../fig/pointcloud-request.svg" alt="Request flow: a browser asks Apache on the EC2 server for a collection page; Apache returns the HTML plus Potree's JavaScript from the same server; the Potree viewer running in the browser then requests the point cloud data directly from an S3 bucket, sending the page's address in the Referer header; S3 returns the data only if that Referer is the www site." class="figure mx-auto d-block"></figure><ol style="list-style-type: decimal">
+<li>
+<strong>Your browser</strong> asks
+<code>https://www.pointcloud.ucla.edu/</code> for a collection
+page.</li>
+<li>
+<strong>Apache</strong>, on one EC2 server, returns the page and the
+Potree viewer’s JavaScript (<code>/build/potree/potree.js</code>).</li>
+<li>
+<strong>The Potree viewer</strong>, now running <em>in your
+browser</em>, requests the point cloud data straight from <strong>an S3
+bucket</strong>. The server never touches the 3D data.</li>
+<li>
+<strong>S3</strong> checks the request’s <code>Referer</code> header
+(the page it came from) and serves the data only to pages on
+<code>www.pointcloud.ucla.edu</code>. This stops other sites from
+embedding the scans and running up the bandwidth bill.</li>
+</ol>
+<p>Three systems, three places to fail.</p>
+</section><section><h2 class="section-heading" id="step-1-the-page">Step 1: the page<a class="anchor" aria-label="anchor" href="#step-1-the-page"></a>
+</h2>
+<hr class="half-width">
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-o</span> /dev/null <span class="at">-w</span> <span class="st">"%{http_code}\n"</span> https://www.pointcloud.ucla.edu/Iceland/Torfljar.html</span></code></pre>
+</div>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code><span><span class="fl">200</span></span></code></pre>
+</div>
+<p><code>200</code> means Apache found the page and returned it.
+<code>-o /dev/null</code> throws the body away and <code>-w</code>
+prints just the status code.</p>
+</section><section><h2 class="section-heading" id="step-2-the-viewer-code">Step 2: the viewer code<a class="anchor" aria-label="anchor" href="#step-2-the-viewer-code"></a>
+</h2>
+<hr class="half-width">
+<p>Collection pages load Potree with relative paths. Look for them:</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="ex">curl</span> <span class="at">-s</span> https://www.pointcloud.ucla.edu/Iceland/Torfljar.html <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-o</span> <span class="st">'\.\./build/[^"]*'</span></span></code></pre>
+</div>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code><span><span class="va">..</span><span class="op">/</span><span class="va">build</span><span class="op">/</span><span class="va">potree</span><span class="op">/</span><span class="va">potree.css</span></span>
+<span><span class="va">..</span><span class="op">/</span><span class="va">build</span><span class="op">/</span><span class="va">potree</span><span class="op">/</span><span class="va">potree.js</span></span></code></pre>
+</div>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-o</span> /dev/null <span class="at">-w</span> <span class="st">"%{http_code}\n"</span> https://www.pointcloud.ucla.edu/build/potree/potree.js</span></code></pre>
+</div>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code><span><span class="fl">200</span></span></code></pre>
+</div>
+</section><section><h2 class="section-heading" id="step-3-the-data">Step 3: the data<a class="anchor" aria-label="anchor" href="#step-3-the-data"></a>
+</h2>
+<hr class="half-width">
+<p>Find where this page gets its point cloud:</p>
+<div class="codewrapper sourceCode" id="cb7">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="ex">curl</span> <span class="at">-s</span> https://www.pointcloud.ucla.edu/Iceland/Torfljar.html <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-o</span> <span class="st">'loadPointCloud("[^"]*'</span></span></code></pre>
+</div>
+<p>That prints a URL in an S3 bucket ending in
+<code>metadata.json</code>. Save it in a variable, then request it the
+way <code>curl</code> does by default, with no <code>Referer</code>:</p>
+<div class="codewrapper sourceCode" id="cb8">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1" aria-label="code-block-8-1"></a><span class="va">DATA</span><span class="op">=</span><span class="va">$(</span><span class="ex">curl</span> <span class="at">-s</span> https://www.pointcloud.ucla.edu/Iceland/Torfljar.html <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-o</span> <span class="st">'loadPointCloud("[^"]*'</span> <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-d</span><span class="st">'"'</span> <span class="at">-f2</span><span class="va">)</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1" aria-label="code-block-8-2"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-o</span> /dev/null <span class="at">-w</span> <span class="st">"%{http_code}\n"</span> <span class="st">"</span><span class="va">$DATA</span><span class="st">"</span></span></code></pre>
+</div>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code><span><span class="fl">403</span></span></code></pre>
+</div>
+<div id="predict-then-check" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="predict-then-check" class="callout-inner">
+<h3 class="callout-title">Predict, then check</h3>
+<div class="callout-content">
+<p>S3 refused. Before running anything else, write down:</p>
+<ol style="list-style-type: decimal">
+<li>What do you think a browser sends that <code>curl</code>
+didn’t?</li>
+<li>What status code will you get if you send it?</li>
+</ol>
+<p>Then try it:</p>
+<div class="codewrapper sourceCode" id="cb10">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1" aria-label="code-block-10-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-o</span> /dev/null <span class="at">-w</span> <span class="st">"%{http_code}\n"</span> <span class="dt">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1" aria-label="code-block-10-2"></a>  <span class="at">-H</span> <span class="st">"Referer: https://www.pointcloud.ucla.edu/Iceland/Torfljar.html"</span> <span class="st">"</span><span class="va">$DATA</span><span class="st">"</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div class="accordion-body">
+<p>A browser sends a <code>Referer</code> header naming the page that
+made the request. With it, S3 returns <code>200</code>. The bucket
+policy allows reads only when the <code>Referer</code> matches
+<code>https://www.pointcloud.ucla.edu/*</code>. Without it, you get
+<code>403 Forbidden</code>, which is exactly what a viewer page on the
+wrong address would see.</p>
+</div>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="a-real-failure-the-missing-www">A real failure: the missing <code>www</code>
+<a class="anchor" aria-label="anchor" href="#a-real-failure-the-missing-www"></a>
+</h2>
+<hr class="half-width">
+<p>The site answers to two names, <code>www.pointcloud.ucla.edu</code>
+and <code>pointcloud.ucla.edu</code>. Until October 2026, a visitor
+arriving at <code>https://pointcloud.ucla.edu/...</code> got the page
+with a <code>200</code>, the viewer loaded, and then the scan never
+appeared. Every check that looked only at the page said the site was
+fine.</p>
+<div id="where-did-it-break" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="where-did-it-break" class="callout-inner">
+<h3 class="callout-title">Where did it break?</h3>
+<div class="callout-content">
+<p>Using only what you’ve seen in this episode, explain why the scan
+failed for visitors on <code>https://pointcloud.ucla.edu/</code> (no
+<code>www</code>). Which of the three systems refused, and why?</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div class="accordion-body">
+<p>The page came from <code>pointcloud.ucla.edu</code>, so the viewer’s
+request to S3 carried
+<code>Referer: https://pointcloud.ucla.edu/...</code>. The bucket policy
+only allows <code>https://www.pointcloud.ucla.edu/*</code>, so S3
+returned <code>403</code>. Apache and the page were fine. The failure
+was in step 3, caused by a decision made in step 1 (serving the page on
+the bare name). Modern browsers make this common, because they try
+<code>https://</code> first when you type a bare name.</p>
+</div>
+</div>
+</div>
+</div>
+<p>The fix was to make Apache redirect every non-<code>www</code>
+address to <code>www</code>. Check it:</p>
+<div class="codewrapper sourceCode" id="cb11">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1" aria-label="code-block-11-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-o</span> /dev/null <span class="at">-w</span> <span class="st">"%{http_code} %{redirect_url}\n"</span> https://pointcloud.ucla.edu/Iceland/Torfljar.html</span></code></pre>
+</div>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code>301 https://www.pointcloud.ucla.edu/Iceland/Torfljar.html</code></pre>
+</div>
+<p>That redirect now lives in the Ansible role
+(<code>potree_canonical_redirect</code>), so a rebuilt server can’t lose
+it.</p>
+<div id="the-page-loads-is-not-the-site-works" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="the-page-loads-is-not-the-site-works" class="callout-inner">
+<h3 class="callout-title">“The page loads” is not “the site works”</h3>
+<div class="callout-content">
+<p>The repository’s daily health check,
+<code>scripts/site-check.sh</code>, tests all three steps: the page
+answers, the bare name redirects to the exact <code>www</code> address,
+and a real collection’s point cloud data loads with a browser-style
+<code>Referer</code>. Its first version only checked that both names
+returned <code>200</code> or <code>301</code>, and it would have passed
+during the outage above. When you write a check, ask what failure it
+would actually catch.</p>
+</div>
+</div>
+</div>
+<div id="map-failures-to-places" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="map-failures-to-places" class="callout-inner">
+<h3 class="callout-title">Map failures to places</h3>
+<div class="callout-content">
+<p>For each symptom, say which step (page, viewer code, or data) you’d
+check first, and which <code>curl</code> command from this episode you’d
+run.</p>
+<ol style="list-style-type: decimal">
+<li>The browser shows “This site can’t be reached.”</li>
+<li>The page loads but the viewer area is blank and the browser console
+shows <code>potree.js</code> 404.</li>
+<li>The viewer and its controls appear, but no points ever load.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="accordionSolution3" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
+  <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
+</button>
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div class="accordion-body">
+<ol style="list-style-type: decimal">
+<li>Step 1, the page:
+<code>curl -s -o /dev/null -w "%{http_code}\n" https://www.pointcloud.ucla.edu/</code>.
+A connection error rather than a status code means the server or network
+is down, or the certificate is broken.</li>
+<li>Step 2, the viewer code: request
+<code>/build/potree/potree.js</code> directly. A 404 means Potree isn’t
+installed where the pages expect it.</li>
+<li>Step 3, the data: extract the <code>loadPointCloud</code> URL and
+request it with the page as <code>Referer</code>. A 403 points to the
+bucket policy or the address the page was served from; a 404 means the
+data path in the page is wrong.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>A point cloud page involves three systems: Apache serves the page
+and viewer code, the viewer runs in the browser, and S3 serves the data
+directly to the browser.</li>
+<li>
+<code>curl</code> with <code>-o /dev/null -w "%{http_code}"</code>
+checks one step at a time; adding <code>-H "Referer: ..."</code>
+reproduces what a browser sends.</li>
+<li>Find where a failure happens from evidence first; the fix often
+belongs somewhere other than where the symptom appears.</li>
+<li>A health check is only as good as the failures it would catch.</li>
+</ul>
+</div>
+</div>
+</div>
+<!--
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use.
+ -->
+</section></section><section id="aio-first-converge"><p>Content from <a href="first-converge.html">First Converge and Second Run</a></p>
+<hr>
+<p>Last updated on 2026-10-04 |
+
+        <a href="https://github.com/jt14den/terraform-aws-infrastructure/edit/main/episodes/first-converge.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p>Estimated time: <i aria-hidden="true" data-feather="clock"></i> 50 minutes</p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right" data-expand="Expand All Solutions " data-collapse="Collapse All Solutions "> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>What does it mean to run a playbook against a server, and then run
+it again?</li>
+<li>What should the second run report, and why?</li>
+<li>How is “the playbook made no changes” different from “the site
+works”?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Build a local copy of pointcloud.ucla.edu with Molecule and
+Podman.</li>
+<li>Predict which tasks report <code>changed</code> on a first and a
+second run, and check the prediction.</li>
+<li>Write a task that breaks idempotence, observe the failure, and fix
+it.</li>
+<li>Distinguish Molecule’s idempotence step from its verify step.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="before-you-start">Before you start<a class="anchor" aria-label="anchor" href="#before-you-start"></a>
+</h2>
+<hr class="half-width">
+<p>You need the pointcloud-infra repository set up on your laptop.
+Follow its <a href="https://github.com/ucla-data-science-center/pointcloud-infra/blob/main/docs/getting-started.md" class="external-link">getting
+started guide</a> (about 30 minutes the first time, mostly downloads).
+In short:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1" aria-label="code-block-1-1"></a><span class="fu">git</span> clone https://github.com/ucla-data-science-center/pointcloud-infra.git</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1" aria-label="code-block-1-2"></a><span class="bu">cd</span> pointcloud-infra</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1" aria-label="code-block-1-3"></a><span class="ex">pixi</span> run setup</span></code></pre>
+</div>
+<p>No AWS account or server access is needed. Everything in this episode
+runs in a container on your machine.</p>
+</section><section><h2 class="section-heading" id="staging-the-same-playbook-on-your-laptop">Staging: the same playbook, on your laptop<a class="anchor" aria-label="anchor" href="#staging-the-same-playbook-on-your-laptop"></a>
+</h2>
+<hr class="half-width">
+<p>pointcloud-infra has one playbook,
+<code>ansible/playbooks/site.yml</code>, and one role,
+<code>ansible/roles/potree/</code>. Production and your laptop run the
+same code. On your laptop, <a href="https://ansible.readthedocs.io/projects/molecule/" class="external-link">Molecule</a>
+creates a Rocky Linux 10 container with Podman and points the playbook
+at it. We call that container <strong>staging</strong>.</p>
+<p>Running a playbook against a host to bring it to the described state
+is called a <strong>converge</strong>.</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="ex">pixi</span> run staging-up</span></code></pre>
+</div>
+<p>The first run takes a few minutes. Ansible prints each task, and at
+the end a recap:</p>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code>PLAY RECAP *********************************************************************
+pointcloud-staging         : ok=35   changed=27   unreachable=0    failed=0  ...</code></pre>
+</div>
+<p>Your exact numbers may differ. Read them as:</p>
+<ul>
+<li>
+<strong>ok</strong>: the task ran and the host was already in the
+described state (nothing to do), <em>or</em> it was a task that only
+gathers information.</li>
+<li>
+<strong>changed</strong>: the task had to change something to reach
+the described state.</li>
+<li>
+<strong>failed</strong>: something went wrong. Ansible stops for
+that host.</li>
+</ul>
+<p>Open <a href="https://localhost:8443/" class="external-link uri">https://localhost:8443/</a> and click through the browser’s
+certificate warning (staging uses a self-signed certificate). You should
+see the same UCLA Library listing as the live site.</p>
+<div id="what-staging-doesnt-do" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="what-staging-doesnt-do" class="callout-inner">
+<h3 class="callout-title">What staging doesn’t do</h3>
+<div class="callout-content">
+<p>The point clouds themselves won’t load in staging: the S3 bucket only
+serves pages on <code>www.pointcloud.ucla.edu</code> (see the previous
+episode). Staging also skips the parts a container can’t do (firewalld,
+SELinux, rebooting, the AWS agent). The repository lists these
+differences and checks them on a real server with an <a href="https://github.com/ucla-data-science-center/pointcloud-infra/blob/main/docs/acceptance.md" class="external-link">acceptance
+checklist</a>.</p>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="the-second-run">The second run<a class="anchor" aria-label="anchor" href="#the-second-run"></a>
+</h2>
+<hr class="half-width">
+<div id="predict-then-run" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="predict-then-run" class="callout-inner">
+<h3 class="callout-title">Predict, then run</h3>
+<div class="callout-content">
+<p>Before running anything, write down how many tasks you expect to
+report <code>changed</code> if you run <code>pixi run staging-up</code>
+again, right now, with no edits. Then run it.</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div class="accordion-body">
+<p>You should see <code>changed=0</code>. Every task describes an end
+state (“this package is installed”, “this file has this content”, “this
+service is running”), and the container is already in that state, so
+there’s nothing to change. This property is called
+<strong>idempotence</strong>: running the playbook once or ten times
+leaves the host in the same state.</p>
+<p>If you see a non-zero <code>changed</code>, look at which tasks
+reported it. That’s a real finding worth reporting as an issue.</p>
+</div>
+</div>
+</div>
+</div>
+<p>Compare this with the Dataverse role in the <a href="ansible-idempotency.html">Ansible episode</a>: its individual
+modules are idempotent, but the playbook as a whole isn’t safe to rerun.
+The pointcloud role is held to the stronger standard, and the tests
+check it on every change.</p>
+</section><section><h2 class="section-heading" id="breaking-idempotence-on-purpose">Breaking idempotence on purpose<a class="anchor" aria-label="anchor" href="#breaking-idempotence-on-purpose"></a>
+</h2>
+<hr class="half-width">
+<p>Here’s a reasonable-looking request: <em>“When an operator logs in,
+show a message saying the server is managed by Ansible.”</em> The text
+goes in <code>/etc/motd</code>.</p>
+<div id="attempt-1-the-shell-way" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="attempt-1-the-shell-way" class="callout-inner">
+<h3 class="callout-title">Attempt 1: the shell way</h3>
+<div class="callout-content">
+<p>Make a branch, then add this task to the end of
+<code>ansible/roles/potree/tasks/maintenance.yml</code>:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Tell operators this host is managed</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="at">  </span><span class="fu">ansible.builtin.shell</span><span class="kw">:</span><span class="at"> echo "Managed by Ansible. Changes made by hand will be overwritten." &gt;&gt; /etc/motd</span></span></code></pre>
+</div>
+<p>Predict what the recap will say on the next two runs. Then run
+<code>pixi run staging-up</code> twice and look at the file:</p>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="ex">podman</span> exec pointcloud-staging cat /etc/motd</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div class="accordion-body">
+<p>Both runs report <code>changed=1</code>, and the file grows by one
+line each run:</p>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code>Managed by Ansible. Changes made by hand will be overwritten.
+Managed by Ansible. Changes made by hand will be overwritten.</code></pre>
+</div>
+<p><code>shell</code> and <code>command</code> don’t know what end state
+you want. They run every time and always report <code>changed</code>.
+Here <code>&gt;&gt;</code> appends, so the task doesn’t describe a state
+at all; it describes an action.</p>
+</div>
+</div>
+</div>
+</div>
+<p>Molecule has a step that catches exactly this. On a host that’s
+already converged, it runs the playbook once more and fails if any task
+reports <code>changed</code>:</p>
+<div class="codewrapper sourceCode" id="cb7">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="bu">cd</span> ansible</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1" aria-label="code-block-7-2"></a><span class="ex">pixi</span> run <span class="at">--</span> molecule idempotence</span></code></pre>
+</div>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code>CRITICAL Idempotence test failed because of the following tasks:
+*  =&gt; potree : Tell operators this host is managed</code></pre>
+</div>
+<div id="attempt-2-describe-the-state" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="attempt-2-describe-the-state" class="callout-inner">
+<h3 class="callout-title">Attempt 2: describe the state</h3>
+<div class="callout-content">
+<p>Rewrite the task so it describes the end state of
+<code>/etc/motd</code> instead of an action. Use
+<code>ansible-doc ansible.builtin.copy</code> to find the option that
+sets a file’s contents directly from a string. Set the owner, group and
+mode too.</p>
+<p>Run <code>pixi run staging-up</code>, check <code>/etc/motd</code>,
+then run <code>molecule idempotence</code> again.</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution3" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
+  <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
+</button>
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div class="accordion-body">
+<div class="codewrapper sourceCode" id="cb9">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" tabindex="-1" aria-label="code-block-9-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Tell operators this host is managed</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1" aria-label="code-block-9-2"></a><span class="at">  </span><span class="fu">ansible.builtin.copy</span><span class="kw">:</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1" aria-label="code-block-9-3"></a><span class="at">    </span><span class="fu">dest</span><span class="kw">:</span><span class="at"> /etc/motd</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1" aria-label="code-block-9-4"></a><span class="at">    </span><span class="fu">content</span><span class="kw">:</span><span class="at"> </span><span class="st">"Managed by Ansible. Changes made by hand will be overwritten.</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1" aria-label="code-block-9-5"></a><span class="at">    </span><span class="fu">owner</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1" aria-label="code-block-9-6"></a><span class="at">    </span><span class="fu">group</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1" aria-label="code-block-9-7"></a><span class="at">    </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> </span><span class="st">"0644"</span></span></code></pre>
+</div>
+<p>The first run reports <code>changed=1</code>, and the duplicated
+lines from attempt 1 are gone: <code>copy</code> makes the file contain
+exactly this text, whatever was there before. The idempotence step then
+passes:</p>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code>INFO     default ➜ idempotence: Executed: Successful</code></pre>
+</div>
+<p>That’s the habit to build: tell Ansible what should be true, not what
+to do. When you truly need <code>command</code> or <code>shell</code>,
+add <code>creates:</code>, <code>removes:</code> or
+<code>changed_when:</code> so the task can tell when there’s nothing to
+do.</p>
+</div>
+</div>
+</div>
+</div>
+</section><section><h2 class="section-heading" id="no-changes-is-not-it-works">“No changes” is not “it works”<a class="anchor" aria-label="anchor" href="#no-changes-is-not-it-works"></a>
+</h2>
+<hr class="half-width">
+<p>A playbook can be perfectly idempotent and still configure a broken
+site: if the Apache configuration had a typo, every run would happily
+put the same typo back. So Molecule has a separate
+<strong>verify</strong> step that checks the result, not the playbook.
+In pointcloud-infra, <code>ansible/molecule/default/verify.yml</code>
+checks things a visitor would notice: the listing has the UCLA skin and
+real titles, the viewer’s JavaScript is served, plain HTTP redirects to
+HTTPS, descriptions appear.</p>
+<div class="codewrapper sourceCode" id="cb11">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1" aria-label="code-block-11-1"></a><span class="ex">pixi</span> run staging-verify</span></code></pre>
+</div>
+<p>The full test runs every step on a fresh container: create, converge,
+idempotence, verify, destroy.</p>
+<div class="codewrapper sourceCode" id="cb12">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1" aria-label="code-block-12-1"></a><span class="ex">pixi</span> run test</span></code></pre>
+</div>
+<p>This is what CI runs on every pull request.</p>
+<div id="which-step-catches-it" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="which-step-catches-it" class="callout-inner">
+<h3 class="callout-title">Which step catches it?</h3>
+<div class="callout-content">
+<p>For each problem, say whether the <strong>idempotence</strong> step,
+the <strong>verify</strong> step, or neither would catch it.</p>
+<ol style="list-style-type: decimal">
+<li>A task appends a line to a config file on every run.</li>
+<li>A template typo makes Apache serve the default test page instead of
+the listing.</li>
+<li>The S3 bucket policy changes and point clouds stop loading on the
+live site.</li>
+</ol>
+</div>
+</div>
+</div>
+<div id="accordionSolution4" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
+  <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
+</button>
+<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
+<div class="accordion-body">
+<ol style="list-style-type: decimal">
+<li>Idempotence: the task reports <code>changed</code> on the second
+run.</li>
+<li>Verify: the playbook converges cleanly (and idempotently), but the
+listing check fails.</li>
+<li>Neither. Staging doesn’t load S3 data, and the bucket isn’t managed
+by this playbook. That’s what the outside-in health check from the
+previous episode is for. Each kind of check covers different failures;
+none covers everything.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<p>When you’re done, put the role back
+(<code>git checkout -- ansible/roles/potree/tasks/maintenance.yml</code>,
+or keep your attempt 2 on your branch) and stop staging with
+<code>pixi run staging-down</code>.</p>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
+<ul>
+<li>A converge brings a host to the state the playbook describes;
+<code>ok</code> means already there, <code>changed</code> means Ansible
+had to act.</li>
+<li>A second run with no edits should report <code>changed=0</code>.
+That’s idempotence.</li>
+<li>
+<code>shell</code> and <code>command</code> describe actions, not
+states; prefer modules like <code>copy</code>, or guard commands with
+<code>creates</code>, <code>removes</code> or
+<code>changed_when</code>.</li>
+<li>Molecule’s idempotence step checks the playbook; its verify step
+checks the result. You need both, and an outside-in check for what
+staging can’t see.</li>
 </ul>
 </div>
 </div>
@@ -1298,7 +2052,7 @@ what CIDR range?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>The exact output will depend on current state. Things to look
 for:</p>
@@ -1344,7 +2098,7 @@ to the specific piece of config that proves your answer.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>No. Each environment’s <code>main.tf</code> points at a different S3
@@ -2101,7 +2855,7 @@ is usable again?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>RDS gets a new file record (name, checksum, storage identifier,
@@ -2142,7 +2896,7 @@ proxy), what would break, and what’s the planned fix?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
@@ -2818,7 +3572,7 @@ does that tell you about the Elastic IP’s current state (Episode
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
@@ -3983,7 +4737,7 @@ can start:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>Phase 3 requires Phase 2 complete: Tim’s env must rebuild cleanly
@@ -4021,7 +4775,7 @@ the original roadmap?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>No. Only <code>02-02</code> (FAKE DOI + <code>test_cert</code> +
