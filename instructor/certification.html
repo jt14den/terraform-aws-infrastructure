@@ -459,10 +459,11 @@ without one, add <code>--ee false</code>:</p>
 <pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1" aria-label="code-block-2-1"></a><span class="ex">ansible-navigator</span> run site.yml <span class="at">-i</span> inventory <span class="at">--ee</span> false <span class="at">-m</span> stdout</span></code></pre>
 </div>
 </section><section><h2 class="section-heading" id="objective-map">Objective map<a class="anchor" aria-label="anchor" href="#objective-map"></a></h2>
-<hr class="half-width"><p>Objectives are grouped as on Red Hat’s EX294 page (checked
-2026-10-04). <strong>Where</strong> shows where you can see or practice
-each one in this lesson or in pointcloud-infra. <strong>Gap</strong>
-means you need a separate drill.</p>
+<hr class="half-width"><p>The <strong>Drill</strong> notes below refer to the numbered drills
+further down this page. Objectives are grouped as on Red Hat’s EX294
+page (checked 2026-10-04). <strong>Where</strong> shows where you can
+see or practice each one in this lesson or in pointcloud-infra.
+<strong>Gap</strong> means you need a separate drill.</p>
 <table class="table"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><thead><tr><th>Objective</th>
 <th>Where</th>
 <th>Gap and drill</th>
@@ -551,14 +552,526 @@ timers; firewalld; <code>ini_file</code>, <code>copy</code>,
 <td><code>templates/pointcloud.conf.j2</code></td>
 <td>Vault: the project has no secrets. Drill: encrypt a dummy variable
 file, use it in a play, show the plaintext never appears in output</td>
-</tr></tbody></table></section><section><h2 class="section-heading" id="practice-environments">Practice environments<a class="anchor" aria-label="anchor" href="#practice-environments"></a></h2>
+</tr></tbody></table></section><section><h2 class="section-heading" id="drills">Drills<a class="anchor" aria-label="anchor" href="#drills"></a></h2>
+<hr class="half-width"><p>Each drill is a requirement written the way the exam phrases tasks,
+with checks you run yourself and a time limit. Work from the requirement
+and <code>ansible-doc</code> only. Open the solution after you’ve
+attempted it, or when the time is up. Then rerun your own version and
+confirm the second run reports <code>changed=0</code>.</p>
+<p>Drills 1 to 5 run on three practice nodes (containers) on your
+laptop, so they cover the Ansible mechanics. Storage, SELinux, firewalld
+and reboot persistence need virtual machines; see the end of this
+section.</p>
+<div class="section level3">
+<h3 id="drill-0-set-up-the-practice-nodes-10-minutes">Drill 0: set up the practice nodes (10 minutes)<a class="anchor" aria-label="anchor" href="#drill-0-set-up-the-practice-nodes-10-minutes"></a></h3>
+<p>This is also an exam objective (installing collections), so do it by
+hand and don’t skip ahead.</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1" aria-label="code-block-3-1"></a><span class="fu">mkdir</span> ~/ex294-drills <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> ~/ex294-drills</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1" aria-label="code-block-3-2"></a><span class="va">IMG</span><span class="op">=</span>docker.io/geerlingguy/docker-rockylinux10-ansible:latest</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1" aria-label="code-block-3-3"></a><span class="cf">for</span> n <span class="kw">in</span> node1 node2 node3<span class="kw">;</span> <span class="cf">do</span> <span class="ex">podman</span> run <span class="at">-d</span> <span class="at">--name</span> <span class="va">$n</span> <span class="at">--hostname</span> <span class="va">$n</span> <span class="at">--systemd</span><span class="op">=</span>always <span class="va">$IMG</span> /usr/sbin/init<span class="kw">;</span> <span class="cf">done</span></span></code></pre>
+</div>
+<p>Create <code>requirements.yml</code>:</p>
+<div class="codewrapper sourceCode" id="cb4">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="pp">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="fu">collections</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1" aria-label="code-block-4-3"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> containers.podman</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1" aria-label="code-block-4-4"></a><span class="at">    </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="st">"1.20.2"</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1" aria-label="code-block-4-5"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> ansible.posix</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1" aria-label="code-block-4-6"></a><span class="at">    </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="st">"2.2.2"</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1" aria-label="code-block-4-7"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> community.general</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1" aria-label="code-block-4-8"></a><span class="at">    </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="st">"11.4.9"</span><span class="co">   # last series supporting ansible-core 2.16</span></span></code></pre>
+</div>
+<p>Then, from the exam environment (<code>pixi shell -e exam</code> in
+pointcloud-infra, then back to this directory):</p>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="ex">ansible</span> <span class="at">--version</span>                      <span class="co"># should say core 2.16.x</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1" aria-label="code-block-5-2"></a><span class="ex">ansible-galaxy</span> collection install <span class="at">-r</span> requirements.yml <span class="at">-p</span> ./collections</span></code></pre>
+</div>
+<div id="why-the-pin-matters" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="why-the-pin-matters" class="callout-inner">
+<h3 class="callout-title">Why the pin matters</h3>
+<div class="callout-content">
+<p><code>community.general</code> 12.x needs ansible-core 2.17 or newer,
+and 13.x needs 2.18. Installing the newest version into the exam’s 2.16
+environment fails or misbehaves. When a module “doesn’t work” and the
+code looks right, check the collection’s <code>requires_ansible</code>
+in its <code>meta/runtime.yml</code>.</p>
+</div>
+</div>
+</div>
+<p>Tear down when you’re done studying:
+<code>podman rm -f node1 node2 node3</code>.</p>
+<div id="drill-1-inventory-and-navigator-15-minutes" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="drill-1-inventory-and-navigator-15-minutes" class="callout-inner">
+<h3 class="callout-title">Drill 1: inventory and navigator (15
+minutes)</h3>
+<div class="callout-content">
+<p>Create <code>inventory.ini</code>, <code>ansible-navigator.yml</code>
+and <code>ping.yml</code> so that:</p>
+<ul><li>
+<code>node1</code> and <code>node2</code> are in group
+<code>web</code>; <code>node3</code> is in group <code>db</code>; a
+group <code>prod</code> contains both groups.</li>
+<li>All hosts connect through Podman
+(<code>ansible_connection=containers.podman.podman</code>).</li>
+<li>
+<code>ansible-navigator.yml</code> sets stdout mode, disables the
+execution environment, and points at your inventory.</li>
+<li>
+<code>ping.yml</code> runs on <code>prod</code> and prints each
+host’s groups.</li>
+</ul><p><strong>Checks</strong></p>
+<ol style="list-style-type: decimal"><li>
+<code>ansible-inventory --graph</code> shows <code>prod</code>
+containing <code>web</code> (node1, node2) and <code>db</code>
+(node3).</li>
+<li>
+<code>ansible-playbook ping.yml</code> and
+<code>ansible-navigator run ping.yml</code> both succeed on all three
+nodes.</li>
+<li>Node3’s output says it’s in <code>db, prod</code>.</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
+</button>
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div class="accordion-body">
+<div class="codewrapper sourceCode" id="cb6">
+<h3 class="code-label">INI<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode ini" tabindex="0"><code class="sourceCode ini"><span id="cb6-1"><a href="#cb6-1" tabindex="-1" aria-label="code-block-6-1"></a><span class="co"># inventory.ini</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1" aria-label="code-block-6-2"></a><span class="kw">[web]</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1" aria-label="code-block-6-3"></a><span class="dt">node1</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1" aria-label="code-block-6-4"></a><span class="dt">node2</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1" aria-label="code-block-6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1" aria-label="code-block-6-6"></a><span class="kw">[db]</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1" aria-label="code-block-6-7"></a><span class="dt">node3</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1" aria-label="code-block-6-8"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1" aria-label="code-block-6-9"></a><span class="kw">[prod:children]</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1" aria-label="code-block-6-10"></a><span class="dt">web</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1" aria-label="code-block-6-11"></a><span class="dt">db</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1" aria-label="code-block-6-12"></a></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1" aria-label="code-block-6-13"></a><span class="kw">[all:vars]</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1" aria-label="code-block-6-14"></a><span class="dt">ansible_connection</span><span class="ot">=</span><span class="st">containers.podman.podman</span></span></code></pre>
+</div>
+<div class="codewrapper sourceCode" id="cb7">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" tabindex="-1" aria-label="code-block-7-1"></a><span class="co"># ansible-navigator.yml</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1" aria-label="code-block-7-2"></a><span class="pp">---</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1" aria-label="code-block-7-3"></a><span class="fu">ansible-navigator</span><span class="kw">:</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1" aria-label="code-block-7-4"></a><span class="at">  </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> stdout</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1" aria-label="code-block-7-5"></a><span class="at">  </span><span class="fu">execution-environment</span><span class="kw">:</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1" aria-label="code-block-7-6"></a><span class="at">    </span><span class="fu">enabled</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1" aria-label="code-block-7-7"></a><span class="at">  </span><span class="fu">ansible</span><span class="kw">:</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1" aria-label="code-block-7-8"></a><span class="at">    </span><span class="fu">inventory</span><span class="kw">:</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1" aria-label="code-block-7-9"></a><span class="at">      </span><span class="fu">entries</span><span class="kw">:</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1" aria-label="code-block-7-10"></a><span class="at">        </span><span class="kw">-</span><span class="at"> inventory.ini</span></span></code></pre>
+</div>
+<div class="codewrapper sourceCode" id="cb8">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" tabindex="-1" aria-label="code-block-8-1"></a><span class="co"># ping.yml</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1" aria-label="code-block-8-2"></a><span class="pp">---</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1" aria-label="code-block-8-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Reach every node</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1" aria-label="code-block-8-4"></a><span class="at">  </span><span class="fu">hosts</span><span class="kw">:</span><span class="at"> prod</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1" aria-label="code-block-8-5"></a><span class="at">  </span><span class="fu">gather_facts</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1" aria-label="code-block-8-6"></a><span class="at">  </span><span class="fu">tasks</span><span class="kw">:</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1" aria-label="code-block-8-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Show each host's groups</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1" aria-label="code-block-8-8"></a><span class="at">      </span><span class="fu">ansible.builtin.debug</span><span class="kw">:</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1" aria-label="code-block-8-9"></a><span class="at">        </span><span class="fu">msg</span><span class="kw">:</span><span class="at"> </span><span class="st">"{{ inventory_hostname }} is in {{ group_names | join(', ') }}"</span></span></code></pre>
+</div>
+<p>Plain <code>ansible-playbook</code> finds the inventory and your
+installed collections through an <code>ansible.cfg</code> in the same
+directory:</p>
+<div class="codewrapper sourceCode" id="cb9">
+<h3 class="code-label">INI<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode ini" tabindex="0"><code class="sourceCode ini"><span id="cb9-1"><a href="#cb9-1" tabindex="-1" aria-label="code-block-9-1"></a><span class="kw">[defaults]</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1" aria-label="code-block-9-2"></a><span class="dt">inventory </span><span class="ot">=</span><span class="st"> inventory.ini</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1" aria-label="code-block-9-3"></a><span class="dt">collections_path </span><span class="ot">=</span><span class="st"> ./collections</span></span></code></pre>
+</div>
+<p>The connection variable is only needed because these “servers” are
+containers; on real machines you’d rely on SSH.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="drill-2-failure-handling-15-minutes" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="drill-2-failure-handling-15-minutes" class="callout-inner">
+<h3 class="callout-title">Drill 2: failure handling (15 minutes)</h3>
+<div class="callout-content">
+<p>On the <code>web</code> group, with privilege escalation, try to
+install the package <code>pointcloud-viewer-extras</code> (it doesn’t
+exist). The play must not fail:</p>
+<ul><li>If the install fails, write
+<code>pointcloud-viewer-extras: not available on &lt;hostname&gt;</code>
+to <code>/root/install-report.txt</code> (mode 0600).</li>
+<li>Whether or not it fails, print “Optional package step finished on
+<hostname>”.</hostname></li>
+</ul><p><strong>Checks</strong></p>
+<ol style="list-style-type: decimal"><li>The recap shows <code>rescued=1</code> and <code>failed=0</code> for
+node1 and node2, and the play doesn’t touch node3.</li>
+<li>
+<code>podman exec node1 cat /root/install-report.txt</code> shows
+the message.</li>
+<li>The “finished” message appears for both web nodes.</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+</button>
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div class="accordion-body">
+<div class="codewrapper sourceCode" id="cb10">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" tabindex="-1" aria-label="code-block-10-1"></a><span class="pp">---</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1" aria-label="code-block-10-2"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install an optional package, survive if it's missing</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1" aria-label="code-block-10-3"></a><span class="at">  </span><span class="fu">hosts</span><span class="kw">:</span><span class="at"> web</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1" aria-label="code-block-10-4"></a><span class="at">  </span><span class="fu">become</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1" aria-label="code-block-10-5"></a><span class="at">  </span><span class="fu">tasks</span><span class="kw">:</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1" aria-label="code-block-10-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Try the optional package, report either way</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1" aria-label="code-block-10-7"></a><span class="at">      </span><span class="fu">block</span><span class="kw">:</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1" aria-label="code-block-10-8"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install the optional package</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1" aria-label="code-block-10-9"></a><span class="at">          </span><span class="fu">ansible.builtin.dnf</span><span class="kw">:</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1" aria-label="code-block-10-10"></a><span class="at">            </span><span class="fu">name</span><span class="kw">:</span><span class="at"> pointcloud-viewer-extras</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1" aria-label="code-block-10-11"></a><span class="at">            </span><span class="fu">state</span><span class="kw">:</span><span class="at"> present</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1" aria-label="code-block-10-12"></a><span class="at">      </span><span class="fu">rescue</span><span class="kw">:</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1" aria-label="code-block-10-13"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Record the failure</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1" aria-label="code-block-10-14"></a><span class="at">          </span><span class="fu">ansible.builtin.copy</span><span class="kw">:</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1" aria-label="code-block-10-15"></a><span class="at">            </span><span class="fu">dest</span><span class="kw">:</span><span class="at"> /root/install-report.txt</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1" aria-label="code-block-10-16"></a><span class="at">            </span><span class="fu">content</span><span class="kw">:</span><span class="at"> </span><span class="st">"pointcloud-viewer-extras: not available on {{ inventory_hostname }}</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1" aria-label="code-block-10-17"></a><span class="at">            </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> </span><span class="st">"0600"</span></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1" aria-label="code-block-10-18"></a><span class="at">      </span><span class="fu">always</span><span class="kw">:</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1" aria-label="code-block-10-19"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Summarize</span></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1" aria-label="code-block-10-20"></a><span class="at">          </span><span class="fu">ansible.builtin.debug</span><span class="kw">:</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1" aria-label="code-block-10-21"></a><span class="at">            </span><span class="fu">msg</span><span class="kw">:</span><span class="at"> </span><span class="st">"Optional package step finished on {{ inventory_hostname }}"</span></span></code></pre>
+</div>
+<p>You’ll see a red <code>fatal:</code> line for each node, which is
+expected: the failure happens, then <code>rescue</code> handles it.
+<code>rescued=1</code> in the recap is the proof. The <code>copy</code>
+task is idempotent, so the report file doesn’t change on a second run,
+but the failing <code>dnf</code> task and the rescue still run each
+time.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="drill-3-vault-20-minutes" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="drill-3-vault-20-minutes" class="callout-inner">
+<h3 class="callout-title">Drill 3: Vault (20 minutes)</h3>
+<div class="callout-content">
+<p>Create a variables file <code>secrets.yml</code> containing
+<code>app_db_password: "S3cret-drill-only"</code>, encrypted with
+Ansible Vault using a password file. Write a play for the
+<code>db</code> group that creates <code>/etc/drill-app.conf</code>
+(root, mode 0600) containing
+<code>db_password=&lt;the value&gt;</code>.</p>
+<p><strong>Checks</strong></p>
+<ol style="list-style-type: decimal"><li>
+<code>head -1 secrets.yml</code> shows
+<code>$ANSIBLE_VAULT;...</code>, not your password.</li>
+<li>Running with <code>-v</code> never prints the password:
+<code>ansible-playbook vault.yml --vault-password-file .vault-pass -v | grep -c S3cret</code>
+prints <code>0</code>.</li>
+<li>
+<code>podman exec node3 stat -c '%a %U' /etc/drill-app.conf</code>
+prints <code>600 root</code>.</li>
+<li>A second run reports <code>changed=0</code>.</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution3" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
+  <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
+</button>
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div class="accordion-body">
+<div class="codewrapper sourceCode" id="cb11">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1" aria-label="code-block-11-1"></a><span class="bu">echo</span> <span class="st">'drill-vault-pass'</span> <span class="op">&gt;</span> .vault-pass <span class="kw">&amp;&amp;</span> <span class="fu">chmod</span> 600 .vault-pass</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1" aria-label="code-block-11-2"></a><span class="bu">printf</span> <span class="st">'app_db_password: "S3cret-drill-only"\n'</span> <span class="op">&gt;</span> secrets.yml</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1" aria-label="code-block-11-3"></a><span class="ex">ansible-vault</span> encrypt secrets.yml <span class="at">--vault-password-file</span> .vault-pass</span></code></pre>
+</div>
+<div class="codewrapper sourceCode" id="cb12">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" tabindex="-1" aria-label="code-block-12-1"></a><span class="co"># vault.yml</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1" aria-label="code-block-12-2"></a><span class="pp">---</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1" aria-label="code-block-12-3"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Configure an app with a secret</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1" aria-label="code-block-12-4"></a><span class="at">  </span><span class="fu">hosts</span><span class="kw">:</span><span class="at"> db</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1" aria-label="code-block-12-5"></a><span class="at">  </span><span class="fu">become</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1" aria-label="code-block-12-6"></a><span class="at">  </span><span class="fu">vars_files</span><span class="kw">:</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1" aria-label="code-block-12-7"></a><span class="at">    </span><span class="kw">-</span><span class="at"> secrets.yml</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1" aria-label="code-block-12-8"></a><span class="at">  </span><span class="fu">tasks</span><span class="kw">:</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1" aria-label="code-block-12-9"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Write the app config</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1" aria-label="code-block-12-10"></a><span class="at">      </span><span class="fu">ansible.builtin.copy</span><span class="kw">:</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1" aria-label="code-block-12-11"></a><span class="at">        </span><span class="fu">dest</span><span class="kw">:</span><span class="at"> /etc/drill-app.conf</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1" aria-label="code-block-12-12"></a><span class="at">        </span><span class="fu">content</span><span class="kw">:</span><span class="at"> </span><span class="st">"db_password={{ app_db_password }}</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1" aria-label="code-block-12-13"></a><span class="at">        </span><span class="fu">owner</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1" aria-label="code-block-12-14"></a><span class="at">        </span><span class="fu">group</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1" aria-label="code-block-12-15"></a><span class="at">        </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> </span><span class="st">"0600"</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1" aria-label="code-block-12-16"></a><span class="at">      </span><span class="fu">no_log</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre>
+</div>
+<p><code>no_log: true</code> keeps the password out of task output,
+including with <code>-v</code>. Never commit <code>.vault-pass</code>.
+In a real repository it’s gitignored and kept somewhere else.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="drill-4-users-ssh-keys-privilege-escalation-25-minutes" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="drill-4-users-ssh-keys-privilege-escalation-25-minutes" class="callout-inner">
+<h3 class="callout-title">Drill 4: users, SSH keys, privilege escalation
+(25 minutes)</h3>
+<div class="callout-content">
+<p>On every node in <code>prod</code>:</p>
+<ul><li>A group <code>operators</code> with GID 2000.</li>
+<li>Users <code>automation</code> (UID 2001) and <code>auditor</code>
+(UID 2002), both in <code>operators</code> (as a supplementary group),
+shell <code>/bin/bash</code>.</li>
+<li>
+<code>automation</code> accepts an SSH key you generate
+(<code>ssh-keygen -t ed25519 -N '' -f drill_key</code>).</li>
+<li>
+<code>automation</code> has passwordless sudo, and the sudoers file
+is validated before it’s installed.</li>
+</ul><p><strong>Checks</strong></p>
+<ol style="list-style-type: decimal"><li>
+<code>podman exec node2 id automation</code> shows UID 2001 and
+groups <code>automation</code> and <code>operators</code>.</li>
+<li>
+<code>podman exec node2 sudo -l -U automation</code> ends with
+<code>(ALL) NOPASSWD: ALL</code>.</li>
+<li>
+<code>podman exec node2 stat -c '%a %U' /home/automation/.ssh/authorized_keys</code>
+prints <code>600 automation</code>.</li>
+<li>A second run reports <code>changed=0</code> on all three nodes.</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution4" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
+  <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
+</button>
+<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
+<div class="accordion-body">
+<div class="codewrapper sourceCode" id="cb13">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" tabindex="-1" aria-label="code-block-13-1"></a><span class="pp">---</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1" aria-label="code-block-13-2"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Operator accounts</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1" aria-label="code-block-13-3"></a><span class="at">  </span><span class="fu">hosts</span><span class="kw">:</span><span class="at"> prod</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1" aria-label="code-block-13-4"></a><span class="at">  </span><span class="fu">become</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1" aria-label="code-block-13-5"></a><span class="at">  </span><span class="fu">vars</span><span class="kw">:</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1" aria-label="code-block-13-6"></a><span class="at">    </span><span class="fu">operators</span><span class="kw">:</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1" aria-label="code-block-13-7"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> automation</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1" aria-label="code-block-13-8"></a><span class="at">        </span><span class="fu">uid</span><span class="kw">:</span><span class="at"> </span><span class="dv">2001</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1" aria-label="code-block-13-9"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> auditor</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1" aria-label="code-block-13-10"></a><span class="at">        </span><span class="fu">uid</span><span class="kw">:</span><span class="at"> </span><span class="dv">2002</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1" aria-label="code-block-13-11"></a><span class="at">  </span><span class="fu">tasks</span><span class="kw">:</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1" aria-label="code-block-13-12"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Operators group exists</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1" aria-label="code-block-13-13"></a><span class="at">      </span><span class="fu">ansible.builtin.group</span><span class="kw">:</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1" aria-label="code-block-13-14"></a><span class="at">        </span><span class="fu">name</span><span class="kw">:</span><span class="at"> operators</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1" aria-label="code-block-13-15"></a><span class="at">        </span><span class="fu">gid</span><span class="kw">:</span><span class="at"> </span><span class="dv">2000</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1" aria-label="code-block-13-16"></a></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1" aria-label="code-block-13-17"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Operator users exist</span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1" aria-label="code-block-13-18"></a><span class="at">      </span><span class="fu">ansible.builtin.user</span><span class="kw">:</span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1" aria-label="code-block-13-19"></a><span class="at">        </span><span class="fu">name</span><span class="kw">:</span><span class="at"> </span><span class="st">"{{ item.name }}"</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1" aria-label="code-block-13-20"></a><span class="at">        </span><span class="fu">uid</span><span class="kw">:</span><span class="at"> </span><span class="st">"{{ item.uid }}"</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1" aria-label="code-block-13-21"></a><span class="at">        </span><span class="fu">groups</span><span class="kw">:</span><span class="at"> operators</span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1" aria-label="code-block-13-22"></a><span class="at">        </span><span class="fu">append</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1" aria-label="code-block-13-23"></a><span class="at">        </span><span class="fu">shell</span><span class="kw">:</span><span class="at"> /bin/bash</span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1" aria-label="code-block-13-24"></a><span class="at">      </span><span class="fu">loop</span><span class="kw">:</span><span class="at"> </span><span class="st">"{{ operators }}"</span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1" aria-label="code-block-13-25"></a><span class="at">      </span><span class="fu">loop_control</span><span class="kw">:</span></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1" aria-label="code-block-13-26"></a><span class="at">        </span><span class="fu">label</span><span class="kw">:</span><span class="at"> </span><span class="st">"{{ item.name }}"</span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1" aria-label="code-block-13-27"></a></span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1" aria-label="code-block-13-28"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Automation user accepts the control node's key</span></span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1" aria-label="code-block-13-29"></a><span class="at">      </span><span class="fu">ansible.posix.authorized_key</span><span class="kw">:</span></span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1" aria-label="code-block-13-30"></a><span class="at">        </span><span class="fu">user</span><span class="kw">:</span><span class="at"> automation</span></span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1" aria-label="code-block-13-31"></a><span class="at">        </span><span class="fu">key</span><span class="kw">:</span><span class="at"> </span><span class="st">"{{ lookup('ansible.builtin.file', 'drill_key.pub') }}"</span></span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1" aria-label="code-block-13-32"></a></span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1" aria-label="code-block-13-33"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Sudo is installed</span></span>
+<span id="cb13-34"><a href="#cb13-34" tabindex="-1" aria-label="code-block-13-34"></a><span class="at">      </span><span class="fu">ansible.builtin.dnf</span><span class="kw">:</span></span>
+<span id="cb13-35"><a href="#cb13-35" tabindex="-1" aria-label="code-block-13-35"></a><span class="at">        </span><span class="fu">name</span><span class="kw">:</span><span class="at"> sudo</span></span>
+<span id="cb13-36"><a href="#cb13-36" tabindex="-1" aria-label="code-block-13-36"></a><span class="at">        </span><span class="fu">state</span><span class="kw">:</span><span class="at"> present</span></span>
+<span id="cb13-37"><a href="#cb13-37" tabindex="-1" aria-label="code-block-13-37"></a></span>
+<span id="cb13-38"><a href="#cb13-38" tabindex="-1" aria-label="code-block-13-38"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Automation user has passwordless sudo</span></span>
+<span id="cb13-39"><a href="#cb13-39" tabindex="-1" aria-label="code-block-13-39"></a><span class="at">      </span><span class="fu">ansible.builtin.copy</span><span class="kw">:</span></span>
+<span id="cb13-40"><a href="#cb13-40" tabindex="-1" aria-label="code-block-13-40"></a><span class="at">        </span><span class="fu">dest</span><span class="kw">:</span><span class="at"> /etc/sudoers.d/automation</span></span>
+<span id="cb13-41"><a href="#cb13-41" tabindex="-1" aria-label="code-block-13-41"></a><span class="at">        </span><span class="fu">content</span><span class="kw">:</span><span class="at"> </span><span class="st">"automation ALL=(ALL) NOPASSWD: ALL</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb13-42"><a href="#cb13-42" tabindex="-1" aria-label="code-block-13-42"></a><span class="at">        </span><span class="fu">owner</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb13-43"><a href="#cb13-43" tabindex="-1" aria-label="code-block-13-43"></a><span class="at">        </span><span class="fu">group</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb13-44"><a href="#cb13-44" tabindex="-1" aria-label="code-block-13-44"></a><span class="at">        </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> </span><span class="st">"0440"</span></span>
+<span id="cb13-45"><a href="#cb13-45" tabindex="-1" aria-label="code-block-13-45"></a><span class="at">        </span><span class="fu">validate</span><span class="kw">:</span><span class="at"> /usr/sbin/visudo -cf %s</span></span></code></pre>
+</div>
+<p><code>validate:</code> matters: a syntax error in a sudoers file can
+lock everyone out, so Ansible checks the new file before moving it into
+place. First run <code>changed=4</code> on each node (group, users, key,
+sudoers; the package was already there), second run
+<code>changed=0</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="drill-5-scheduling-file-content-archiving-20-minutes" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="drill-5-scheduling-file-content-archiving-20-minutes" class="callout-inner">
+<h3 class="callout-title">Drill 5: scheduling, file content, archiving
+(20 minutes)</h3>
+<div class="callout-content">
+<p>On the <code>web</code> group:</p>
+<ul><li>
+<code>cronie</code> installed and <code>crond</code> running and
+enabled.</li>
+<li>A root cron job named <code>dnf makecache</code> that runs
+<code>/usr/bin/dnf -q makecache</code> at 02:30 every day.</li>
+<li>
+<code>/etc/dnf/dnf.conf</code> contains exactly one line
+<code>max_parallel_downloads=10</code>, even if the setting is already
+there with another value.</li>
+<li>A gzip archive of <code>/etc/dnf</code> at
+<code>/root/dnf-config.tar.gz</code>, mode 0600.</li>
+</ul><p><strong>Checks</strong></p>
+<ol style="list-style-type: decimal"><li>
+<code>podman exec node1 crontab -l</code> shows
+<code>30 2 * * * /usr/bin/dnf -q makecache</code>.</li>
+<li>
+<code>podman exec node1 grep -c max_parallel /etc/dnf/dnf.conf</code>
+prints <code>1</code>.</li>
+<li>
+<code>podman exec node1 tar -tzf /root/dnf-config.tar.gz</code>
+lists files under <code>dnf/</code>.</li>
+<li>A second run reports <code>changed=0</code>.</li>
+</ol></div>
+</div>
+</div>
+<div id="accordionSolution5" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution5" aria-expanded="false" aria-controls="collapseSolution5">
+  <h4 class="accordion-header" id="headingSolution5"> Show me the solution </h4>
+</button>
+<div id="collapseSolution5" class="accordion-collapse collapse" data-bs-parent="#accordionSolution5" aria-labelledby="headingSolution5">
+<div class="accordion-body">
+<div class="codewrapper sourceCode" id="cb14">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" tabindex="-1" aria-label="code-block-14-1"></a><span class="pp">---</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1" aria-label="code-block-14-2"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Housekeeping on web servers</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1" aria-label="code-block-14-3"></a><span class="at">  </span><span class="fu">hosts</span><span class="kw">:</span><span class="at"> web</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1" aria-label="code-block-14-4"></a><span class="at">  </span><span class="fu">become</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1" aria-label="code-block-14-5"></a><span class="at">  </span><span class="fu">tasks</span><span class="kw">:</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1" aria-label="code-block-14-6"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Cron is installed and running</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1" aria-label="code-block-14-7"></a><span class="at">      </span><span class="fu">ansible.builtin.dnf</span><span class="kw">:</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1" aria-label="code-block-14-8"></a><span class="at">        </span><span class="fu">name</span><span class="kw">:</span><span class="at"> cronie</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1" aria-label="code-block-14-9"></a><span class="at">        </span><span class="fu">state</span><span class="kw">:</span><span class="at"> present</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1" aria-label="code-block-14-10"></a></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1" aria-label="code-block-14-11"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Cron service is enabled</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1" aria-label="code-block-14-12"></a><span class="at">      </span><span class="fu">ansible.builtin.service</span><span class="kw">:</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1" aria-label="code-block-14-13"></a><span class="at">        </span><span class="fu">name</span><span class="kw">:</span><span class="at"> crond</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1" aria-label="code-block-14-14"></a><span class="at">        </span><span class="fu">state</span><span class="kw">:</span><span class="at"> started</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1" aria-label="code-block-14-15"></a><span class="at">        </span><span class="fu">enabled</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1" aria-label="code-block-14-16"></a></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1" aria-label="code-block-14-17"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Nightly metadata refresh</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1" aria-label="code-block-14-18"></a><span class="at">      </span><span class="fu">ansible.builtin.cron</span><span class="kw">:</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1" aria-label="code-block-14-19"></a><span class="at">        </span><span class="fu">name</span><span class="kw">:</span><span class="at"> dnf makecache</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1" aria-label="code-block-14-20"></a><span class="at">        </span><span class="fu">user</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1" aria-label="code-block-14-21"></a><span class="at">        </span><span class="fu">minute</span><span class="kw">:</span><span class="at"> </span><span class="st">"30"</span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1" aria-label="code-block-14-22"></a><span class="at">        </span><span class="fu">hour</span><span class="kw">:</span><span class="at"> </span><span class="st">"2"</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1" aria-label="code-block-14-23"></a><span class="at">        </span><span class="fu">job</span><span class="kw">:</span><span class="at"> /usr/bin/dnf -q makecache</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1" aria-label="code-block-14-24"></a></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1" aria-label="code-block-14-25"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Faster downloads</span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1" aria-label="code-block-14-26"></a><span class="at">      </span><span class="fu">ansible.builtin.lineinfile</span><span class="kw">:</span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1" aria-label="code-block-14-27"></a><span class="at">        </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /etc/dnf/dnf.conf</span></span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1" aria-label="code-block-14-28"></a><span class="at">        </span><span class="fu">regexp</span><span class="kw">:</span><span class="at"> </span><span class="st">'^max_parallel_downloads='</span></span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1" aria-label="code-block-14-29"></a><span class="at">        </span><span class="fu">line</span><span class="kw">:</span><span class="at"> max_parallel_downloads=10</span></span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1" aria-label="code-block-14-30"></a></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1" aria-label="code-block-14-31"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Back up /etc/dnf</span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1" aria-label="code-block-14-32"></a><span class="at">      </span><span class="fu">community.general.archive</span><span class="kw">:</span></span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1" aria-label="code-block-14-33"></a><span class="at">        </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /etc/dnf</span></span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1" aria-label="code-block-14-34"></a><span class="at">        </span><span class="fu">dest</span><span class="kw">:</span><span class="at"> /root/dnf-config.tar.gz</span></span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1" aria-label="code-block-14-35"></a><span class="at">        </span><span class="fu">format</span><span class="kw">:</span><span class="at"> gz</span></span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1" aria-label="code-block-14-36"></a><span class="at">        </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> </span><span class="st">"0600"</span></span></code></pre>
+</div>
+<p><code>lineinfile</code> with a <code>regexp</code> replaces the
+existing line instead of adding a duplicate, which is what keeps it
+idempotent. The archive module only rewrites the archive when the
+contents change.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="drills-that-need-virtual-machines">Drills that need virtual machines<a class="anchor" aria-label="anchor" href="#drills-that-need-virtual-machines"></a></h3>
+<p>Containers share the host’s kernel and have no real disks, boot
+process, or SELinux. These exam topics need VMs, and they’re waiting on
+the exam lab (Rocky Linux machines built with Terraform):</p>
+<ul><li>Storage: partitions, LVM, file systems, persistent mounts
+(<code>community.general.lvg</code>, <code>lvol</code>,
+<code>filesystem</code>; <code>ansible.posix.mount</code>)</li>
+<li>SELinux: file contexts and booleans
+(<code>community.general.sefcontext</code>,
+<code>ansible.posix.seboolean</code>,
+<code>ansible.builtin.command: restorecon</code>)</li>
+<li>Firewall rules with <code>ansible.posix.firewalld</code>, on a
+machine whose firewall is actually running</li>
+<li>“Persists after reboot”: run, reboot, check again</li>
+</ul><p>Until the lab exists, read the <code>ansible-doc</code> pages for
+those modules and write the playbooks, but don’t treat a playbook as
+done until it has been run on a real machine and survived a reboot.</p>
+</div>
+</section><section><h2 class="section-heading" id="practice-environments">Practice environments<a class="anchor" aria-label="anchor" href="#practice-environments"></a></h2>
 <hr class="half-width"><table class="table"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>What you’re practicing</th>
 <th>Where</th>
 </tr></thead><tbody><tr><td>Modules, templates, handlers, roles, idempotence</td>
 <td>Local staging: <code>pixi run staging-up</code> (Rocky Linux 10
 container)</td>
-</tr><tr><td>Storage, file systems, users, SELinux, firewalld, reboot
-persistence</td>
+</tr><tr><td>Inventories, users, Vault, cron, failure handling, collections,
+navigator</td>
+<td>The three practice nodes from Drill 0</td>
+</tr><tr><td>Storage, file systems, SELinux, firewalld, reboot persistence</td>
 <td>Virtual machines. A Terraform-built exam lab (one control node,
 three or four managed Rocky Linux nodes, destroyed after each session)
 is planned for this lesson</td>

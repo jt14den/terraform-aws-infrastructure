@@ -833,6 +833,25 @@ bucket</strong>. The server never touches the 3D data.</li>
 embedding the scans and running up the bandwidth bill.</li>
 </ol>
 <p>Three systems, three places to fail.</p>
+<div id="these-commands-depend-on-the-live-site" class="callout">
+<div class="callout-square">
+<i class="callout-icon" data-feather="bell"></i>
+</div>
+<span class="callout-header">Callout</span>
+<div id="these-commands-depend-on-the-live-site" class="callout-inner">
+<h3 class="callout-title">These commands depend on the live site</h3>
+<div class="callout-content">
+<p>The outputs below were captured on 2026-10-04 against the real site.
+The S3 bucket’s access rule, the redirects, and even which collection
+pages exist can change. If a command here gives a different result,
+don’t assume you’ve done something wrong: check the repository’s
+<code>docs/</code> and recent pull requests for what changed, and treat
+the difference as something to explain. That’s good practice for the
+exam too, since you’ll often meet systems that don’t match the
+instructions.</p>
+</div>
+</div>
+</div>
 </section><section><h2 class="section-heading" id="step-1-the-page">Step 1: the page<a class="anchor" aria-label="anchor" href="#step-1-the-page"></a>
 </h2>
 <hr class="half-width">
@@ -1115,12 +1134,13 @@ works”?</li>
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <ul>
-<li>Build a local copy of pointcloud.ucla.edu with Molecule and
-Podman.</li>
-<li>Predict which tasks report <code>changed</code> on a first and a
-second run, and check the prediction.</li>
+<li>Build a local copy of pointcloud.ucla.edu with Molecule and Podman,
+and predict which tasks report <code>changed</code> on a first and a
+second run.</li>
 <li>Write a task that breaks idempotence, observe the failure, and fix
 it.</li>
+<li>Write tasks from a written requirement with no starter code, and
+check the result on the host.</li>
 <li>Distinguish Molecule’s idempotence step from its verify step.</li>
 </ul>
 </div>
@@ -1255,21 +1275,23 @@ goes in <code>/etc/motd</code>.</p>
 <div id="attempt-1-the-shell-way" class="callout-inner">
 <h3 class="callout-title">Attempt 1: the shell way</h3>
 <div class="callout-content">
-<p>Make a branch, then add this task to the end of
-<code>ansible/roles/potree/tasks/maintenance.yml</code>:</p>
+<p>Make a branch. In
+<code>ansible/roles/potree/tasks/maintenance.yml</code>, add a task
+named “Tell operators this host is managed” that uses
+<code>ansible.builtin.shell</code> to append the line
+<code>Managed by Ansible. Changes made by hand will be overwritten.</code>
+to <code>/etc/motd</code>. Write it yourself;
+<code>ansible-doc ansible.builtin.shell</code> shows the options.</p>
+<p>Before you run it, write down what the recap will say on the next two
+runs. Then run <code>pixi run staging-up</code> twice and look at the
+file:</p>
 <div class="codewrapper sourceCode" id="cb4">
-<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Tell operators this host is managed</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1" aria-label="code-block-4-2"></a><span class="at">  </span><span class="fu">ansible.builtin.shell</span><span class="kw">:</span><span class="at"> echo "Managed by Ansible. Changes made by hand will be overwritten." &gt;&gt; /etc/motd</span></span></code></pre>
-</div>
-<p>Predict what the recap will say on the next two runs. Then run
-<code>pixi run staging-up</code> twice and look at the file:</p>
-<div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="ex">podman</span> exec pointcloud-staging cat /etc/motd</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1" aria-label="code-block-4-1"></a><span class="ex">podman</span> exec pointcloud-staging cat /etc/motd</span></code></pre>
 </div>
+<p>Finally, write one or two sentences: was your prediction right, and
+what does the file tell you that the recap didn’t?</p>
 </div>
 </div>
 </div>
@@ -1280,6 +1302,13 @@ goes in <code>/etc/motd</code>.</p>
 </button>
 <div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
+<p>A natural way to write it:</p>
+<div class="codewrapper sourceCode" id="cb5">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" tabindex="-1" aria-label="code-block-5-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Tell operators this host is managed</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1" aria-label="code-block-5-2"></a><span class="at">  </span><span class="fu">ansible.builtin.shell</span><span class="kw">:</span><span class="at"> echo "Managed by Ansible. Changes made by hand will be overwritten." &gt;&gt; /etc/motd</span></span></code></pre>
+</div>
 <p>Both runs report <code>changed=1</code>, and the file grows by one
 line each run:</p>
 <div class="codewrapper">
@@ -1365,6 +1394,71 @@ do.</p>
 </div>
 </div>
 </div>
+<p>Write down, in your own words, why attempt 2 passes the idempotence
+step and attempt 1 doesn’t. If you can’t say it without looking back,
+reread the two recaps side by side.</p>
+<div id="now-one-with-no-hints" class="callout challenge">
+<div class="callout-square">
+<i class="callout-icon" data-feather="zap"></i>
+</div>
+<span class="callout-header">Challenge</span>
+<div id="now-one-with-no-hints" class="callout-inner">
+<h3 class="callout-title">Now one with no hints</h3>
+<div class="callout-content">
+<p>Come back to this after a break, a few hours at least, with the
+earlier solutions closed. Here’s a new requirement:</p>
+<blockquote>
+<p>Every server must have the <code>tree</code> package installed. Every
+server must also have a file <code>/etc/pointcloud-release</code>
+containing the line <code>potree X</code>, where <code>X</code> is the
+Potree version the role installs (look in <code>defaults/main.yml</code>
+for the variable). The file is owned by root, mode 0644.</p>
+</blockquote>
+<p>Write it as tasks in <code>maintenance.yml</code>. Before running
+anything, write down your prediction for the first and second runs. Then
+run <code>pixi run staging-up</code> twice and
+<code>molecule idempotence</code>. Check the file on the container
+yourself; don’t rely on the recap.</p>
+</div>
+</div>
+</div>
+<div id="accordionSolution4" class="accordion challenge-accordion accordion-flush">
+<div class="accordion-item">
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
+  <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
+</button>
+<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
+<div class="accordion-body">
+<div class="codewrapper sourceCode" id="cb11">
+<h3 class="code-label">YAML<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode yaml" tabindex="0"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" tabindex="-1" aria-label="code-block-11-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Troubleshooting tools are installed</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1" aria-label="code-block-11-2"></a><span class="at">  </span><span class="fu">ansible.builtin.dnf</span><span class="kw">:</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1" aria-label="code-block-11-3"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> tree</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1" aria-label="code-block-11-4"></a><span class="at">    </span><span class="fu">state</span><span class="kw">:</span><span class="at"> present</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1" aria-label="code-block-11-5"></a></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1" aria-label="code-block-11-6"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Record which Potree release this host serves</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1" aria-label="code-block-11-7"></a><span class="at">  </span><span class="fu">ansible.builtin.copy</span><span class="kw">:</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1" aria-label="code-block-11-8"></a><span class="at">    </span><span class="fu">dest</span><span class="kw">:</span><span class="at"> /etc/pointcloud-release</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1" aria-label="code-block-11-9"></a><span class="at">    </span><span class="fu">content</span><span class="kw">:</span><span class="at"> </span><span class="st">"potree {{ potree_version }}</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1" aria-label="code-block-11-10"></a><span class="at">    </span><span class="fu">owner</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1" aria-label="code-block-11-11"></a><span class="at">    </span><span class="fu">group</span><span class="kw">:</span><span class="at"> root</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1" aria-label="code-block-11-12"></a><span class="at">    </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> </span><span class="st">"0644"</span></span></code></pre>
+</div>
+<p>First run: <code>changed=2</code>. Second run:
+<code>changed=0</code>, and <code>molecule idempotence</code> passes.
+The variable (<code>potree_version</code>) means the file follows the
+version if someone upgrades Potree, with no second edit.
+<code>cat /etc/pointcloud-release</code> on the container shows
+<code>potree 1.8.2</code>.</p>
+<p>If you used
+<code>shell: echo ... &gt; /etc/pointcloud-release</code>, the task
+reports <code>changed</code> every run even though the file never
+changes; that’s the attempt 1 mistake again.</p>
+</div>
+</div>
+</div>
+</div>
 </section><section><h2 class="section-heading" id="no-changes-is-not-it-works">“No changes” is not “it works”<a class="anchor" aria-label="anchor" href="#no-changes-is-not-it-works"></a>
 </h2>
 <hr class="half-width">
@@ -1376,17 +1470,17 @@ In pointcloud-infra, <code>ansible/molecule/default/verify.yml</code>
 checks things a visitor would notice: the listing has the UCLA skin and
 real titles, the viewer’s JavaScript is served, plain HTTP redirects to
 HTTPS, descriptions appear.</p>
-<div class="codewrapper sourceCode" id="cb11">
-<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1" aria-label="code-block-11-1"></a><span class="ex">pixi</span> run staging-verify</span></code></pre>
-</div>
-<p>The full test runs every step on a fresh container: create, converge,
-idempotence, verify, destroy.</p>
 <div class="codewrapper sourceCode" id="cb12">
 <h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1" aria-label="code-block-12-1"></a><span class="ex">pixi</span> run test</span></code></pre>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1" aria-label="code-block-12-1"></a><span class="ex">pixi</span> run staging-verify</span></code></pre>
+</div>
+<p>The full test runs every step on a fresh container: create, converge,
+idempotence, verify, destroy.</p>
+<div class="codewrapper sourceCode" id="cb13">
+<h3 class="code-label">BASH<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode bash" tabindex="0"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" tabindex="-1" aria-label="code-block-13-1"></a><span class="ex">pixi</span> run test</span></code></pre>
 </div>
 <p>This is what CI runs on every pull request.</p>
 <div id="which-step-catches-it" class="callout challenge">
@@ -1409,12 +1503,12 @@ live site.</li>
 </div>
 </div>
 </div>
-<div id="accordionSolution4" class="accordion challenge-accordion accordion-flush">
+<div id="accordionSolution5" class="accordion challenge-accordion accordion-flush">
 <div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
-  <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution5" aria-expanded="false" aria-controls="collapseSolution5">
+  <h4 class="accordion-header" id="headingSolution5"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
+<div id="collapseSolution5" class="accordion-collapse collapse" aria-labelledby="headingSolution5" data-bs-parent="#accordionSolution5">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>Idempotence: the task reports <code>changed</code> on the second
@@ -2045,7 +2139,7 @@ what CIDR range?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>The exact output will depend on current state. Things to look
 for:</p>
@@ -2091,7 +2185,7 @@ to the specific piece of config that proves your answer.</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>No. Each environment’s <code>main.tf</code> points at a different S3
@@ -2846,7 +2940,7 @@ is usable again?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>RDS gets a new file record (name, checksum, storage identifier,
@@ -2887,7 +2981,7 @@ proxy), what would break, and what’s the planned fix?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
