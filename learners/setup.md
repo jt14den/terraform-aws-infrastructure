@@ -1,256 +1,61 @@
-
 ---
 title: "Setup"
 ---
 
-## Introduction
+## Public core: your laptop only
 
-You do not need to understand everything on this page at this time. The goal is only to get the tools working.
-By the end of this setup, you will be able to authenticate to AWS, run Terraform, and prepare a working directory.
+Install Git, curl, [Pixi](https://pixi.sh), and [Podman](https://podman.io).
+Use the companion repository's [getting started guide](https://github.com/ucla-data-science-center/pointcloud-infra/blob/main/docs/getting-started.md)
+for your platform (macOS, Linux, or Windows through WSL). Allow 30–60 minutes
+before the workshop for downloads and container setup. Internet access is needed
+for dependencies; this is not an offline installation.
 
-## Part 1 (pointcloud episodes): no AWS needed
-
-The pointcloud episodes run on your laptop. You need **git**, **[pixi](https://pixi.sh)** and **[Podman](https://podman.io)**; pixi installs everything else (Ansible, Molecule, Terraform) at the right versions. Follow the pointcloud-infra [getting started guide](https://github.com/ucla-data-science-center/pointcloud-infra/blob/main/docs/getting-started.md), which covers macOS, Linux and Windows (via WSL), then check:
+Clone into a new directory, or use your existing checkout without overwriting work:
 
 ```bash
+git clone https://github.com/ucla-data-science-center/pointcloud-infra.git
 cd pointcloud-infra
-pixi run staging-up     # builds a local copy of the site
+pixi run setup
+pixi run ansible --version
+pixi run staging-up
+pixi run staging-verify
 ```
 
-and open <https://localhost:8443/>. The first episode, *Follow One Point Cloud Request*, needs only `curl`.
-
-The rest of this page is for Part 2 (Dataverse), which uses AWS.
-
-## 1. AWS Account
-
-You will need an AWS account you can log into.  
-During the lesson, AWS will be used to create a virtual machine and store a small amount of configuration data.
-
-
-## 2. Install the AWS CLI
-
-We use the AWS CLI throughout the lesson to authenticate and confirm credentials.
-
-:::::::::::::::::::::::::::::::::::::: group-tab
-
-### macOS
-
-Install using Homebrew:
-
-```bash
-brew install awscli
-````
-
-Verify:
-
-```bash
-aws --version
-```
-
-### Windows
-
-Use the official MSI installer:
-
-1. Download:
-   [https://awscli.amazonaws.com/AWSCLIV2.msi](https://awscli.amazonaws.com/AWSCLIV2.msi)
-2. Run installer
-3. Verify:
-
-```powershell
-aws --version
-```
-
-### Linux
-
-On Ubuntu/Debian:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y awscli
-```
-
-On Fedora/RHEL/Amazon Linux:
-
-```bash
-sudo dnf install -y awscli
-```
-
-Verify:
-
-```bash
-aws --version
-```
-
-:::::::::::::::::::::::::::::::::::::::::::::::
-
-
-::::::::::::::::::::::::::::::::::::: checklist
-
-If you are using a personal AWS account without Identity Center, ask the instructor for an alternative setup.
-
-Before running `aws configure sso`, confirm the following:
-
-- IAM Identity Center is **enabled** in your AWS account
-- You have been given:
-  - an **SSO start URL** (looks like `https://your-org.awsapps.com/start`)
-  - the **AWS region** for Identity Center (commonly `us-west-2` or `us-east-1`)
-  - permission to assume at least one AWS account role
-
-If you do not have this information, contact your AWS administrator.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
-## 3. Configure AWS credentials (IAM Identity Center / SSO)
-
-::::::::::::::::::::::::::::::::::::: callout
-
-### AWS authentication is changing (and that’s normal)
-
-AWS has significantly changed how users authenticate over the last few years.
-
-Older tutorials often reference:
-- long-lived access keys (`AWS_ACCESS_KEY_ID`)
-- `aws configure` with static credentials
-- manually managing credentials files
-
-This lesson uses **AWS IAM Identity Center (SSO)**, which is now the recommended
-approach for most organizations.
-
-As a result:
-- some older guides will not match what you see here
-- prompts in the AWS CLI may look unfamiliar
-- defaults (like SSO registration scopes) are usually correct
-
-If something feels different from past AWS experience, that’s expected.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-::::::::::::::::::::::::::::::::::::: instructor
-
-Learners with prior AWS experience may expect access keys instead of SSO.
-Reassure them that Identity Center is now standard in many organizations and
-that accepting defaults is usually correct.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
-This lesson uses **IAM Identity Center**, the modern AWS authentication system.
-
-Run:
-
-```bash
-aws configure sso
-```
-Follow the browser prompts to authenticate.
-
-Then confirm your identity. This command doesn’t change anything. It only confirms that authentication worked.
-
-```bash
-aws sts get-caller-identity
-```
-
-You should see:
-
-* Your AWS account ID
-* Your IAM role ARN
-* Your user ID
-
-::::::::::::::::::::::::::::::::::::: callout
-
-### About the “SSO registration scopes” prompt
-
-During `aws configure sso`, you may see:
-
-``` bash
-SSO registration scopes [sso:account:access]:
-
-```
-
-For this lesson, **press Enter to accept the default**.
-
-You only need a different value if your organization has explicitly instructed you to use custom scopes.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
-## 4. Install Terraform
-
-:::::::::::::::::::::::::::::::::::::: group-tab
-
-### macOS
-
-```bash
-brew tap hashicorp/tap
-brew install hashicorp/tap/terraform
-```
-
-### Windows
-
-Using Chocolatey:
-
-```powershell
-choco install terraform
-```
-
-Using Scoop:
-
-```powershell
-scoop install terraform
-```
-
-### Linux
-
-On Ubuntu/Debian:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y gnupg software-properties-common
-wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp.gpg
-echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] \
-https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-| sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt-get update
-sudo apt-get install terraform
-```
-
-On Fedora/RHEL:
-
-```bash
-sudo dnf install -y dnf-plugins-core
-sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-sudo dnf install terraform
-```
-:::::::::::::::::::::::::::::::::::::::::::::::
-
-Verify installation:
-
-```bash
-terraform version
-```
-
-## 5. Create a working directory
-
-Create a folder where your Terraform configuration files will live:
-
-```bash
-mkdir terraform-dataverse
-cd terraform-dataverse
-```
-
-## 6. (Optional) Clone the lesson repository
-
-If you want the example files from this lesson:
-
-```bash
-git clone https://github.com/jt14den/terraform-aws-infrastructure
-```
-
-::::::::::::::::::::::::::::::::::::: keypoints
-
-* Install AWS CLI, Terraform, and Git before beginning the lesson
-* Use `aws configure sso` to authenticate with AWS Identity Center
-* Use `terraform version` and `aws --version` to verify installation
-* Create a dedicated working directory for Terraform files
-
-::::::::::::::::::::::::::::::::::::::::::::::::
+Open <https://localhost:8443/>. Accept the self-signed certificate only for this
+local lab. Expect the collection listing and styling. Public S3-backed scans do
+not normally load from localhost. The role skips firewalld and SELinux enforcement
+in the container; this is not proof of production readiness.
+
+All core commands start at the **pointcloud-infra repository root**, unless a
+subshell explicitly changes directory. `pixi run` supplies the controller tools;
+you do not need a Pixi shell. Check `git status --short` before each exercise,
+use a learner branch, and preserve any previous work. Do not run `deploy`,
+`deploy-check`, or the `tf-*` tasks during the core.
+
+If Podman cannot connect, follow the platform guide to start its machine/service.
+If ports 8080 or 8443 are busy, stop the conflicting local service before retrying.
+If downloads fail, retain the error and check network access; do not substitute
+production deployment. The instructor can demonstrate while you inspect source.
+
+Leave staging running for the next exercise, or stop this lab container with
+`pixi run staging-down`. Recreate it with `pixi run staging-up`.
+
+The [request-tracing episode](../episodes/pointcloud-request.md) uses only curl
+but depends on the live public site. All other core changes target local staging.
+No verified local point-cloud fixture is provided yet; the exercises publish
+HTML and test service behavior without claiming successful 3D rendering.
+
+## Dataverse extension: read-only case study
+
+No additional installation or credentials are needed to analyze the extension.
+Private-repository exploration is optional and limited to authorized maintainers.
+Its historical examples must not be copied into a live terminal as workshop tasks.
+
+For actual operator onboarding, obtain repository access, the intended AWS account
+and role/profile, SSH authorization, tool versions, and the existing Vault password
+through the project's established process. This lesson does not specify that
+process or supply credentials. A newly generated password cannot decrypt existing
+project ciphertext. See [Tooling setup](../episodes/tooling-setup.md).
+
+The [optional certification drills](certification.md) have a separate controller
+environment and disposable nodes; they are not prerequisites for the core.

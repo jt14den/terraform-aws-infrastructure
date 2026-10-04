@@ -4,6 +4,18 @@ teaching: 20
 exercises: 8
 ---
 
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::: questions
 
 - How are secrets kept out of the repository?
@@ -17,7 +29,7 @@ exercises: 8
 - Explain what Ansible Vault does and how to use it.
 - Describe the differences between test and production configuration.
 - Identify which config values are environment-specific vs. shared.
-- View a vaulted file's contents using the vault password.
+- Distinguish whole-file encryption from inline values using dummy lab content.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -69,20 +81,64 @@ dataverse_adminpass: !vault |
           663365396...
 ```
 
-To decrypt and view one value, or a whole file:
+An ordinary YAML file with inline `!vault` values is **not** a whole-file vault.
+`ansible-vault view` and `edit` operate on whole-file encrypted content, whose first
+line is `$ANSIBLE_VAULT;...`. They cannot view or edit ordinary YAML as if its inline
+values made the entire file encrypted. Inline values are decrypted when Ansible
+loads and uses them; replace them with newly encrypted values when editing.
+Do not print production secrets to demonstrate either mechanism.
+
+### Disposable dummy-secret lab (optional, 10 minutes)
+
+From the pointcloud-infra root, enter its controller environment, then create a
+fresh temporary directory outside Git. The shell remains active across the
+following commands; `exit` returns to the repository afterwards.
 
 ```bash
-ansible-vault view group_vars/dev.yml
+pixi shell
+umask 077
+VAULT_LAB=$(mktemp -d "${TMPDIR:-/tmp}/lesson-vault.XXXXXX")
+cd "$VAULT_LAB"
+(set -C; openssl rand -base64 24 > .vault-password)
+printf 'lab_secret: "dummy-only"\n' > whole.yml
+ansible-vault encrypt --vault-password-file .vault-password whole.yml
+head -1 whole.yml
+ansible-vault view --vault-password-file .vault-password whole.yml
+printf '%s' 'dummy-only' | ansible-vault encrypt_string --vault-password-file .vault-password --stdin-name lab_secret > inline.yml
+head -2 inline.yml
 ```
 
-To edit a vaulted value in place:
+Predict which file `ansible-vault view` accepts and explain why. It accepts
+`whole.yml`; `inline.yml` is ordinary YAML containing one encrypted scalar.
+The password is created only inside a new private directory, with mode 0600;
+the no-clobber subshell also prevents overwriting an existing password file.
+
+To demonstrate inline decryption without dumping a variable, create `check.yml`:
+
+```yaml
+- name: Check a dummy inline secret locally
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - inline.yml
+  tasks:
+    - name: Dummy value decrypts correctly
+      ansible.builtin.assert:
+        that: lab_secret == 'dummy-only'
+      no_log: true
+```
 
 ```bash
-ansible-vault edit group_vars/dev.yml
+ansible-playbook -i localhost, check.yml --vault-password-file .vault-password
 ```
 
-Both commands prompt for the vault password (the `.vault-password` file from Episode 2).
-That file itself is never committed to the repository.
+A successful assertion checks the dummy value. Never substitute project secrets.
+Whole-file `ansible-vault edit whole.yml --vault-password-file .vault-password`
+is valid here if you want to practice; it is not valid on `inline.yml` as a whole.
+Delete the files you created in this temporary lab when finished and type `exit`.
+Keep passwords and plaintext out of Git; encryption at rest does not protect a
+secret printed in logs or written to an unprotected destination.
 
 ![A secret moves from an encrypted group_vars block, through ansible-vault decryption at runtime, into a Payara JVM option, and is finally read by Dataverse at startup.](fig/secret-flow.svg){alt="Flow diagram: a secret starts as an encrypted vault block in group_vars/<env>.yml, is decrypted by Ansible at playbook runtime, is set as a Payara JVM option in domain.xml, and is read by Dataverse at startup."}
 
@@ -199,11 +255,17 @@ in `test.yml`" as two separate questions with two different answers today.
 
 ### Spot the difference
 
-Open `group_vars/dev.yml` and `group_vars/test.yml` in the `dataverse-ansible` repo.
+Use the inline-vault example, test certificate and PID blocks, and comparison table above. Authorized maintainers may also inspect current private `group_vars/dev.yml` and `group_vars/test.yml`; no private access is required for this analysis.
 
-1. Which top-level keys are shared structure (same key, different value) between the two files?
-2. Find `dataverse_adminpass` in each file. Is it vaulted (`!vault |`) in both? If not, which one isn't, and what does that tell you about deploy-readiness?
-3. Find the `pid:`/`doi:` blocks. What's the DOI provider in each?
+1. Which configuration blocks need environment-specific values?
+2. The historical table says test secrets are placeholders. Does encrypting a placeholder make it a usable deployment secret?
+3. What distinguishes the `pid:` block from `doi.provider`, and why use FAKE in a test environment?
+
+:::::::::::::::::::::::::::::::::: solution
+
+Certificate mode, passwords, storage and identifier settings depend on the environment. Encrypting a placeholder protects the placeholder but does not supply a valid secret. `pid:` specifies identifier format; `doi.provider` selects the registration service. FAKE avoids real external registration during tests.
+
+::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 

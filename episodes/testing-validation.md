@@ -4,17 +4,29 @@ teaching: 20
 exercises: 10
 ---
 
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::: questions
 
 - How do I know the migration worked?
 - What does the test suite check?
-- How do baseline comparisons verify data integrity?
+- What can baseline counts tell us, and what additional integrity checks are needed?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: objectives
 
-- Run the pytest suite and read its output.
+- Interpret illustrative pytest output and identify its limits.
 - Explain what each test category checks.
 - Compare two baseline snapshots and interpret the diff.
 - Identify what must pass before each migration phase can proceed.
@@ -97,6 +109,8 @@ The error message usually tells you what to do.
 
 ## Baseline comparisons
 
+Counts can match despite substituted, corrupted, or missing-and-replaced records. Compare object identifiers, sizes and checksums, and retrieve historical files against known source bytes. Capture the comparison baseline at the final write freeze; an early planning baseline can legitimately differ after later user activity.
+
 ### Capturing baselines
 
 Run `make baseline` before and after any significant operation:
@@ -147,9 +161,7 @@ must match exactly. Common causes of a real mismatch:
 
 ### The Phase 7 comparison is the final gate
 
-The baseline captured by Jamie before any migration work (run with `BASELINE_UPLOAD_BUCKET` set)
-is compared against the post-cutover production environment. If these do not match,
-the migration is not complete. Do not finalize the cutover until the comparison passes.
+The early planning baseline helps track changes over time. The cutover comparison must use a fresh baseline captured at the final write freeze. Investigate unexpected differences before reopening writes, and pair count checks with integrity and retrievability checks.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -202,7 +214,7 @@ Without checking the episode: a `baseline-compare` run shows `datasets: 1,247 ->
 Not a failure. `downloads`/guestbook history is treated as informational-only by
 `baseline-compare.sh`: download counts naturally keep incrementing while an instance
 is live and serving traffic, so a difference there reflects normal usage, not lost or
-corrupted data. Datasets and files matching exactly is what actually gates a migration phase.
+corrupted data. Matching dataset and file counts is one gate. Integrity and retrievability checks are also required.
 
 ::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -212,8 +224,8 @@ corrupted data. Datasets and files matching exactly is what actually gates a mig
 
 - The test suite (`dataverse-ansible/tests/integration/`, run via `make test`) covers API health, search, S3 round-trip, and Solr indexing as real pytest classes.
 - PID/DOI-specific validation is thin today: a `TestPIDConfiguration` class exists but only runs under the `migration` marker and mostly checks settings exist, not FAKE-vs-EZID behavior.
-- Baseline comparisons verify data integrity by comparing counts before and after migration, saved to `baseline-snapshots/` (no `latest.json`).
+- Baseline comparisons detect count discrepancies; they do not prove byte integrity or correct record-to-object mappings.
 - Every baseline field must match exactly **except** `downloads`, which is deliberately informational-only.
-- Jamie's pre-migration production baseline is the anchor for the final Phase 7 comparison.
+- A final write-freeze baseline anchors the cutover comparison; an older planning snapshot is supporting context.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::

@@ -4,6 +4,18 @@ teaching: 25
 exercises: 10
 ---
 
+:::::::::::::::::::::::::::::::::::::::::::::::: callout
+
+### Dataverse extension: case study
+
+This is outside the six-episode public core. Operational commands and historical
+status descriptions are examples for analysis, not a current production runbook.
+No AWS or private access is required to discuss the included material. Only
+authorized maintainers using a reviewed, current runbook should operate the
+actual service. Do not run these commands as workshop exercises.
+
+::::::::::::::::::::::::::::::::::::::::::::::::
+
 :::::::::::::::::::::::::::::::::::::: questions
 
 - What does `dataverse-ansible` configure on the EC2 instance?
@@ -16,7 +28,7 @@ exercises: 10
 
 - Explain the structure of the `dataverse-ansible` role.
 - Describe what `group_vars` does and how environment overrides work.
-- Run the playbook and read the output.
+- Interpret task output without running production configuration.
 - Explain the difference between module-level idempotency and playbook-level re-run safety, and why this role only has the first.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
@@ -147,7 +159,7 @@ doi:
   provider: FAKE
   baseurl: "https://mds.test.datacite.org/"
   username: "testaccount"
-  password: "notmypassword"   # not vaulted in dev -- see Episode 6
+  password: "notmypassword"   # not vaulted in dev -- see [Secrets and configuration](secrets-config.md)
 ```
 
 The same playbook runs against every environment; the variables control which behavior
@@ -176,31 +188,35 @@ on every `apply`. Never edit it by hand: your edits will be overwritten.
 There is no `--check`-mode wrapper for this role today: `make ansible ENV=tim` runs the
 real thing:
 
-```bash
-cd dataverse-infrastructure
-make ansible ENV=tim
+Use this illustrative output and task instead of running the private playbook:
+
+```output
+TASK [Install package] ok: [example]
+TASK [Write configuration] changed: [example]
+PLAY RECAP example: ok=2 changed=1 unreachable=0 failed=0
 ```
 
-(Under the hood: `cd dataverse-ansible && ansible-playbook -i ../<inventory> site.yml`.)
+```yaml
+- name: Initialize an example directory once
+  ansible.builtin.command:
+    cmd: /usr/local/bin/example-init
+    creates: /var/lib/example/initialized
+```
 
-Read through the output and identify:
-
-1. Which tasks report `changed` and which report `ok`?
-2. Find one `shell` or `command` task in `tasks/`. Does it have a `creates:` or `when:` guard?
-3. If this run failed halfway through, per `CONTEXT.md` what is the supported way to recover?
+1. How many tasks succeeded? Which reported a change?
+2. What prevents this example command from executing? Would `changed_when: false`
+   do the same thing?
+3. Why does one guarded task not prove that an entire playbook is safe to rerun?
 
 :::::::::::::::::::::::::::::::::: solution
 
-`ok` means the module checked state and found nothing to do. `changed` means it modified
-something. A freshly-provisioned instance should show mostly `changed` on first run;
-re-running against the *same still-fresh* instance would show more `ok`s for the guarded
-tasks. But that's not a scenario this role is meant to be run in twice.
-
-Some `shell`/`command` tasks are guarded, some aren't. That inconsistency is exactly
-why the repo-wide rule exists.
-
-Per `CONTEXT.md`: destroy and rebuild (`make rebuild`), not re-run in place. There is no
-supported partial-recovery path.
+Both tasks succeeded; the recap's `ok=2` includes the changed task. The per-task
+`ok` line reports no change, which is a different use of the word from recap totals.
+The `creates` path prevents execution if it exists. `changed_when: false` only
+suppresses change reporting and handler notification. Other tasks can still have
+unsafe side effects, so inspect the whole procedure and recovery requirements.
+The historical destroy/rebuild policy is not a reason to destroy production data
+without verified backups, file recovery, and a reviewed runbook.
 
 ::::::::::::::::::::::::::::::::::::::::::
 

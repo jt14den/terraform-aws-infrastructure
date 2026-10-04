@@ -35,7 +35,7 @@ Before writing any automation, you need a picture of what the system *does*. Thi
 1. **Your browser** asks `https://www.pointcloud.ucla.edu/` for a collection page.
 2. **Apache**, on one EC2 server, returns the page and the Potree viewer's JavaScript (`/build/potree/potree.js`).
 3. **The Potree viewer**, now running *in your browser*, requests the point cloud data straight from **an S3 bucket**. The server never touches the 3D data.
-4. **S3** checks the request's `Referer` header (the page it came from) and serves the data only to pages on `www.pointcloud.ucla.edu`. This stops other sites from embedding the scans and running up the bandwidth bill.
+4. **S3** checks the request's `Referer` header (the page it came from) and serves the data only to pages on `www.pointcloud.ucla.edu`. This deters ordinary hotlinking. It is not robust authentication or access control: a client can supply the header, as this exercise demonstrates.
 
 Three systems, three places to fail.
 
@@ -123,6 +123,8 @@ A browser sends a `Referer` header naming the page that made the request. With i
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
+A browser's Referer may contain only the origin, depending on its referrer policy. The header is client-controlled and must never be treated as user identity.
+
 ## A real failure: the missing `www`
 
 The site answers to two names, `www.pointcloud.ucla.edu` and `pointcloud.ucla.edu`. Until October 2026, a visitor arriving at `https://pointcloud.ucla.edu/...` got the page with a `200`, the viewer loaded, and then the scan never appeared. Every check that looked only at the page said the site was fine.
@@ -157,9 +159,27 @@ That redirect now lives in the Ansible role (`potree_canonical_redirect`), so a 
 
 ### "The page loads" is not "the site works"
 
-The repository's daily health check, `scripts/site-check.sh`, tests all three steps: the page answers, the bare name redirects to the exact `www` address, and a real collection's point cloud data loads with a browser-style `Referer`. Its first version only checked that both names returned `200` or `301`, and it would have passed during the outage above. When you write a check, ask what failure it would actually catch.
+The repository's `scripts/site-check.sh` checks a 200 status for the canonical homepage, an exact 301 redirect for the chosen collection path, extraction of the first HTTPS `loadPointCloud` URL from that page, and a 200 response for that metadata URL with a supplied `Referer`. It also checks certificate expiry on both hostnames against a threshold (21 days by default). It does not parse the metadata or fetch the cloud's binary data, execute JavaScript, or prove browser rendering. Its first version only checked that both names returned `200` or `301`, and it would have passed during the outage above. When you write a check, ask what failure it would actually catch.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
+
+::::::::::::::::::::::::::::::::::::: challenge
+
+### Green checks, broken viewer?
+
+If every `site-check.sh` check passes, what could still be broken? Name two
+failures and the additional evidence you would gather.
+
+:::::::::::::::::::::::::::::::::: solution
+
+JavaScript could fail at runtime, a binary object could be missing, or CORS could
+prevent browser access even though curl gets 200. Inspect the browser console
+and network requests, including metadata and binary responses, then confirm an
+actual scan renders. An HTTP status is not evidence of those later steps.
+
+::::::::::::::::::::::::::::::::::::::::::
+
+:::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: challenge
 

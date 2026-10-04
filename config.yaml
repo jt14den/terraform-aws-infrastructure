@@ -4,9 +4,9 @@
 
 carpentry: 'incubator'
 
-carpentry_description: 'A Carpentries Incubator lesson on managing and migrating a Dataverse instance using Terraform and Ansible.'
+carpentry_description: 'Learn Ansible with a public Potree service, then study Terraform and Dataverse operations.'
 
-title: 'Dataverse Infrastructure: Terraform, Ansible, and the Migration Path'
+title: 'Infrastructure as Code for Library Services: Ansible and Terraform'
 
 created: 2025-11-28
 
@@ -25,9 +25,15 @@ contact: 'tdennis@library.ucla.edu'
 # Navigation ------------------------------------------------
 
 episodes:
-  - introduction.md
+  # Public core (six episodes)
   - pointcloud-request.md
   - first-converge.md
+  - variables-handlers.md
+  - roles-validation.md
+  - diagnose-recover.md
+  - operate-service.md
+  # Dataverse case-study extension
+  - introduction.md
   - tooling-setup.md
   - terraform-infrastructure.md
   - ansible-idempotency.md
@@ -47,3 +53,4 @@ instructors:
   - instructor-notes.md
 
 profiles:
+  - learner-profiles.md

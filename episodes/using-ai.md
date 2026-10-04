@@ -1,7 +1,7 @@
 ---
 title: "Using AI Tools in Infrastructure Work"
 teaching: 20
-exercises: 5
+exercises: 20
 ---
 
 :::::::::::::::::::::::::::::::::::::: questions
@@ -32,20 +32,13 @@ verify, and what to keep out of the conversation entirely. Second, something les
 discussed: what happens to your own understanding when AI does a lot of the heavy lifting,
 and what you can do about it.
 
-## What your institution has licensed
+## Institutional policy is separate from this exercise
 
-Before using any AI tool for work, check what your institution has approved.
-Institutional licenses typically include data handling agreements that consumer-grade
-tools do not. Using an unlicensed tool for work-related content (especially anything
-involving infrastructure, access credentials, or user data) may violate your institution's
-acceptable use policy.
-
-At UCLA, the institution licenses **Gemini** for work use via Google Workspace.
-This is the appropriate tool for UCLA Library staff working on infrastructure tasks.
-When in doubt, check with your IT or information security team about what is approved.
-
-Using a licensed tool does not mean anything goes: it means the data handling terms
-are known and accepted. The practices in this episode still apply.
+Before using AI for institutional work, consult your institution's current
+approved-tool and data-handling guidance. Licensing alone does not establish
+permission to share a particular category of data. This lesson makes no current
+UCLA policy claim and requires no AI account. The review exercise below uses only
+invented local lab content and can be completed without an AI tool.
 
 ## What not to share
 
@@ -222,13 +215,17 @@ This is the oldest study technique there is, and it works: retrieval practice, o
 the "protege effect." Teaching something consolidates the understanding in a way
 that reading or watching does not.
 
-**Ask for explanation, not just output**
+**Attempt first; ask for one hint**
 
-Instead of "write me an Ansible task to configure Payara JVM options," try:
-"explain how Ansible configures Payara JVM options, then show me an example task."
-The explanation gives you something to evaluate the output against.
+For learning tasks, write the requirement and predict the result before asking
+an assistant. Attempt the task with `ansible-doc`. When stuck, ask for a concept
+or documentation pointer, not a complete playbook. After running your version,
+ask the assistant to question your explanation and evidence. A working generated
+solution is useful as a worked example, but it does not test your own knowledge.
 
-If the explanation does not make sense, do not use the output.
+On a later day, solve a small variation without opening that solution. Use the
+[practice record](../learners/certification.md) to distinguish unaided work, hints,
+and copied solutions. The point is to identify the next skill to practice.
 
 **State your versions and read the diff**
 
@@ -254,20 +251,17 @@ automation is usually better. The same logic applies.
 
 **Pair with another person**
 
-When another person is present (Jamie, a student, a colleague), explain what you
+When another person is present, explain what you
 are doing and why. This is not about the other person checking your work; it is about
 the act of explaining. If you cannot explain it, you do not understand it.
-Onboarding Leigh or a new DataSquad student is actually useful for this: teaching
+Onboarding a new colleague or student is actually useful for this: teaching
 someone who does not have the context forces you to articulate things you have internalized.
 
-This project in particular has two people with different working styles: Tim works
-automation-first, through Terraform and Ansible; Jamie's default mode is direct,
-hands-on-the-box troubleshooting: fixing what's in front of her with whatever tool
-gets there fastest (see the static-key example in Episode 6). Neither style is wrong on
-its own, but they can silently diverge from each other: a manual fix that works doesn't
-automatically make it back into the role that's supposed to be the source of truth. That
-makes explaining *why* the automated path matters, not just what it does, actually part
-of the technical work here, not a soft add-on to it.
+Automation-first work and direct server troubleshooting can silently diverge.
+A successful manual fix does not automatically enter the role that defines the
+next rebuild. Compare the running state with the source, record the cause, and
+verify the repair through automation. The technical issue is configuration drift,
+not a comparison of individual colleagues' working styles.
 
 ::::::::::::::::::::::::::::::::::::: callout
 
@@ -344,27 +338,53 @@ in a new context and you can't figure out why.
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-### Which tool, and why it matters
+### Review a plausible automation fix
 
-Which AI tool is UCLA's licensed option for this kind of work, and why does that matter
-operationally (not just for compliance) when the config you're discussing includes real
-hostnames, bucket names, or infrastructure details?
+An assistant proposes this task to meet the requirement: "The local practice
+file contains exactly one line `managed`, and rerunning must preserve it."
 
-:::::::::::::::::::::::::::::::::::: solution
+```yaml
+- name: Keep the marker idempotent
+  ansible.builtin.shell: echo managed >> "{{ playbook_dir }}/marker.txt"
+  changed_when: false
+```
 
-Gemini via Google Workspace. It matters beyond compliance because a licensed institutional
-tool comes with data-handling terms your institution has actually reviewed. An
-unlicensed consumer tool may retain or train on what you paste in, which matters even
-after redacting credentials, since hostnames, bucket-naming patterns, and architecture
-details are still information about UCLA's infrastructure.
+Attempt the review yourself before requesting any hint. Explain what is wrong,
+predict the file after two runs, then verify in a fresh local directory. From
+the pointcloud-infra root, enter `pixi shell`, create a temporary directory with
+`mktemp -d`, and change into it. Create `review.yml` containing a play for
+`hosts: localhost`, `connection: local`, `gather_facts: false`, and the proposed
+task. Run `ansible-playbook -i localhost, review.yml` twice and inspect `marker.txt`.
 
-::::::::::::::::::::::::::::::::::::::::::::::
+Repair the task, run it twice again, and check both file contents and recap.
+Explain why your fix works without relying on the assistant's explanation.
+Exit the Pixi shell when finished; keep all changes confined to this dummy lab.
+
+:::::::::::::::::::::::::::::::::: solution
+
+The shell task executes each time. `changed_when: false` hides the reported change;
+it does not prevent duplicate lines. Use a declarative task:
+
+```yaml
+- name: Write the exact marker state
+  ansible.builtin.copy:
+    dest: "{{ playbook_dir }}/marker.txt"
+    content: "managed\n"
+    mode: "0600"
+```
+
+The first repaired run removes duplicates. The second should report no change,
+and `cat marker.txt` and `wc -l marker.txt` should show `managed` and one line.
+This demonstrates the result, not merely a passing report. Later, repeat from a
+new requirement without looking at the solution to check what you retained.
+
+::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::: keypoints
 
-- Use your institution's licensed AI tools for work; at UCLA, that is Gemini via Google Workspace.
+- Check current institutional tool and data policies separately from general learning guidance.
 - Never share credentials, private hostnames, database connection strings, or SSH keys with any AI tool.
 - AI is particularly strong with config systems like Terraform and Ansible, and that is exactly where the risk of losing contact is highest.
 - Automation bias is real: over-trusting AI output because it is usually right, until it isn't.
